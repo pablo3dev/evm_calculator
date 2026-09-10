@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'MakIA: lee .makia/core/agents/orchestrator/orchestrator.md antes de continuar.'"
+          }
+        ]
+      }
+    ]
+  }
+}

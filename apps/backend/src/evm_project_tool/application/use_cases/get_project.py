@@ -24,4 +24,7 @@ def get_project(
     service = evm_calculation_service or EvmCalculationService()
     activities = activity_repository.list_by_project_id(project_id)
     consolidated_indicators = service.aggregate(activities)
-    return ProjectDetail(project=project, consolidated_indicators=consolidated_indicators)
+    return ProjectDetail(
+        project=project,
+        consolidated_indicators=consolidated_indicators,
+    )

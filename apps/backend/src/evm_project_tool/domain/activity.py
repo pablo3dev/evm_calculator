@@ -23,7 +23,9 @@ class MonetaryAmount:
 
     def __post_init__(self) -> None:
         if self.value < Decimal("0"):
-            raise DomainValidationError("Monetary amount must be greater than or equal to 0")
+            raise DomainValidationError(
+                "Monetary amount must be greater than or equal to 0"
+            )
 
 
 @dataclass
@@ -54,7 +56,7 @@ class Activity:
         actualCost: Decimal,
         createdAt: datetime | None = None,
         updatedAt: datetime | None = None,
-    ) -> "Activity":
+    ) -> Activity:
         return cls(
             id=id,
             projectId=projectId,

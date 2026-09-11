@@ -6,7 +6,10 @@ from evm_project_tool.application.use_cases.get_activity import (
     ActivityWithIndicators,
     get_activity,
 )
-from evm_project_tool.application.use_cases.get_project import ProjectDetail, get_project
+from evm_project_tool.application.use_cases.get_project import (
+    ProjectDetail,
+    get_project,
+)
 from evm_project_tool.application.use_cases.list_activities import list_activities
 from evm_project_tool.application.use_cases.list_projects import list_projects
 from evm_project_tool.application.use_cases.update_activity import update_activity

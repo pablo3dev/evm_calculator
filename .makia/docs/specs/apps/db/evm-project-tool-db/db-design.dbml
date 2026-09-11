@@ -1,0 +1,93 @@
+// EVM Project Tool - Data Design
+// Domain: Earned Value Management (EVM/PMI), simplified.
+// Scope decision (closed by IDEA): EVM indicators (PV, EV, CV, SV, CPI, SPI, EAC, VAC)
+// are NOT persisted. They are calculated in real time by the backend from the
+// input fields on `activities`. There is no requirement in this idea's scope
+// for historical/trend tracking of indicators, so no indicator table exists.
+
+Table projects {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Unique identifier of the project.']
+  name varchar [not null, note: 'Project name.']
+  description text [note: 'Optional free-text description of the project.']
+  created_at timestamptz [not null, default: `now()`, note: 'Timestamp when the project was created.']
+  updated_at timestamptz [not null, default: `now()`, note: 'Timestamp when the project was last updated.']
+
+  Note: '''
+    A Project groups a set of Activities (simplified equivalent of an EVM/PMI
+    Control Account) whose input data feeds the EVM calculations performed
+    by the backend at read time.
+  '''
+}
+
+Table activities {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Unique identifier of the activity.']
+  project_id uuid [not null, note: 'Owning project (many activities belong to one project).']
+  name varchar [not null, note: 'Activity name.']
+  budget_at_completion numeric(14,2) [not null, note: '''
+    BAC (Budget at Completion): total planned budget for this activity.
+    Used as the base multiplier for PV and EV:
+      PV = planned_progress_percentage x BAC
+      EV = actual_progress_percentage x BAC
+    Also used directly in EAC and VAC:
+      EAC = BAC / CPI
+      VAC = BAC - EAC
+    Constraint: must be >= 0.
+  ''']
+  planned_progress_percentage numeric(5,2) [not null, note: '''
+    Planned percentage of progress as of the cutoff date (0-100).
+    Used to compute PV (Planned Value):
+      PV = planned_progress_percentage x BAC
+    PV is also the denominator of SPI:
+      SPI = EV / PV
+    Constraint: must be between 0 and 100 inclusive.
+  ''']
+  actual_progress_percentage numeric(5,2) [not null, note: '''
+    Actual percentage of progress completed to date (0-100).
+    Used to compute EV (Earned Value):
+      EV = actual_progress_percentage x BAC
+    EV feeds CV, SV, CPI, SPI, EAC and VAC.
+    Constraint: must be between 0 and 100 inclusive.
+  ''']
+  actual_cost numeric(14,2) [not null, note: '''
+    AC (Actual Cost): real cost incurred by this activity to date.
+    Used to compute:
+      CV (Cost Variance)      = EV - AC
+      CPI (Cost Performance)  = EV / AC
+    CPI in turn feeds EAC = BAC / CPI, and VAC = BAC - EAC.
+    Constraint: must be >= 0.
+  ''']
+  created_at timestamptz [not null, default: `now()`, note: 'Timestamp when the activity was created.']
+  updated_at timestamptz [not null, default: `now()`, note: 'Timestamp when the activity was last updated.']
+
+  indexes {
+    project_id
+  }
+
+  Note: '''
+    An Activity is the simplified equivalent of an EVM/PMI Work Package: the
+    unit that carries the raw inputs needed to compute Earned Value Management
+    indicators.
+
+    EVM indicators are NOT persisted anywhere in this schema. They are
+    calculated in real time by the backend from the four business fields
+    above (budget_at_completion, planned_progress_percentage,
+    actual_progress_percentage, actual_cost) using these formulas:
+
+      PV  (Planned Value)        = planned_progress_percentage x BAC
+      EV  (Earned Value)         = actual_progress_percentage x BAC
+      CV  (Cost Variance)        = EV - AC
+      SV  (Schedule Variance)    = EV - PV
+      CPI (Cost Performance Idx) = EV / AC
+      SPI (Sched. Performance)   = EV / PV
+      EAC (Estimate at Complete) = BAC / CPI
+      VAC (Variance at Complete) = BAC - EAC
+
+    This is a closed decision of this idea's scope: there is no requirement
+    for historical or trend tracking of EVM indicators over time, so no
+    table stores computed indicator snapshots. If that requirement appears
+    in a future idea, a separate indicator-history table should be added
+    then, not retrofitted into this table.
+  '''
+}
+
+Ref: activities.project_id > projects.id [delete: cascade]

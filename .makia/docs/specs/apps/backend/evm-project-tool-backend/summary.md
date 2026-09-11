@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 |:---:|:---:|
-| `En progreso` | `2026-09-11` |
+| `Completado` | `2026-09-11` |
 
 ## Objetivo
 
@@ -39,7 +39,7 @@ Ofrecer al líder de proyecto una API REST confiable que centralice la gestión 
 
 **Disponible ahora:** API REST CRUD de proyectos y actividades bajo `/api/v1`; consultas de lectura con indicadores EVM calculados en tiempo real (PV, EV, CV, SV, CPI, SPI, EAC, VAC) e interpretaciones CPI/SPI; documentación interactiva Swagger en `/api-docs` (OpenAPI en `/openapi.json`).
 
-**Pendiente de cierre:** validación TEST global y AUDIT por el Orquestador antes de marcar el spec como `Completado`.
+**Cierre:** TEST global y AUDIT completados — spec marcado `Completado` (2026-09-11).
 
 ## Coordinación multi-unidad
 

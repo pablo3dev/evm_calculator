@@ -16,7 +16,7 @@ Una aplicación fullstack (e2e), que permita gestionar proyectos y sus actividad
 ## Base de datos
 
 ### Rutas
-- .makia/docs/specs/apps/db/
+- .makia/docs/specs/apps/db/[specs]
 - apps/db/
 
 Stack
@@ -31,7 +31,7 @@ Stack
 > Arquitectura por defecto de MakIA
 
 ### Rutas
-- .makia/docs/specs/apps/backend/
+- .makia/docs/specs/apps/backend/[specs]
 - apps/backend/
 
 ### Stack
@@ -79,7 +79,7 @@ El API también debe retornar la interpretación de CPI y SPI: si el proyecto es
 > Arquitectura por defecto de MakIA y las reglas de frontend establecidas por MakIA.
 
 ### Rutas
-- .makia/docs/specs/apps/frontend/
+- .makia/docs/specs/apps/frontend/[specs]
 - apps/frontend/
 
 ### Stack
@@ -111,7 +111,7 @@ Este proyecto centraliza todo el run local en docker y contiene todos los archiv
 El objetivo de este proyecto es correr el docker-compose y levantar todas las apps en un solo comando, sin necesidad de correr cada app por separado o correr scripts de base de datos por separado, solo un comando para poner todo en marcha cuando es por primera vez o cuando ya se ha ejecutado. Debe funcionar sin problemas.
 
 ### Rutas
-- .makia/docs/specs/apps/infrastructure/
+- .makia/docs/specs/apps/infrastructure/[specs]
 - apps/infrastructure/
 
 ---

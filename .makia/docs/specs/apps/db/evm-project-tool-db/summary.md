@@ -25,7 +25,7 @@ Persistir de forma confiable los datos de entrada de proyectos y actividades que
 
 ## Qué puede hacer ya el usuario / Qué falta
 
-- [ ] Persistir un proyecto (`projects`) vía migración SQL aplicable con `yoyo apply`.
+- [x] Persistir un proyecto (`projects`) vía migración SQL aplicable con `yoyo apply`.
 - [ ] Persistir actividades (`activities`) de un proyecto con integridad referencial (FK con `delete: cascade`) e índice en `project_id`.
 - [x] `lefthook.yml` en la raíz del repositorio con verificación local de backend y frontend.
 

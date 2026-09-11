@@ -22,7 +22,7 @@
 - [x] **Tarea 1.1: Crear `lefthook.yml` en la raíz del repositorio** `[REQ-4.1]` `[DESIGN §5]` — copiar la plantilla base `.makia/core/harness/templates/lefthook.example.yml` a `lefthook.yml` en la raíz, agregando la sección `pre-commit` con los comandos `backend-lint`, `backend-format`, `frontend-lint`, `frontend-format` exactamente como están cerrados en `design.md` §2.5 (heredado de `draft.md` de IDEA) — sin modificar la sección `commit-msg` ya provista por la plantilla.
 
 ### Fase 2: Esquema y migraciones de `projects`
-- [ ] **Tarea 2.1: [P] Migración `0001_create_projects_table.sql`** `[REQ-1.1, REQ-1.2, REQ-1.3]` `[DESIGN §3.2]` — crear la migración de `yoyo-migrations` 9.0.0 (verificar convención exacta de archivo de yoyo 9.0.2 al momento de implementar) que crea la tabla `projects` con el DDL exacto de `design.md` §3.2 (columnas `id`, `name`, `description`, `created_at`, `updated_at`, constraint `NOT NULL` en `name`).
+- [x] **Tarea 2.1: [P] Migración `0001_create_projects_table.sql`** `[REQ-1.1, REQ-1.2, REQ-1.3]` `[DESIGN §3.2]` — crear la migración de `yoyo-migrations` 9.0.0 (verificar convención exacta de archivo de yoyo 9.0.2 al momento de implementar) que crea la tabla `projects` con el DDL exacto de `design.md` §3.2 (columnas `id`, `name`, `description`, `created_at`, `updated_at`, constraint `NOT NULL` en `name`).
 - [ ] **Tarea 2.2: Verificar aplicación de la migración `0001`** `[REQ-1.2]` `[DESIGN §8.2]` — aplicar `yoyo apply --batch` sobre una base de datos PostgreSQL 18 vacía y confirmar que la tabla `projects` queda creada con todos sus constraints, sin error.
 
 ### Fase 3: Esquema y migraciones de `activities`
@@ -39,10 +39,10 @@
 | Fase | Total Tareas | Completadas | Estado |
 |:---|:---:|:---:|:---|
 | Fase 1: Configuración de verificación local (lefthook) | 1 | 1 | `Completed` |
-| Fase 2: Esquema y migraciones de `projects` | 2 | 0 | `Pending` |
+| Fase 2: Esquema y migraciones de `projects` | 2 | 1 | `Pending` |
 | Fase 3: Esquema y migraciones de `activities` | 2 | 0 | `Pending` |
 | Fase 4: Verificación de integridad referencial y documentación | 2 | 0 | `Pending` |
-| **Total Global** | **7** | **1** | **~14%** |
+| **Total Global** | **7** | **2** | **~29%** |
 
 ---
 

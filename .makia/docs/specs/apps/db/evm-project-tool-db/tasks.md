@@ -26,8 +26,8 @@
 - [x] **Tarea 2.2: Verificar aplicación de la migración `0001`** `[REQ-1.2]` `[DESIGN §8.2]` — aplicar `yoyo apply --batch` sobre una base de datos PostgreSQL 18 vacía y confirmar que la tabla `projects` queda creada con todos sus constraints, sin error.
 
 ### Fase 3: Esquema y migraciones de `activities`
-- [ ] **Tarea 3.1: Migración `0002_create_activities_table.sql`** `[REQ-2.1, REQ-2.3, REQ-2.4, REQ-2.5]` `[DESIGN §3.2]` — crear la migración que crea la tabla `activities` con el DDL exacto de `design.md` §3.2 (columnas `id`, `project_id` con FK `ON DELETE CASCADE`, `name`, `budget_at_completion`, `planned_progress_percentage`, `actual_progress_percentage`, `actual_cost`, `created_at`, `updated_at`, constraints `CHECK` de rango 0-100 y de no-negatividad, índice en `project_id`). Depende de que la Tarea 2.1 exista (orden secuencial `0001` antes de `0002`).
-- [ ] **Tarea 3.2: Verificar aplicación de la migración `0002` y constraints** `[REQ-2.2, EC-01, EC-02, EC-03, EC-04]` `[DESIGN §8.2]` — aplicar `yoyo apply --batch` en secuencia sobre la base de datos con `0001` ya aplicada, y verificar manualmente (consultas SQL directas) que: (a) insertar una `activity` con `project_id` inexistente es rechazado (EC-01), (b) eliminar un `project` con actividades asociadas elimina esas actividades en cascada (EC-02), (c) insertar una `activity` con porcentaje fuera de rango 0-100 es rechazado (EC-03), (d) insertar una `activity` con `budget_at_completion`/`actual_cost` negativo es rechazado (EC-04).
+- [x] **Tarea 3.1: Migración `0002_create_activities_table.sql`** `[REQ-2.1, REQ-2.3, REQ-2.4, REQ-2.5]` `[DESIGN §3.2]` — crear la migración que crea la tabla `activities` con el DDL exacto de `design.md` §3.2 (columnas `id`, `project_id` con FK `ON DELETE CASCADE`, `name`, `budget_at_completion`, `planned_progress_percentage`, `actual_progress_percentage`, `actual_cost`, `created_at`, `updated_at`, constraints `CHECK` de rango 0-100 y de no-negatividad, índice en `project_id`). Depende de que la Tarea 2.1 exista (orden secuencial `0001` antes de `0002`).
+- [x] **Tarea 3.2: Verificar aplicación de la migración `0002` y constraints** `[REQ-2.2, EC-01, EC-02, EC-03, EC-04]` `[DESIGN §8.2]` — aplicar `yoyo apply --batch` en secuencia sobre la base de datos con `0001` ya aplicada, y verificar manualmente (consultas SQL directas) que: (a) insertar una `activity` con `project_id` inexistente es rechazado (EC-01), (b) eliminar un `project` con actividades asociadas elimina esas actividades en cascada (EC-02), (c) insertar una `activity` con porcentaje fuera de rango 0-100 es rechazado (EC-03), (d) insertar una `activity` con `budget_at_completion`/`actual_cost` negativo es rechazado (EC-04).
 
 ### Fase 4: Verificación de integridad referencial y documentación
 - [ ] **Tarea 4.1: Re-ejecución idempotente de migraciones** `[EC-05]` `[DESIGN §8.2]` — ejecutar `yoyo apply --batch` una segunda vez sobre la base de datos ya migrada y confirmar que no falla ni re-aplica migraciones ya aplicadas.
@@ -40,9 +40,9 @@
 |:---|:---:|:---:|:---|
 | Fase 1: Configuración de verificación local (lefthook) | 1 | 1 | `Completed` |
 | Fase 2: Esquema y migraciones de `projects` | 2 | 2 | `Completed` |
-| Fase 3: Esquema y migraciones de `activities` | 2 | 0 | `Pending` |
+| Fase 3: Esquema y migraciones de `activities` | 2 | 2 | `Completed` |
 | Fase 4: Verificación de integridad referencial y documentación | 2 | 0 | `Pending` |
-| **Total Global** | **7** | **3** | **~43%** |
+| **Total Global** | **7** | **5** | **~71%** |
 
 ---
 

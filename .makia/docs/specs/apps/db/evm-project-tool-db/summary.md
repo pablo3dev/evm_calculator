@@ -18,15 +18,15 @@ Persistir de forma confiable los datos de entrada de proyectos y actividades que
 |:---|:---:|
 | Fase 1: Configuración de verificación local (lefthook) | `Completada` |
 | Fase 2: Esquema y migraciones de `projects` | `Completada` |
-| Fase 3: Esquema y migraciones de `activities` | `Pendiente` |
+| Fase 3: Esquema y migraciones de `activities` | `Completada` |
 | Fase 4: Verificación de integridad referencial y documentación | `Pendiente` |
 
-**Progreso global:** `50%` (2 de 4 fases completadas)
+**Progreso global:** `75%` (3 de 4 fases completadas)
 
 ## Qué puede hacer ya el usuario / Qué falta
 
 - [x] Persistir un proyecto (`projects`) vía migración SQL aplicable con `yoyo apply`.
-- [ ] Persistir actividades (`activities`) de un proyecto con integridad referencial (FK con `delete: cascade`) e índice en `project_id`.
+- [x] Persistir actividades (`activities`) de un proyecto con integridad referencial (FK con `delete: cascade`) e índice en `project_id`.
 - [x] `lefthook.yml` en la raíz del repositorio con verificación local de backend y frontend.
 
 ## Coordinación multi-unidad

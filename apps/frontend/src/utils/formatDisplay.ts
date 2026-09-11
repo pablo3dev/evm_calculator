@@ -1,4 +1,4 @@
-export const MISSING_VALUE = '—'
+export const MISSING_VALUE = 'N/A'
 
 function isDisplayableNumber(
   value: number | null | undefined,
@@ -36,4 +36,20 @@ export function formatIndicator(value: number | null | undefined): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value)
+}
+
+export function formatDateTime(value: string | null | undefined): string {
+  if (!value) {
+    return MISSING_VALUE
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return MISSING_VALUE
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date)
 }

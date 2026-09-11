@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 |:---:|:---:|
-| `En progreso` | `2026-09-11` |
+| `Completado` | `2026-09-11` |
 
 ## Objetivo
 

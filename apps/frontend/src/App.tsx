@@ -1,13 +1,26 @@
+import { useState } from 'react'
 import './App.css'
+import { Dashboard } from './components/Dashboard.tsx'
+import { ProjectSelector } from './components/ProjectSelector.tsx'
 
 function App() {
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null)
+
   return (
     <main className="dashboard-shell">
       <header>
         <h1>EVM Project Tool</h1>
+        <ProjectSelector
+          value={activeProjectId}
+          onChange={setActiveProjectId}
+        />
       </header>
-      <section aria-label="Dashboard placeholder">
-        <p>Dashboard placeholder — project metrics will render here.</p>
+      <section aria-label="Project dashboard">
+        {activeProjectId ? (
+          <Dashboard key={activeProjectId} projectId={activeProjectId} />
+        ) : (
+          <p>Select a project to view the dashboard.</p>
+        )}
       </section>
     </main>
   )

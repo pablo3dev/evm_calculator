@@ -18,26 +18,27 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 |:---|:---:|
 | Fase 1: Scaffolding | `Completado` (2/2 tareas) |
 | Fase 2: API client | `Completado` (2/2 tareas) |
-| Fase 3: Dashboard componentes | `En progreso` (0/7 tareas) |
-| Fase 4: Docker / verificación | `Pendiente` |
+| Fase 3: Dashboard componentes | `Completado` (7/7 tareas) |
+| Fase 4: Docker / verificación | `En progreso` |
 
-**Progreso global:** `~29%` (4 de 14 tareas)
+**Progreso global:** `~79%` (11 de 14 tareas)
 
-**Tarea 2.2 completada:** módulos de dominio API en `src/api/projects.ts` y `src/api/activities.ts` — **10 métodos** 1:1 con el contrato backend §4.2 (`listProjects`, `createProject`, `getProject`, `updateProject`, `deleteProject`, `listActivitiesByProject`, `createActivity`, `getActivity`, `updateActivity`, `deleteActivity`); tipos de retorno alineados con `src/types/api.ts`; propagación de `ApiError` sin tragar códigos HTTP.
+**Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
 
 ## Qué puede hacer ya el usuario / Qué falta
 
 **Ya disponible:**
 - Footprint Vite React-TS en `apps/frontend/` con dependencias fijadas (React 19, Vite 8, TypeScript 7, Recharts 3).
 - Toolchain operativa: `npm run build`, `npm run lint` y `npm run format` pasan sin errores.
-- Shell mínimo en `src/App.tsx` listo para integrar componentes del dashboard.
 - Tipos TypeScript del contrato API en `src/types/api.ts` (snake_case, alineados con OpenAPI backend).
 - Cliente HTTP base en `src/api/client.ts` (`ApiError`, `apiFetch`, helpers REST tipados).
-- Módulos de dominio API completos: `src/api/projects.ts` (5 métodos) y `src/api/activities.ts` (5 métodos) — **10 métodos REST** listos para consumo por componentes del dashboard.
+- Módulos de dominio API completos: `src/api/projects.ts` (5 métodos) y `src/api/activities.ts` (5 métodos) — **10 métodos REST**.
+- Dashboard integrado con CRUD de actividades: `ProjectSelector`, `ActivitiesTable`, `ConsolidatedIndicators`, `CpiSpiBadge`, `PvEvAcChart`, `ActivityFormModal`, `ErrorBanner`, `LoadingButton` y hook `useMutationWithLock`; orquestados en `Dashboard.tsx` con refetch tras create/update/delete.
 
 **Pendiente:**
-- Componentes del dashboard (`ProjectSelector`, `ActivitiesTable`, `ConsolidatedIndicators`, `CpiSpiBadge`, `PvEvAcChart`, `ActivityFormModal`) e integración en `Dashboard.tsx`.
-- Dockerfile, nginx y verificación manual contra backend local.
+- Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático.
+- Limpieza ESLint/Prettier final y tests de componente opcionales (Vitest).
+- Verificación manual del dashboard contra backend local (Fase 4.3).
 
 ## Coordinación multi-unidad
 

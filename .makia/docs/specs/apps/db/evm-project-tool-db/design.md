@@ -39,7 +39,7 @@ graph TD
 ## 3. Data Models & Schema Design
 
 ### 3.1 Domain Entities (Core Business Objects)
-No aplica — esta unidad no define entidades de dominio en código; el modelo conceptual (`Project`, `Activity`) vive en `domain-model.md` de `apps/backend/` (../../../../apps/backend/domain-model.md), dueño del dominio. Esta unidad solo materializa su forma de persistencia.
+No aplica — esta unidad no define entidades de dominio en código; el modelo conceptual (`Project`, `Activity`) vive en `domain-model.md` de `apps/backend/` (../../backend/domain-model.md), dueño del dominio. Esta unidad solo materializa su forma de persistencia.
 
 ### 3.2 Database Schema & Persistence
 - **Target Database / Storage:** PostgreSQL 18.

@@ -41,8 +41,13 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 - Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático (build arg `VITE_API_BASE_URL`).
 - Toolchain de calidad: ESLint/Prettier limpios; Vitest configurado con test de humo opcional.
 
+**Corrección audit ciclo 1 (iteración 1, 2026-09-11):**
+- **H-01 cerrado:** UI CRUD de proyectos (`ProjectFormModal`, `ProjectSelector` con create/edit/delete vía `api/projects.ts`; confirmación antes de DELETE; selección del proyecto creado; salida del dashboard si se elimina el activo; refetch de lista).
+- **H-02 cerrado:** anti doble-submit en eliminación desde tabla (`useMutationWithLock` en `Dashboard`, `LoadingButton`/`actionsDisabled` en `ActivitiesTable`).
+- **H-03/H-04 (menores):** listado muestra description y fechas; nulls numéricos como `N/A` en `formatDisplay.ts`.
+
 **Pendiente:**
-- Orquestación TEST + AUDIT de la unidad (cierre formal del spec).
+- Re-auditoría ciclo 2 (AUDIT) tras correcciones H-01/H-02.
 
 ## Verificación manual 4.3
 

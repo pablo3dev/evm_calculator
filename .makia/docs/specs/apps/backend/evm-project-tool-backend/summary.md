@@ -33,7 +33,7 @@ Esta unidad (`apps/backend/`) es la segunda de 4 unit-specs de la capacidad "EVM
 
 1. [`evm-project-tool-db`](../../db/evm-project-tool-db/summary.md) — esquema PostgreSQL y migraciones. **Creado** (Creación Aprobado).
 2. **`evm-project-tool-backend`** (esta unidad) — API REST y lógica de negocio EVM.
-3. [`evm-project-tool-frontend`](../../frontend/evm-project-tool-frontend/summary.md) — dashboard de presentación. Pendiente de creación.
+3. [`evm-project-tool-frontend`](../../frontend/evm-project-tool-frontend/summary.md) — dashboard de presentación. **Creado** (Creación pendiente aprobación).
 4. [`evm-project-tool-infrastructure`](../../infrastructure/evm-project-tool-infrastructure/summary.md) — orquestación Docker Compose. Pendiente de creación.
 
 **Depende de:** unit-spec [`evm-project-tool-db`](../../db/evm-project-tool-db/summary.md) (esquema PostgreSQL: tablas `projects` y `activities`, migraciones aplicables).

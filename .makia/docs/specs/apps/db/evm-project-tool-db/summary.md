@@ -34,14 +34,14 @@ Persistir de forma confiable los datos de entrada de proyectos y actividades que
 Esta unidad (`apps/db/`) es la primera de 4 unit-specs de la capacidad "EVM Project Tool", creadas en este orden fijo:
 
 1. `evm-project-tool-db` (esta unidad) — esquema PostgreSQL y migraciones.
-2. `evm-project-tool-backend` — API REST y lógica de negocio EVM. Depende de esta unidad.
-3. `evm-project-tool-frontend` — dashboard de presentación. Depende de `evm-project-tool-backend`.
+2. [`evm-project-tool-backend`](../../backend/evm-project-tool-backend/summary.md) — API REST y lógica de negocio EVM. Depende de esta unidad.
+3. [`evm-project-tool-frontend`](../../frontend/evm-project-tool-frontend/summary.md) — dashboard de presentación. Depende de [`evm-project-tool-backend`](../../backend/evm-project-tool-backend/summary.md).
 4. `evm-project-tool-infrastructure` — orquestación Docker Compose de las 3 unidades anteriores.
 
 Como `evm-project-tool-db` es el primer unit-spec creado, todavía no existen `summary.md` de las unidades hermanas para enlazar por ruta relativa. SPEC completa estos enlaces en cada invocación siguiente, a medida que cada unit-spec hermano se cree:
 
-- `evm-project-tool-backend`: [`../../backend/evm-project-tool-backend/summary.md`](../../backend/evm-project-tool-backend/summary.md) (creado — pendiente aprobación).
-- `evm-project-tool-frontend`: `../../frontend/evm-project-tool-frontend/summary.md` (pendiente de creación).
+- `evm-project-tool-backend`: [`../../backend/evm-project-tool-backend/summary.md`](../../backend/evm-project-tool-backend/summary.md) (creado — Creación Aprobado).
+- `evm-project-tool-frontend`: [`../../frontend/evm-project-tool-frontend/summary.md`](../../frontend/evm-project-tool-frontend/summary.md) (creado — pendiente aprobación).
 - `evm-project-tool-infrastructure`: `../../infrastructure/evm-project-tool-infrastructure/summary.md` (pendiente de creación).
 
 Condición de Done conjunto de la capacidad completa: las 4 unidades con todas sus tareas en `[x]`, TEST/AUDIT en verde por unidad, y la E2E cross-unidad (`docker compose up` completo levantando DB + migraciones + backend + frontend) pasando sin intervención manual.

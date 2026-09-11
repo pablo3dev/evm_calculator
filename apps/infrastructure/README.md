@@ -48,3 +48,34 @@ Reset the database volume (fresh PostgreSQL data):
 ```bash
 docker compose down -v
 ```
+
+## Troubleshooting
+
+### `migrate` failed — backend does not start
+
+If migrations fail, the `backend` service **will not start** because it depends on `migrate` with `service_completed_successfully`.
+
+1. Inspect migrate logs:
+
+   ```bash
+   docker compose logs migrate
+   ```
+
+2. Fix the underlying cause (SQL error, bad `DATABASE_URL`, missing `.env`, etc.).
+
+3. Bring the stack up again:
+
+   ```bash
+   docker compose up
+   ```
+
+### Reset schema (destructive)
+
+To wipe PostgreSQL data and re-apply migrations from scratch:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+This removes the `postgres_data` volume; all local DB data is lost.

@@ -17,4 +17,4 @@ graph LR
 
 | Spec | Estado | Creación | Paralelizable con | Ruta | Depende de |
 |---|:---:|:---:|:---:|---|---|
-| evm-project-tool-infrastructure | `En progreso` | `Aprobado` | `D` | `evm-project-tool-infrastructure/summary.md` | `../../backend/evm-project-tool-backend/summary.md`, `../../frontend/evm-project-tool-frontend/summary.md` |
+| evm-project-tool-infrastructure | `Completado` | `Aprobado` | `D` | `evm-project-tool-infrastructure/summary.md` | `../../backend/evm-project-tool-backend/summary.md`, `../../frontend/evm-project-tool-frontend/summary.md` |

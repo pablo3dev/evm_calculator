@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 | :--- | :--- |
-| `En progreso` | `2026-09-11` |
+| `Completado` | `2026-09-11` |
 
 ## Objetivo
 
@@ -21,6 +21,8 @@ Proveer el punto de entrada local único del monorepo EVM Project Tool: un `dock
 | Fase 3: Wiring de servicios (`db` → `migrate` → `backend` → `frontend`, puertos y healthchecks) | `Completada` |
 | Fase 4: Verificación E2E (`docker compose up` stack completo sin pasos manuales) | `Completada` |
 
+**Progreso global:** `100%` (4 de 4 fases completadas)
+
 ## Qué puede hacer ya el usuario / Qué falta
 
 - [x] Levantar el stack completo con `docker compose up` desde `apps/infrastructure/` (PostgreSQL 18 + migraciones + backend + frontend).
@@ -29,6 +31,8 @@ Proveer el punto de entrada local único del monorepo EVM Project Tool: un `dock
 - [x] Ejecutar migraciones automáticamente en arranque mediante servicio `migrate` one-shot (`yoyo apply --batch`) antes de que arranque el backend.
 - [x] Acceder a la UI en `http://localhost:8080` y a la API/OpenAPI en `http://localhost:8000` tras un único comando, sin intervención manual intermedia.
 - [x] Resetear el entorno local documentado (`docker compose down -v`) cuando sea necesario.
+
+**Cierre:** TEST global y AUDIT completados — spec marcado `Completado` (2026-09-11). Veredicto AUDIT: **PASA_CON_OBSERVACIONES** (4 observaciones menores H-01..H-04, no bloqueantes).
 
 ## Coordinación multi-unidad
 

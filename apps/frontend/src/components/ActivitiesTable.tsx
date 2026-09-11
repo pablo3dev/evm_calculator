@@ -5,17 +5,20 @@ import {
   formatPercent,
 } from '../utils/formatDisplay.ts'
 import { CpiSpiBadge } from './CpiSpiBadge.tsx'
+import { LoadingButton } from './LoadingButton.tsx'
 
 export interface ActivitiesTableProps {
   activities: ActivityWithIndicatorsResponse[]
   onEdit: (id: string) => void
   onDelete: (id: string) => void
+  actionsDisabled?: boolean
 }
 
 export function ActivitiesTable({
   activities,
   onEdit,
   onDelete,
+  actionsDisabled = false,
 }: ActivitiesTableProps) {
   if (activities.length === 0) {
     return (
@@ -78,12 +81,20 @@ export function ActivitiesTable({
                 <td>{formatIndicator(indicators.eac)}</td>
                 <td>{formatIndicator(indicators.vac)}</td>
                 <td className="activities-table-actions">
-                  <button type="button" onClick={() => onEdit(activity.id)}>
+                  <button
+                    type="button"
+                    disabled={actionsDisabled}
+                    onClick={() => onEdit(activity.id)}
+                  >
                     Edit
                   </button>
-                  <button type="button" onClick={() => onDelete(activity.id)}>
+                  <LoadingButton
+                    type="button"
+                    loading={actionsDisabled}
+                    onClick={() => onDelete(activity.id)}
+                  >
                     Delete
-                  </button>
+                  </LoadingButton>
                 </td>
               </tr>
             )

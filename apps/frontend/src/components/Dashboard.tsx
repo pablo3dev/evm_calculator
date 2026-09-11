@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { deleteActivity, listActivitiesByProject } from '../api/activities.ts'
 import { ApiError } from '../api/client.ts'
 import { getProject } from '../api/projects.ts'
+import { useMutationWithLock } from '../hooks/useMutationWithLock.ts'
 import type {
   ActivityWithIndicatorsResponse,
   ProjectDetailResponse,
@@ -49,6 +50,7 @@ export function Dashboard({ projectId }: DashboardProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingActivity, setEditingActivity] =
     useState<ActivityWithIndicatorsResponse | null>(null)
+  const { isLocked, runMutation } = useMutationWithLock()
 
   const refetch = useCallback(async () => {
     const [projectData, activitiesData] = await Promise.all([
@@ -121,12 +123,15 @@ export function Dashboard({ projectId }: DashboardProps) {
       return
     }
 
-    try {
-      await deleteActivity(activityId)
-      await refetch()
-    } catch (err: unknown) {
-      setError(formatLoadError(err))
-    }
+    await runMutation(async () => {
+      try {
+        await deleteActivity(activityId)
+        await refetch()
+      } catch (err: unknown) {
+        setError(formatLoadError(err))
+        throw err
+      }
+    })
   }
 
   const handleModalDelete = async () => {
@@ -164,6 +169,7 @@ export function Dashboard({ projectId }: DashboardProps) {
             activities={activities}
             onEdit={openEditModal}
             onDelete={handleDeleteFromTable}
+            actionsDisabled={isLocked}
           />
 
           <PvEvAcChart activities={activities} />

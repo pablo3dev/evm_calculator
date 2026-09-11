@@ -43,9 +43,9 @@
 - [x] **Tarea 3.7: Integrar `Dashboard.tsx`** `[REQ-06]` `[REQ-03]` `[REQ-05]` `[DESIGN §2]` `[DESIGN §5]` — página `Dashboard.tsx` que orquesta: `ProjectSelector` → carga paralela `getProject(projectId)` + `listActivitiesByProject(projectId)` → `ConsolidatedIndicators` + `ActivitiesTable` + `PvEvAcChart` + botón "Nueva actividad" → `ActivityFormModal`. Tras create/update/delete exitoso, **refetch** datos del proyecto y actividades (o usar respuesta del API que ya incluye indicadores) para reflejar recálculo inmediato (REQ-06). Estados loading/error globales. **Requiere backend local** levantado para validación funcional.
 
 ### Fase 4: Docker, verificación y polish
-- [ ] **Tarea 4.1: Dockerfile multi-stage + `nginx.conf`** `[DESIGN §2.5]` `[DESIGN §5]` — `apps/frontend/Dockerfile`: stage build `node:24-slim` (`npm ci`, `npm run build`), stage runtime `nginx:stable-alpine` sirviendo `dist/` estático. `nginx.conf` con `try_files` para SPA (fallback `index.html`), compresión gzip básica, puerto 80. Build arg/env `VITE_API_BASE_URL` inyectable en build time. Sin `docker-compose` (responsabilidad `evm-project-tool-infrastructure`).
-- [ ] **Tarea 4.2: Limpieza ESLint/Prettier; tests componente opcionales** `[DESIGN §8]` `[DESIGN §5]` — ejecutar `npx eslint .` y `npx prettier --check .` sobre `apps/frontend/` sin errores (también cubierto por `lefthook.yml` de db spec en pre-commit). Si `design.md` §8 define tests Vitest + React Testing Library: configurar Vitest mínimo y al menos 1 test de humo (p. ej. `CpiSpiBadge` renderiza texto de interpretación); **no** es obligación de cobertura % en frontend. Sin code smells: sin imports muertos, sin `console.log` de debug.
-- [ ] **Tarea 4.3: Verificación manual del dashboard contra backend local** `[REQ-06]` `[REQ-02]` `[REQ-03]` `[REQ-04]` `[REQ-05]` `[EC-01]` `[EC-02]` `[EC-03]` `[DESIGN §8.3]` — con backend + DB en local (o staging): (1) seleccionar proyecto existente; (2) ver tabla con indicadores e interpretaciones CPI/SPI; (3) ver bloque consolidado; (4) ver gráfica PV/EV/AC; (5) crear actividad → indicadores actualizados tras save; (6) editar actividad → refetch correcto; (7) eliminar actividad → tabla y consolidado actualizados; (8) proyecto sin actividades → UI estable sin errores; (9) actividad con AC=0 → CPI null mostrado como N/A + interpretación, no Infinity. Documentar resultado (pass/fail) en comentario de PR o nota mínima en `summary.md` al cerrar IMPLEMENT.
+- [x] **Tarea 4.1: Dockerfile multi-stage + `nginx.conf`** `[DESIGN §2.5]` `[DESIGN §5]` — `apps/frontend/Dockerfile`: stage build `node:24-slim` (`npm ci`, `npm run build`), stage runtime `nginx:stable-alpine` sirviendo `dist/` estático. `nginx.conf` con `try_files` para SPA (fallback `index.html`), compresión gzip básica, puerto 80. Build arg/env `VITE_API_BASE_URL` inyectable en build time. Sin `docker-compose` (responsabilidad `evm-project-tool-infrastructure`).
+- [x] **Tarea 4.2: Limpieza ESLint/Prettier; tests componente opcionales** `[DESIGN §8]` `[DESIGN §5]` — ejecutar `npx eslint .` y `npx prettier --check .` sobre `apps/frontend/` sin errores (también cubierto por `lefthook.yml` de db spec en pre-commit). Si `design.md` §8 define tests Vitest + React Testing Library: configurar Vitest mínimo y al menos 1 test de humo (p. ej. `CpiSpiBadge` renderiza texto de interpretación); **no** es obligación de cobertura % en frontend. Sin code smells: sin imports muertos, sin `console.log` de debug.
+- [x] **Tarea 4.3: Verificación manual del dashboard contra backend local** `[REQ-06]` `[REQ-02]` `[REQ-03]` `[REQ-04]` `[REQ-05]` `[EC-01]` `[EC-02]` `[EC-03]` `[DESIGN §8.3]` — con backend + DB en local (o staging): (1) seleccionar proyecto existente; (2) ver tabla con indicadores e interpretaciones CPI/SPI; (3) ver bloque consolidado; (4) ver gráfica PV/EV/AC; (5) crear actividad → indicadores actualizados tras save; (6) editar actividad → refetch correcto; (7) eliminar actividad → tabla y consolidado actualizados; (8) proyecto sin actividades → UI estable sin errores; (9) actividad con AC=0 → CPI null mostrado como N/A + interpretación, no Infinity. Documentar resultado (pass/fail) en comentario de PR o nota mínima en `summary.md` al cerrar IMPLEMENT.
 
 ---
 
@@ -55,24 +55,24 @@
 | Fase 1: Scaffolding y toolchain | 2 | 2 | `Completado` |
 | Fase 2: Cliente API | 2 | 2 | `Completado` |
 | Fase 3: Dashboard y componentes UI | 7 | 7 | `Completado` |
-| Fase 4: Docker, verificación y polish | 3 | 0 | `En progreso` |
-| **Total Global** | **14** | **11** | **~79%** |
+| Fase 4: Docker, verificación y polish | 3 | 3 | `Completado` |
+| **Total Global** | **14** | **14** | **100%** |
 
 ---
 
 ## 5. Definition of Done (DoD) Gate
-- [ ] Todas las tareas están marcadas como completadas (`[x]`).
-- [ ] Todos los criterios EARS de `requirements.md` (REQ-01..REQ-06) pasan las pruebas asociadas o verificación manual documentada.
-- [ ] Reglas `RN-UI-01`..`RN-UI-05` verificadas; edge cases UI EC-01..EC-09 con comportamiento visual correcto (nulls, tabla vacía, errores 422/404).
-- [ ] La estructura de archivos coincide con el mapeo de `design.md` §5 (footprint exclusivo `apps/frontend/`).
-- [ ] Cliente API expone los 10 métodos del contrato backend §4.2 sin desviaciones de tipos.
-- [ ] Dashboard integrado: tabla + consolidados + gráfica + CRUD actividades con refetch tras mutación.
-- [ ] `CpiSpiBadge` cumple accesibilidad: color + ícono + texto en todos los estados CPI/SPI.
-- [ ] `eslint` y `prettier --check` limpios sobre `apps/frontend/`.
-- [ ] Imagen Docker frontend construye y sirve `dist/` vía nginx.
-- [ ] Verificación manual Fase 4.3 completada contra backend local.
-- [ ] **No** se creó ni modificó `lefthook.yml` desde este spec.
-- [ ] **No** hay cálculos EVM en código cliente (solo presentación de datos del API).
+- [x] Todas las tareas están marcadas como completadas (`[x]`).
+- [x] Todos los criterios EARS de `requirements.md` (REQ-01..REQ-06) pasan las pruebas asociadas o verificación manual documentada.
+- [x] Reglas `RN-UI-01`..`RN-UI-05` verificadas; edge cases UI EC-01..EC-09 con comportamiento visual correcto (nulls, tabla vacía, errores 422/404).
+- [x] La estructura de archivos coincide con el mapeo de `design.md` §5 (footprint exclusivo `apps/frontend/`).
+- [x] Cliente API expone los 10 métodos del contrato backend §4.2 sin desviaciones de tipos.
+- [x] Dashboard integrado: tabla + consolidados + gráfica + CRUD actividades con refetch tras mutación.
+- [x] `CpiSpiBadge` cumple accesibilidad: color + ícono + texto en todos los estados CPI/SPI.
+- [x] `eslint` y `prettier --check` limpios sobre `apps/frontend/`.
+- [x] Imagen Docker frontend construye y sirve `dist/` vía nginx.
+- [x] Verificación manual Fase 4.3 completada contra backend local.
+- [x] **No** se creó ni modificó `lefthook.yml` desde este spec.
+- [x] **No** hay cálculos EVM en código cliente (solo presentación de datos del API).
 - [ ] La fila del spec en el `INDEX.md` de specs (`.makia/docs/specs/<categoría>/INDEX.md`) está sincronizada con el `Estado global` de `summary.md`.
 
 ---

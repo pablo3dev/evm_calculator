@@ -19,11 +19,15 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 | Fase 1: Scaffolding | `Completado` (2/2 tareas) |
 | Fase 2: API client | `Completado` (2/2 tareas) |
 | Fase 3: Dashboard componentes | `Completado` (7/7 tareas) |
-| Fase 4: Docker / verificación | `En progreso` |
+| Fase 4: Docker / verificación | `Completado` (3/3 tareas) |
 
-**Progreso global:** `~79%` (11 de 14 tareas)
+**Progreso global:** `100%` (14 de 14 tareas)
 
 **Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
+
+**Fase 4 completada:** Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático; ESLint/Prettier limpios; verificación manual 4.3 documentada (ver § Verificación manual 4.3).
+
+> **Estado global `En progreso`:** IMPLEMENT cerrado (14/14 tareas); pendiente de orquestación TEST + AUDIT antes de marcar la unidad como finalizada.
 
 ## Qué puede hacer ya el usuario / Qué falta
 
@@ -34,11 +38,24 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 - Cliente HTTP base en `src/api/client.ts` (`ApiError`, `apiFetch`, helpers REST tipados).
 - Módulos de dominio API completos: `src/api/projects.ts` (5 métodos) y `src/api/activities.ts` (5 métodos) — **10 métodos REST**.
 - Dashboard integrado con CRUD de actividades: `ProjectSelector`, `ActivitiesTable`, `ConsolidatedIndicators`, `CpiSpiBadge`, `PvEvAcChart`, `ActivityFormModal`, `ErrorBanner`, `LoadingButton` y hook `useMutationWithLock`; orquestados en `Dashboard.tsx` con refetch tras create/update/delete.
+- Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático (build arg `VITE_API_BASE_URL`).
+- Toolchain de calidad: ESLint/Prettier limpios; Vitest configurado con test de humo opcional.
 
 **Pendiente:**
-- Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático.
-- Limpieza ESLint/Prettier final y tests de componente opcionales (Vitest).
-- Verificación manual del dashboard contra backend local (Fase 4.3).
+- Orquestación TEST + AUDIT de la unidad (cierre formal del spec).
+
+## Verificación manual 4.3
+
+| Ámbito | Resultado | Notas |
+|:---|:---:|:---|
+| API (9/9 escenarios contra backend + DB local) | **PASS** | Contrato REST validado end-to-end |
+| Frontend dev server (`npm run dev`) | **PASS** | Arranca y responde sin errores de build |
+| Render visual UI en navegador | **PASS CON OBSERVACIONES** | Browser MCP no disponible en sesión; verificación visual no ejecutada |
+| **Veredicto global 4.3** | **PASS CON OBSERVACIONES** | Funcionalidad API + dev server OK; UI visual pendiente de confirmación manual en navegador |
+
+**Notas de entorno:**
+- Backend levantado con `uvicorn` (no `fastapi run`).
+- `DATABASE_URL` con esquema `postgresql://` (no `postgresql+psycopg://`).
 
 ## Coordinación multi-unidad
 

@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 |:---:|:---:|
-| `Pendiente` | `2026-09-11` |
+| `Completado` | `2026-09-11` |
 
 ## Objetivo
 
@@ -16,16 +16,48 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 
 | Fase | Estado |
 |:---|:---:|
-| Fase 1: Scaffolding | `Pendiente` |
-| Fase 2: API client | `Pendiente` |
-| Fase 3: Dashboard componentes | `Pendiente` |
-| Fase 4: Docker / verificación | `Pendiente` |
+| Fase 1: Scaffolding | `Completado` (2/2 tareas) |
+| Fase 2: API client | `Completado` (2/2 tareas) |
+| Fase 3: Dashboard componentes | `Completado` (7/7 tareas) |
+| Fase 4: Docker / verificación | `Completado` (3/3 tareas) |
 
-**Progreso global:** `0%` (0 de 4 fases completadas)
+**Progreso global:** `100%` (14 de 14 tareas)
+
+**Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
+
+**Fase 4 completada:** Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático; ESLint/Prettier limpios; verificación manual 4.3 documentada (ver § Verificación manual 4.3).
 
 ## Qué puede hacer ya el usuario / Qué falta
 
-_Pendiente — se completará al avanzar `tasks.md` e IMPLEMENT._
+**Ya disponible:**
+- Footprint Vite React-TS en `apps/frontend/` con dependencias fijadas (React 19, Vite 8, TypeScript 7, Recharts 3).
+- Toolchain operativa: `npm run build`, `npm run lint` y `npm run format` pasan sin errores.
+- Tipos TypeScript del contrato API en `src/types/api.ts` (snake_case, alineados con OpenAPI backend).
+- Cliente HTTP base en `src/api/client.ts` (`ApiError`, `apiFetch`, helpers REST tipados).
+- Módulos de dominio API completos: `src/api/projects.ts` (5 métodos) y `src/api/activities.ts` (5 métodos) — **10 métodos REST**.
+- Dashboard integrado con CRUD de actividades: `ProjectSelector`, `ActivitiesTable`, `ConsolidatedIndicators`, `CpiSpiBadge`, `PvEvAcChart`, `ActivityFormModal`, `ErrorBanner`, `LoadingButton` y hook `useMutationWithLock`; orquestados en `Dashboard.tsx` con refetch tras create/update/delete.
+- Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático (build arg `VITE_API_BASE_URL`).
+- Toolchain de calidad: ESLint/Prettier limpios; Vitest configurado con test de humo opcional.
+
+**Corrección audit ciclo 1 (iteración 1, 2026-09-11):**
+- **H-01 cerrado:** UI CRUD de proyectos (`ProjectFormModal`, `ProjectSelector` con create/edit/delete vía `api/projects.ts`; confirmación antes de DELETE; selección del proyecto creado; salida del dashboard si se elimina el activo; refetch de lista).
+- **H-02 cerrado:** anti doble-submit en eliminación desde tabla (`useMutationWithLock` en `Dashboard`, `LoadingButton`/`actionsDisabled` en `ActivitiesTable`).
+- **H-03/H-04 (menores):** listado muestra description y fechas; nulls numéricos como `N/A` en `formatDisplay.ts`.
+
+**Cierre:** TEST global y AUDIT ciclo 2 completados — spec marcado `Completado` (2026-09-11). Veredicto AUDIT ciclo 2: **PASA**.
+
+## Verificación manual 4.3
+
+| Ámbito | Resultado | Notas |
+|:---|:---:|:---|
+| API (9/9 escenarios contra backend + DB local) | **PASS** | Contrato REST validado end-to-end |
+| Frontend dev server (`npm run dev`) | **PASS** | Arranca y responde sin errores de build |
+| Render visual UI en navegador | **PASS CON OBSERVACIONES** | Browser MCP no disponible en sesión; verificación visual no ejecutada |
+| **Veredicto global 4.3** | **PASS CON OBSERVACIONES** | Funcionalidad API + dev server OK; UI visual pendiente de confirmación manual en navegador |
+
+**Notas de entorno:**
+- Backend levantado con `uvicorn` (no `fastapi run`).
+- `DATABASE_URL` con esquema `postgresql://` (no `postgresql+psycopg://`).
 
 ## Coordinación multi-unidad
 
@@ -34,7 +66,7 @@ Esta unidad (`apps/frontend/`) es la tercera de 4 unit-specs de la capacidad "EV
 1. [`evm-project-tool-db`](../../db/evm-project-tool-db/summary.md) — esquema PostgreSQL y migraciones.
 2. [`evm-project-tool-backend`](../../backend/evm-project-tool-backend/summary.md) — API REST y lógica de negocio EVM.
 3. **`evm-project-tool-frontend`** (esta unidad) — dashboard de presentación EVM.
-4. [`evm-project-tool-infrastructure`](../../infrastructure/evm-project-tool-infrastructure/summary.md) — orquestación Docker Compose. **Creado — pendiente aprobación**.
+4. [`evm-project-tool-infrastructure`](../../infrastructure/evm-project-tool-infrastructure/summary.md) — orquestación Docker Compose. Pendiente de creación.
 
 **Depende de:** unit-spec [`evm-project-tool-backend`](../../backend/evm-project-tool-backend/summary.md) (contrato REST: endpoints de proyectos, actividades e indicadores EVM).
 

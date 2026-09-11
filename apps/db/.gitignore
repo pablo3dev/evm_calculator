@@ -1,0 +1,18 @@
+# yoyo-migrations local cache/state
+.yoyo/
+.yoyo-migrate
+
+# yoyo local config (may contain DB credentials)
+yoyo-local.ini
+
+# local DB credentials
+.env
+.env.local
+
+# Python bytecode (local yoyo CLI)
+__pycache__/
+*.pyc
+
+# SQLite state (local yoyo dev if used)
+*.sqlite
+*.sqlite3

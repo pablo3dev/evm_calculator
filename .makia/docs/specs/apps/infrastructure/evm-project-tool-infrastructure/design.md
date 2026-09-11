@@ -96,7 +96,7 @@ Infrastructure no define tablas, índices ni DDL. El esquema lo aplican las migr
 
 - **Imagen:** `postgres:18`
 - **Variables:** `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` desde `.env`
-- **Volumen:** persistencia de datos (ej. `postgres_data:/var/lib/postgresql/data`)
+- **Volumen:** persistencia de datos en `postgres_data:/var/lib/postgresql` — contrato cerrado para `postgres:18` (la imagen oficial rechaza el subpath `/var/lib/postgresql/data`; no aplica el layout `/data` de versiones anteriores)
 - **Healthcheck:** `pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}`
 - **Red:** accesible como hostname `db` desde `migrate` y `backend`
 
@@ -105,7 +105,7 @@ Infrastructure no define tablas, índices ni DDL. El esquema lo aplican las migr
 - **Build context:** `apps/infrastructure/migrate/` (Dockerfile minimal Python 3.14 + yoyo 9.0.0)
 - **Migrations path:** montaje de volumen `../db/migrations:/migrations` **o** `COPY` en Dockerfile desde contexto ampliado — preferir **volumen en compose** para no duplicar archivos SQL en la imagen de migrate
 - **Comando:** `yoyo apply --batch`
-- **Conexión:** `DATABASE_URL=postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}`
+- **Conexión:** `DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}` (formato libpq/psycopg; yoyo 9.0 y backend FastAPI lo consumen directamente — no usar dialecto SQLAlchemy `postgresql+psycopg://`)
 - **Restart:** `"no"` (one-shot)
 - **depends_on:** `db` con `condition: service_healthy`
 
@@ -131,7 +131,7 @@ Infrastructure no define tablas, índices ni DDL. El esquema lo aplican las migr
 | `POSTGRES_USER` | `db`, `migrate`, `backend` | Usuario PostgreSQL | `evm_user` |
 | `POSTGRES_PASSWORD` | `db`, `migrate`, `backend` | Contraseña PostgreSQL | `changeme` |
 | `POSTGRES_DB` | `db`, `migrate`, `backend` | Nombre de base de datos | `evm_db` |
-| `DATABASE_URL` | `migrate`, `backend` | URL SQLAlchemy/psycopg hacia servicio `db` | `postgresql+psycopg://evm_user:changeme@db:5432/evm_db` |
+| `DATABASE_URL` | `migrate`, `backend` | URL libpq/psycopg hacia servicio `db` (yoyo 9.0 + psycopg ConnectionPool; **no** dialecto SQLAlchemy) | `postgresql://evm_user:changeme@db:5432/evm_db` |
 | `CORS_ORIGINS` | `backend` | Orígenes permitidos (CSV o JSON según backend) | `http://localhost:8080` |
 | `VITE_API_BASE_URL` | `frontend` (build-arg) | Base URL API vista desde el host | `http://localhost:8000/api/v1` |
 | `LOG_LEVEL` | `backend` | Nivel de log | `INFO` |
@@ -156,7 +156,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # postgres:18 — mount at /var/lib/postgresql (NOT /var/lib/postgresql/data)
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s

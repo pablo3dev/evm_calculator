@@ -23,7 +23,7 @@
 
 ### Fase 2: Esquema y migraciones de `projects`
 - [x] **Tarea 2.1: [P] Migración `0001_create_projects_table.sql`** `[REQ-1.1, REQ-1.2, REQ-1.3]` `[DESIGN §3.2]` — crear la migración de `yoyo-migrations` 9.0.0 (verificar convención exacta de archivo de yoyo 9.0.2 al momento de implementar) que crea la tabla `projects` con el DDL exacto de `design.md` §3.2 (columnas `id`, `name`, `description`, `created_at`, `updated_at`, constraint `NOT NULL` en `name`).
-- [ ] **Tarea 2.2: Verificar aplicación de la migración `0001`** `[REQ-1.2]` `[DESIGN §8.2]` — aplicar `yoyo apply --batch` sobre una base de datos PostgreSQL 18 vacía y confirmar que la tabla `projects` queda creada con todos sus constraints, sin error.
+- [x] **Tarea 2.2: Verificar aplicación de la migración `0001`** `[REQ-1.2]` `[DESIGN §8.2]` — aplicar `yoyo apply --batch` sobre una base de datos PostgreSQL 18 vacía y confirmar que la tabla `projects` queda creada con todos sus constraints, sin error.
 
 ### Fase 3: Esquema y migraciones de `activities`
 - [ ] **Tarea 3.1: Migración `0002_create_activities_table.sql`** `[REQ-2.1, REQ-2.3, REQ-2.4, REQ-2.5]` `[DESIGN §3.2]` — crear la migración que crea la tabla `activities` con el DDL exacto de `design.md` §3.2 (columnas `id`, `project_id` con FK `ON DELETE CASCADE`, `name`, `budget_at_completion`, `planned_progress_percentage`, `actual_progress_percentage`, `actual_cost`, `created_at`, `updated_at`, constraints `CHECK` de rango 0-100 y de no-negatividad, índice en `project_id`). Depende de que la Tarea 2.1 exista (orden secuencial `0001` antes de `0002`).
@@ -39,10 +39,10 @@
 | Fase | Total Tareas | Completadas | Estado |
 |:---|:---:|:---:|:---|
 | Fase 1: Configuración de verificación local (lefthook) | 1 | 1 | `Completed` |
-| Fase 2: Esquema y migraciones de `projects` | 2 | 1 | `Pending` |
+| Fase 2: Esquema y migraciones de `projects` | 2 | 2 | `Completed` |
 | Fase 3: Esquema y migraciones de `activities` | 2 | 0 | `Pending` |
 | Fase 4: Verificación de integridad referencial y documentación | 2 | 0 | `Pending` |
-| **Total Global** | **7** | **2** | **~29%** |
+| **Total Global** | **7** | **3** | **~43%** |
 
 ---
 

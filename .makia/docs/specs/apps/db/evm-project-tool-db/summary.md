@@ -17,11 +17,11 @@ Persistir de forma confiable los datos de entrada de proyectos y actividades que
 | Fase | Estado |
 |:---|:---:|
 | Fase 1: Configuración de verificación local (lefthook) | `Completada` |
-| Fase 2: Esquema y migraciones de `projects` | `Pendiente` |
+| Fase 2: Esquema y migraciones de `projects` | `Completada` |
 | Fase 3: Esquema y migraciones de `activities` | `Pendiente` |
 | Fase 4: Verificación de integridad referencial y documentación | `Pendiente` |
 
-**Progreso global:** `25%` (1 de 4 fases completadas)
+**Progreso global:** `50%` (2 de 4 fases completadas)
 
 ## Qué puede hacer ya el usuario / Qué falta
 

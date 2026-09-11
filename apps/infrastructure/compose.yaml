@@ -29,10 +29,6 @@ services:
   backend:
     build:
       context: ../backend
-    command:
-      - sh
-      - -c
-      - /app/.venv/bin/python -m ensurepip && /app/.venv/bin/python -m pip install --quiet 'uvicorn[standard]' && exec /app/.venv/bin/uvicorn evm_project_tool.infra.http.main:app --host 0.0.0.0 --port 8000
     environment:
       DATABASE_URL: ${DATABASE_URL}
       CORS_ORIGINS: ${CORS_ORIGINS}

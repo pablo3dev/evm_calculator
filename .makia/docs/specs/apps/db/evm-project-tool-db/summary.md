@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 |:---:|:---:|
-| `Pendiente` | `2026-09-11` |
+| `Completado` | `2026-09-11` |
 
 ## Objetivo
 
@@ -16,18 +16,20 @@ Persistir de forma confiable los datos de entrada de proyectos y actividades que
 
 | Fase | Estado |
 |:---|:---:|
-| Fase 1: Configuración de verificación local (lefthook) | `Pendiente` |
-| Fase 2: Esquema y migraciones de `projects` | `Pendiente` |
-| Fase 3: Esquema y migraciones de `activities` | `Pendiente` |
-| Fase 4: Verificación de integridad referencial y documentación | `Pendiente` |
+| Fase 1: Configuración de verificación local (lefthook) | `Completada` |
+| Fase 2: Esquema y migraciones de `projects` | `Completada` |
+| Fase 3: Esquema y migraciones de `activities` | `Completada` |
+| Fase 4: Verificación de integridad referencial y documentación | `Completada` |
 
-**Progreso global:** `0%` (0 de 4 fases completadas)
+**Progreso global:** `100%` (4 de 4 fases completadas)
 
 ## Qué puede hacer ya el usuario / Qué falta
 
-- [ ] Persistir un proyecto (`projects`) vía migración SQL aplicable con `yoyo apply`.
-- [ ] Persistir actividades (`activities`) de un proyecto con integridad referencial (FK con `delete: cascade`) e índice en `project_id`.
-- [ ] `lefthook.yml` en la raíz del repositorio con verificación local de backend y frontend.
+- [x] Persistir un proyecto (`projects`) vía migración SQL aplicable con `yoyo apply`.
+- [x] Persistir actividades (`activities`) de un proyecto con integridad referencial (FK con `delete: cascade`) e índice en `project_id`.
+- [x] `lefthook.yml` en la raíz del repositorio con verificación local de backend y frontend.
+- [x] Re-ejecutar migraciones de forma idempotente (`yoyo apply --batch` sobre base de datos ya migrada, sin re-aplicar ni fallar).
+- [x] `apps/db/.gitignore` con exclusiones de caché/estado local de `yoyo-migrations`.
 
 ## Coordinación multi-unidad
 
@@ -40,7 +42,7 @@ Esta unidad (`apps/db/`) es la primera de 4 unit-specs de la capacidad "EVM Proj
 
 Como `evm-project-tool-db` es el primer unit-spec creado, todavía no existen `summary.md` de las unidades hermanas para enlazar por ruta relativa. SPEC completa estos enlaces en cada invocación siguiente, a medida que cada unit-spec hermano se cree:
 
-- `evm-project-tool-backend`: [`../../backend/evm-project-tool-backend/summary.md`](../../backend/evm-project-tool-backend/summary.md) (creado — pendiente aprobación).
+- `evm-project-tool-backend`: `../../backend/evm-project-tool-backend/summary.md` (pendiente de creación).
 - `evm-project-tool-frontend`: `../../frontend/evm-project-tool-frontend/summary.md` (pendiente de creación).
 - `evm-project-tool-infrastructure`: `../../infrastructure/evm-project-tool-infrastructure/summary.md` (pendiente de creación).
 

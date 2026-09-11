@@ -28,7 +28,7 @@
 
 ### Fase 2: Cliente API
 - [x] **Tarea 2.1: Cliente HTTP base (`api/client.ts`)** `[REQ-02]` `[REQ-05]` `[RN-UI-05]` `[DESIGN §4]` `[DESIGN §7.1]` — implementar wrapper `fetch` (o axios si se documenta en design) con base URL desde `import.meta.env.VITE_API_BASE_URL`, headers `Content-Type: application/json`, parseo de respuestas JSON. Clase/función de error tipada (`ApiError`) que distingue: **422** (`detail[]` con `loc`/`msg`), **404** (`detail` string), errores de red/5xx genéricos. Exportar helpers `get`, `post`, `put`, `delete` usados por los módulos de dominio API. Sin lógica de negocio EVM.
-- [ ] **Tarea 2.2: [P] Módulos `api/projects.ts` y `api/activities.ts`** `[REQ-01]` `[REQ-02]` `[DESIGN §4]` `[DESIGN §5]` — implementar **10 métodos** 1:1 con endpoints backend §4.2:
+- [x] **Tarea 2.2: [P] Módulos `api/projects.ts` y `api/activities.ts`** `[REQ-01]` `[REQ-02]` `[DESIGN §4]` `[DESIGN §5]` — implementar **10 métodos** 1:1 con endpoints backend §4.2:
   - `projects.ts`: `listProjects()`, `createProject(body)`, `getProject(projectId)`, `updateProject(projectId, body)`, `deleteProject(projectId)`.
   - `activities.ts`: `listActivitiesByProject(projectId)`, `createActivity(projectId, body)`, `getActivity(activityId)`, `updateActivity(activityId, body)`, `deleteActivity(activityId)`.
   Tipos de retorno alineados con `src/types/api.ts`; propagar `ApiError` sin tragar códigos HTTP.
@@ -53,10 +53,10 @@
 | Fase | Total Tareas | Completadas | Estado |
 |:---|:---:|:---:|:---|
 | Fase 1: Scaffolding y toolchain | 2 | 2 | `Completado` |
-| Fase 2: Cliente API | 2 | 1 | `En progreso` |
-| Fase 3: Dashboard y componentes UI | 7 | 0 | `Pending` |
+| Fase 2: Cliente API | 2 | 2 | `Completado` |
+| Fase 3: Dashboard y componentes UI | 7 | 0 | `En progreso` |
 | Fase 4: Docker, verificación y polish | 3 | 0 | `Pending` |
-| **Total Global** | **14** | **3** | **~21%** |
+| **Total Global** | **14** | **4** | **~29%** |
 
 ---
 

@@ -1,0 +1,43 @@
+# Plantilla de referencia de MakIA para verificación local pre-commit con lefthook.
+# NO se ejecuta automáticamente. Para adoptarla en tu proyecto:
+#   1. Copia este archivo a `lefthook.yml` en la raíz de tu proyecto.
+#   2. Completa la sección `pre-commit` con los comandos de lint/formato/build
+#      parcial de tu propio stack (glob de archivo -> comando). MakIA no asume
+#      ni fuerza ningún lenguaje o herramienta.
+#   3. Instala el binario `lefthook` (brew, npm, gem, pip, o binario directo
+#      desde GitHub Releases) y corre `lefthook install` una vez.
+#
+# La sección `commit-msg` de abajo SÍ está lista para usar: valida la
+# convención fija de mensaje de commit de MakIA.
+
+pre-commit:
+  parallel: true
+  commands:
+    backend-lint:
+      root: "apps/backend/"
+      glob: "*.py"
+      run: uv run ruff check {staged_files}
+    backend-format:
+      root: "apps/backend/"
+      glob: "*.py"
+      run: uv run ruff format --check {staged_files}
+    frontend-lint:
+      root: "apps/frontend/"
+      glob: "*.{ts,tsx}"
+      run: npx eslint --fix {staged_files}
+    frontend-format:
+      root: "apps/frontend/"
+      glob: "*.{ts,tsx}"
+      run: npx prettier --write {staged_files}
+
+commit-msg:
+  commands:
+    makia-convention:
+      run: |
+        sh -c '
+          MSG_FILE="{1}";
+          PATTERN="^(fix: )?makia\([a-z0-9-]+\): (task [0-9]+(\.[0-9]+)* — .+|idea — .+)$";
+          if ! grep -qE "$PATTERN" "$MSG_FILE"; then
+            echo "Commit message no cumple convención MakIA: makia(<slug>): task <id> — <título> (o idea — <archivo>), con o sin prefijo fix:";
+            exit 1;
+          fi'

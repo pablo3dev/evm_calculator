@@ -22,7 +22,7 @@
 ## 3. Phase Breakdown & Actionable Tasks
 
 ### Fase 1: Dominio EVM y entidades
-- [ ] **Tarea 1.1: Entidades de dominio** `[REQ-03]` `[REQ-04]` `[REQ-05]` `[DESIGN §3.1]` `[DESIGN §5]` — implementar en `apps/backend/src/evm_project_tool/domain/` las entidades y objetos de valor alineados con [`../../domain-model.md`](../../domain-model.md): `Project` (`project.py`), `Activity` con value objects embebidos (`activity.py` — `ProgressPercentage`, `MonetaryAmount`), y `EvmIndicatorSet` con campos PV/EV/CV/SV/CPI/SPI/EAC/VAC nullable y textos de interpretación CPI/SPI (`evm_indicator_set.py`). Sin dependencias de FastAPI, psycopg ni Pydantic. Atributos en camelCase interno; validaciones de invariantes RN-10/RN-11 en constructores o factories de dominio donde aplique antes de persistencia.
+- [x] **Tarea 1.1: Entidades de dominio** `[REQ-03]` `[REQ-04]` `[REQ-05]` `[DESIGN §3.1]` `[DESIGN §5]` — implementar en `apps/backend/src/evm_project_tool/domain/` las entidades y objetos de valor alineados con [`../../domain-model.md`](../../domain-model.md): `Project` (`project.py`), `Activity` con value objects embebidos (`activity.py` — `ProgressPercentage`, `MonetaryAmount`), y `EvmIndicatorSet` con campos PV/EV/CV/SV/CPI/SPI/EAC/VAC nullable y textos de interpretación CPI/SPI (`evm_indicator_set.py`). Sin dependencias de FastAPI, psycopg ni Pydantic. Atributos en camelCase interno; validaciones de invariantes RN-10/RN-11 en constructores o factories de dominio donde aplique antes de persistencia.
 - [ ] **Tarea 1.2: `EvmCalculationService` y tests unitarios de dominio** `[REQ-03]` `[REQ-04]` `[REQ-05]` `[RN-01..RN-13]` `[EC-01..EC-09]` `[DESIGN §3.1]` `[DESIGN §8.1]` — implementar `evm_calculation_service.py` con `calculate_for_activity(activity) -> EvmIndicatorSet` (RN-01..RN-08, RN-09) y `aggregate(activities: list[Activity]) -> EvmIndicatorSet` (RN-12, RN-13). Crear `tests/unit/domain/test_evm_calculation_service.py` cubriendo EC-01..EC-09. Verificar cobertura ≥ 80 % sobre `domain/` antes de cerrar la tarea (`pytest-cov` acotado a `src/evm_project_tool/domain/`).
 
 ### Fase 2: Capa application
@@ -45,11 +45,11 @@
 ## 4. Execution Progress Tracker
 | Fase | Total Tareas | Completadas | Estado |
 |:---|:---:|:---:|:---|
-| Fase 1: Dominio EVM y entidades | 2 | 0 | `Pending` |
+| Fase 1: Dominio EVM y entidades | 2 | 1 | `In Progress` |
 | Fase 2: Capa application | 3 | 0 | `Pending` |
 | Fase 3: Infraestructura HTTP y persistencia | 4 | 0 | `Pending` |
 | Fase 4: Tests integración y verificación | 2 | 0 | `Pending` |
-| **Total Global** | **11** | **0** | **0%** |
+| **Total Global** | **11** | **1** | **9%** |
 
 ---
 

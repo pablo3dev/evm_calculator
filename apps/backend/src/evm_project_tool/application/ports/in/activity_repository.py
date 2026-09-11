@@ -1,0 +1,19 @@
+# port: in — persistence contract for Activity aggregates
+from typing import Protocol
+from uuid import UUID
+
+from evm_project_tool.domain import Activity
+
+
+class ActivityRepository(Protocol):
+    def create(self, activity: Activity) -> Activity: ...
+
+    def get_by_id(self, activity_id: UUID) -> Activity | None: ...
+
+    def list_by_project_id(self, project_id: UUID) -> list[Activity]: ...
+
+    def update(self, activity: Activity) -> Activity: ...
+
+    def delete(self, activity_id: UUID) -> bool: ...
+
+    def exists_project(self, project_id: UUID) -> bool: ...

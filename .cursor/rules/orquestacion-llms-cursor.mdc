@@ -1,0 +1,21 @@
+---
+description: Asignación de LLMs de Cursor (Grok y Composer) en la orquestación MakIA; sin razonamiento alto en subagentes.
+alwaysApply: true
+---
+
+# Orquestación: LLMs de Cursor
+
+Al orquestar (Orquestador, sub-orquestadores IDEA/SPEC/IMPLEMENT y sub-agentes), asignar **solo LLMs de Cursor**: Grok y Composer.
+
+- Usar slugs del host actuales: `cursor-grok-4.6-medium` y `composer-2.5-fast`.
+- `inherit` solo si el padre ya es Grok o Composer **sin** razonamiento alto.
+- No asignar otros proveedores (Claude, GPT, etc.) aunque aparezcan en la lista del host.
+
+## Razonamiento
+
+**No asignar razonamiento alto** a sub-agentes ni a sub-orquestadores.
+
+- Permitido: bajo / fast (`composer-2.5-fast`) y medio (`cursor-grok-4.6-medium`).
+- Prohibido: slugs con `thinking-high`, `alto`, o equivalentes de razonamiento alto.
+
+Ejemplo al lanzar `Task`: `model` = `cursor-grok-4.6-medium` o `composer-2.5-fast`; nunca `claude-opus-5-thinking-high`.

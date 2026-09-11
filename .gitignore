@@ -4,3 +4,4 @@
 # excluye del squash-merge final a main (ver session.md RN-03/RN-06).
 .makia/bin/
 .makia/core/
+*.dbdiagram

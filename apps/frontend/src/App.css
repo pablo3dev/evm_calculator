@@ -1,0 +1,10 @@
+.dashboard-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.dashboard-shell header h1 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+}

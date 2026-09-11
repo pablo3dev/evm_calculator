@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 |:---:|:---:|
-| `Pendiente` | `2026-09-11` |
+| `En progreso` | `2026-09-11` |
 
 ## Objetivo
 
@@ -16,16 +16,23 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 
 | Fase | Estado |
 |:---|:---:|
-| Fase 1: Scaffolding | `Pendiente` |
+| Fase 1: Scaffolding | `En progreso` (1/2 tareas) |
 | Fase 2: API client | `Pendiente` |
 | Fase 3: Dashboard componentes | `Pendiente` |
 | Fase 4: Docker / verificación | `Pendiente` |
 
-**Progreso global:** `0%` (0 de 4 fases completadas)
+**Progreso global:** `~7%` (1 de 14 tareas)
 
 ## Qué puede hacer ya el usuario / Qué falta
 
-_Pendiente — se completará al avanzar `tasks.md` e IMPLEMENT._
+**Ya disponible:**
+- Footprint Vite React-TS en `apps/frontend/` con dependencias fijadas (React 19, Vite 8, TypeScript 7, Recharts 3).
+- Toolchain operativa: `npm run build`, `npm run lint` y `npm run format` pasan sin errores.
+- Shell mínimo en `src/App.tsx` listo para integrar componentes del dashboard.
+
+**Pendiente:**
+- Tipos TypeScript del contrato API (`src/types/api.ts`, Tarea 1.2).
+- Cliente HTTP, módulos API, componentes del dashboard e integración con backend.
 
 ## Coordinación multi-unidad
 

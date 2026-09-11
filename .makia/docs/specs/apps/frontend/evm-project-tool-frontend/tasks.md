@@ -24,7 +24,7 @@
 
 ### Fase 1: Scaffolding y toolchain
 - [x] **Tarea 1.1: Footprint Vite React-TS y toolchain** `[REQ-06]` `[DESIGN §2.5]` `[DESIGN §5]` — crear `apps/frontend/` con scaffolding `npm create vite@latest apps/frontend -- --template react-ts` y ajustar `package.json` con dependencias **fijadas**: `react@19.3.0`, `react-dom@19.3.0`, `typescript@7.0.2`, `vite@8.0.10`, `recharts@3.10.1`; devDependencies: `eslint@10.10.0`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `prettier@3.9.6`, `eslint-config-prettier`. Configurar `eslint.config.js` (flat config), `.prettierrc` (o equivalente), `vite.config.ts`, `tsconfig.json`/`tsconfig.app.json`, `index.html`, `src/main.tsx`, `src/App.tsx` (shell mínimo), `.gitignore` en `apps/frontend/` (`node_modules`, `dist`, `.env.local`, etc.). Añadir script npm `dev`, `build`, `lint`, `format`. Variable de entorno documentada: `VITE_API_BASE_URL` (default dev `http://localhost:8000/api/v1`). **No** crear `lefthook.yml` (§2.5).
-- [ ] **Tarea 1.2: [P] Tipos TypeScript del contrato API** `[REQ-01]` `[REQ-02]` `[REQ-03]` `[REQ-05]` `[DESIGN §3]` `[DESIGN §5]` — implementar `src/types/api.ts` espejando **exactamente** los schemas Pydantic/OpenAPI del backend (`design.md` backend §4.2): `ProjectResponse`, `ProjectCreateRequest`, `ProjectUpdateRequest`, `ProjectDetailResponse`, `ActivityCreateRequest`, `ActivityUpdateRequest`, `ActivityWithIndicatorsResponse`, `EvmIndicators` (campos `cpi`/`spi`/`eac`/`vac` nullable), `HTTPValidationError`, `HTTPError`. JSON en **snake_case**; sin entidades de dominio propias ni tipos camelCase duplicados.
+- [x] **Tarea 1.2: [P] Tipos TypeScript del contrato API** `[REQ-01]` `[REQ-02]` `[REQ-03]` `[REQ-05]` `[DESIGN §3]` `[DESIGN §5]` — implementar `src/types/api.ts` espejando **exactamente** los schemas Pydantic/OpenAPI del backend (`design.md` backend §4.2): `ProjectResponse`, `ProjectCreateRequest`, `ProjectUpdateRequest`, `ProjectDetailResponse`, `ActivityCreateRequest`, `ActivityUpdateRequest`, `ActivityWithIndicatorsResponse`, `EvmIndicators` (campos `cpi`/`spi`/`eac`/`vac` nullable), `HTTPValidationError`, `HTTPError`. JSON en **snake_case**; sin entidades de dominio propias ni tipos camelCase duplicados.
 
 ### Fase 2: Cliente API
 - [ ] **Tarea 2.1: Cliente HTTP base (`api/client.ts`)** `[REQ-02]` `[REQ-05]` `[RN-UI-05]` `[DESIGN §4]` `[DESIGN §7.1]` — implementar wrapper `fetch` (o axios si se documenta en design) con base URL desde `import.meta.env.VITE_API_BASE_URL`, headers `Content-Type: application/json`, parseo de respuestas JSON. Clase/función de error tipada (`ApiError`) que distingue: **422** (`detail[]` con `loc`/`msg`), **404** (`detail` string), errores de red/5xx genéricos. Exportar helpers `get`, `post`, `put`, `delete` usados por los módulos de dominio API. Sin lógica de negocio EVM.
@@ -52,11 +52,11 @@
 ## 4. Execution Progress Tracker
 | Fase | Total Tareas | Completadas | Estado |
 |:---|:---:|:---:|:---|
-| Fase 1: Scaffolding y toolchain | 2 | 1 | `Pending` |
+| Fase 1: Scaffolding y toolchain | 2 | 2 | `Completado` |
 | Fase 2: Cliente API | 2 | 0 | `Pending` |
 | Fase 3: Dashboard y componentes UI | 7 | 0 | `Pending` |
 | Fase 4: Docker, verificación y polish | 3 | 0 | `Pending` |
-| **Total Global** | **14** | **1** | **~7%** |
+| **Total Global** | **14** | **2** | **~14%** |
 
 ---
 

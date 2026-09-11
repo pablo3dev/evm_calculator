@@ -12,7 +12,7 @@ function App() {
         <h1>EVM Project Tool</h1>
         <ProjectSelector
           value={activeProjectId}
-          onChange={setActiveProjectId}
+          onChange={(id) => setActiveProjectId(id)}
         />
       </header>
       <section aria-label="Project dashboard">

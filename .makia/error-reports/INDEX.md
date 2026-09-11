@@ -14,3 +14,4 @@
 | [ER-010](./ER-010-evm-project-tool-frontend.md) | evm-project-tool-frontend (idea: evm-project-tool) | D-07 | CR-05 | Abierto | 2026-09-11 |
 | [ER-011](./ER-011-evm-project-tool-frontend.md) | evm-project-tool-frontend (idea: evm-project-tool) | D-07 | CR-05 | Abierto | 2026-09-11 |
 | [ER-012](./ER-012-evm-project-tool-frontend.md) | evm-project-tool-frontend (idea: evm-project-tool) | D-01 | CR-05 | Abierto | 2026-09-11 |
+| [ER-013](./ER-013-evm-project-tool-frontend.md) | evm-project-tool-frontend (idea: evm-project-tool) | D-02 | CR-04 (secundaria: CR-08) | Abierto | 2026-09-11 |

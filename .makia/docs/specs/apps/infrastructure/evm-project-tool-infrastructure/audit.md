@@ -5,7 +5,7 @@
 - **Ruta:** `.makia/docs/specs/apps/infrastructure/evm-project-tool-infrastructure`
 - **Fecha de Auditoría:** `2026-09-11`
 - **Auditor:** `AUDIT`
-- **Ciclo de Auditoría:** `1`
+- **Ciclo de Auditoría:** `2`
 
 ---
 
@@ -13,21 +13,49 @@
 - [x] El código implementado cumple con `requirements.md` (criterios EARS) y `design.md` (contratos, estructura de archivos).
 - [x] El spec (`requirements.md`/`design.md`) está alineado con `domain-model.md` (lenguaje ubicuo, límites del Contexto Delimitado, entidades y reglas de negocio) — esta unidad no implementa dominio EVM; solo orquesta servicios hermanos.
 
+**Fuentes contrastadas:**
+- `requirements.md` — REQ-01..REQ-10, RN-INF-01..RN-INF-07, EC-INF-01..EC-INF-07
+- `design.md` — §4.1..§4.5 (servicios, variables, esqueletos compose/migrate), §5 footprint
+- Código: `apps/infrastructure/` (`compose.yaml`, `.env.example`, `.gitignore`, `migrate/Dockerfile`, `README.md`)
+- Backend hermano (H-04): `apps/backend/Dockerfile`, `apps/backend/pyproject.toml` (commits `1e91193`)
+- Evidencia TEST post-fix (informada por Orquestador): `/api-docs` 200, frontend `:8080` 200, backend CMD de imagen verificado
+
+**Verificaciones de orquestación (muestreo representativo):**
+
+| Requisito / contrato | Evidencia en código | Resultado |
+|:---|:---|:---:|
+| REQ-01 / RN-INF-03 | `compose.yaml`: `db` healthy → `migrate` completed → `backend` → `frontend` | OK |
+| REQ-03 / RN-INF-02 | `.env.example` (7 variables), `.gitignore` ignora `.env`, sin secretos en compose | OK |
+| REQ-04 / RN-INF-04 | `DATABASE_URL` host `db`, `CORS_ORIGINS=http://localhost:8080`, `VITE_API_BASE_URL` build-arg, puertos `8000:8000` / `8080:80` | OK |
+| REQ-05 / DESIGN §4.1.1 | `postgres:18`, volumen `postgres_data:/var/lib/postgresql`, healthcheck `pg_isready` | OK |
+| REQ-06 / DESIGN §4.1.2 | `migrate/Dockerfile` Python 3.14 + yoyo 9.0.0; volumen `../db/migrations:ro`; restart `"no"` | OK |
+| REQ-10.4 | `README.md` §Troubleshooting: fallo migrate → backend bloqueado; logs + `docker compose up` | OK |
+| DESIGN §4.1.3 / RN-INF-07 | `backend` sin `command:` override; `CMD` Dockerfile hermano `uvicorn …:8000` | OK |
+| DESIGN §5 footprint | Solo `apps/infrastructure/`; sin lefthook ni código hermano duplicado | OK |
+
 ---
 
 ## 3. Hallazgos y Desviaciones
+
+### Ciclo 1 — resolución de observaciones menores
+
+| ID | Estado | Evidencia de corrección |
+|:---|:---:|:---|
+| **H-01** | **Resuelto** | `design.md` §4.1.1 y §4.4 documentan `postgres_data:/var/lib/postgresql` como contrato cerrado para `postgres:18`; `compose.yaml` L9 coincide. Commit `63bec2f`. |
+| **H-02** | **Resuelto** | `design.md` §4.1.2 y §4.2 unifican `DATABASE_URL=postgresql://…` (libpq/psycopg, no dialecto SQLAlchemy); `.env.example` L6-9 alineado con comentario explicativo. Commit `63bec2f`. |
+| **H-03** | **Resuelto** | `README.md` L52-70: subsección «`migrate` failed — backend does not start» con logs, causa y reinicio seguro; cumple REQ-10.4. Commit `e1bc1fe`. |
+| **H-04** | **Resuelto** | `compose.yaml` servicio `backend` sin `command:` override; `apps/backend/Dockerfile` L29 `CMD ["uvicorn", …]`; `pyproject.toml` incluye `uvicorn[standard]>=0.34`. Commits `1e91193`, `46c0b3d`. |
+
+### Ciclo 2 — nuevos hallazgos
+
 | ID | Descripción | Severidad | Referencia (REQ/DESIGN/domain-model) |
 |:---|:---|:---:|:---|
-| **H-01** | El volumen de PostgreSQL monta `postgres_data:/var/lib/postgresql` en lugar de `/var/lib/postgresql/data` documentado en `design.md` §4.4. E2E y persistencia en segundo arranque verificados por TEST; no bloquea operación local. | `Menor` | `DESIGN §4.4 / REQ-5.3` |
-| **H-02** | `.env.example` usa `DATABASE_URL=postgresql://…` mientras `design.md` §4.2 ejemplifica `postgresql+psycopg://…`. El comentario en `.env.example` justifica compatibilidad con backend (psycopg directo) y yoyo 9.0; TEST E2E confirma migrate y backend operativos. | `Menor` | `DESIGN §4.2 / REQ-6.4` |
-| **H-03** | `README.md` no documenta el escenario de fallo de `migrate` ni la recuperación segura (backend no arranca; revisar logs de migrate), requerido por REQ-10.4. | `Menor` | `REQ-10.4` |
-| **H-04** | `compose.yaml` redefine el `command` del servicio `backend` con instalación runtime de `uvicorn[standard]`, desviando del `CMD` del Dockerfile hermano (`fastapi run …`). Es cableado de orquestación dentro de `apps/infrastructure/` (no modifica fuente de `apps/backend/`); TEST E2E pasó. | `Menor` | `DESIGN §4.1.3 / RN-INF-07` |
+| — | Sin hallazgos bloqueantes ni menores nuevos | — | — |
 
 ---
 
 ## 4. Supuestos Detectados
-- IMPLEMENT asumió que `postgresql://` es el formato canónico compartido por yoyo 9.0 y el backend FastAPI (psycopg ConnectionPool), en lugar del dialecto SQLAlchemy `postgresql+psycopg://` del esqueleto de diseño — documentado en comentario de `.env.example`.
-- IMPLEMENT asumió que el entrypoint `fastapi run` del Dockerfile de backend no es adecuado en el contexto Compose y sustituyó el arranque por `uvicorn` instalado en runtime vía `command` del compose — no respaldado explícitamente en `design.md`.
+Sin supuestos detectados en ciclo 2. Las correcciones de IMPLEMENT iteración 1 están respaldadas por `design.md` actualizado y código verificado.
 
 ---
 
@@ -37,16 +65,22 @@ Sin preguntas abiertas.
 ---
 
 ## 6. Recomendaciones
-- Alinear el punto de montaje del volumen PostgreSQL con `design.md` (`/var/lib/postgresql/data`) o actualizar el design si `postgres:18` exige `/var/lib/postgresql` como convención oficial.
-- Unificar el formato de `DATABASE_URL` entre `design.md` §4.2 y `.env.example`, o documentar en `design.md` la excepción `postgresql://` como contrato cerrado del monorepo.
-- Ampliar `README.md` con una subsección de troubleshooting: fallo de `migrate` → backend bloqueado por `service_completed_successfully`; consultar `docker compose logs migrate` y re-ejecutar `docker compose up`.
-- Evaluar eliminar la instalación runtime de uvicorn en `compose.yaml` cuando el Dockerfile de backend exponga un entrypoint estable para Compose (p. ej. alinear `CMD` del Dockerfile con el comando usado en compose).
-- Eliminar `psycopg2-binary` del `migrate/Dockerfile` si no es requerido por yoyo 9.0 (solo `psycopg[binary]` está en el esqueleto §4.5).
+> Mejoras sugeridas que **no** son bloqueantes — no afectan negocio ni funcionalidad, quedan a criterio de una futura iteración.
+
+- **R-01:** Eliminar `psycopg2-binary` del `migrate/Dockerfile` si yoyo 9.0 opera solo con `psycopg[binary]` (esqueleto §4.5 no lo incluye; la dependencia extra permanece en L2 del Dockerfile actual).
 
 ---
 
 ## 7. Veredicto Final
 
-**Veredicto:** `PASA_CON_OBSERVACIONES`
+**Veredicto:** `PASA`
 
-La implementación en `apps/infrastructure/` cumple el contrato de orquestación: cuatro servicios (`db`, `migrate`, `backend`, `frontend`), orden `db (healthy) → migrate (completed) → backend → frontend`, secretos vía `.env` gitignored, puertos host `8000`/`8080`, `VITE_API_BASE_URL` orientada al navegador, sin lógica de negocio EVM ni modificación de código hermano. TEST reportó PASS en footprint §5, E2E primer y segundo arranque, `/api-docs` 200 y frontend 8080 200. Las desviaciones detectadas son menores y no bloquean la operación local ni los criterios EARS de orquestación.
+Las observaciones menores del ciclo 1 (**H-01** mount PostgreSQL, **H-02** formato `DATABASE_URL`, **H-03** troubleshooting migrate, **H-04** CMD backend estable sin override en compose) quedaron corregidas y verificadas en spec y código. La orquestación en `apps/infrastructure/` cumple REQ-01..REQ-10, RN-INF-01..RN-INF-07, contratos §4 de `design.md` y footprint §5. TEST post-fix confirmó E2E operativo (`/api-docs` 200, frontend 8080 200, CMD de imagen backend). Queda únicamente la recomendación opcional R-01 (dependencia redundante en migrate).
+
+**Datos para error-report (D-02):**
+| Hallazgo ciclo 1 | Estado | Commits de corrección |
+|:---|:---|:---|
+| H-01 | Cerrado | `63bec2f` |
+| H-02 | Cerrado | `63bec2f` |
+| H-03 | Cerrado | `e1bc1fe` |
+| H-04 | Cerrado | `1e91193`, `46c0b3d` |

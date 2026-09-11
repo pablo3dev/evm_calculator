@@ -7,16 +7,21 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "node --require ./eslint.typescript6-resolver.cjs ./node_modules/eslint/bin/eslint.js .",
+    "test": "vitest run",
     "format": "prettier --write .",
     "preview": "vite preview"
   },
   "dependencies": {
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-is": "^19.3.0",
     "recharts": "3.10.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
@@ -27,9 +32,11 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "jsdom": "^26.1.0",
     "prettier": "3.9.6",
     "typescript": "7.0.2",
     "typescript-eslint": "^8.46.4",
-    "vite": "8.0.10"
+    "vite": "8.0.10",
+    "vitest": "^3.2.4"
   }
 }

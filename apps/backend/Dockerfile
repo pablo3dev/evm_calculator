@@ -26,4 +26,4 @@ COPY --from=builder /app /app
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["fastapi", "run", "evm_project_tool.infra.http.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "evm_project_tool.infra.http.main:app", "--host", "0.0.0.0", "--port", "8000"]

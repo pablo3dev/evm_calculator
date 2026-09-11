@@ -54,7 +54,7 @@ Test de multi-unidad aplicado por IDEA (RN-04): realizar esta capacidad obliga a
 ### `domain-model.md` de la capacidad (solo eje multi-unidad)
 
 - Unidad dueña del dominio: `backend` (`apps/backend/`) — es quien concentra toda la lógica de negocio y las validaciones EVM, por regla explícita del alcance de la idea.
-- Ruta del `domain-model.md` único: `.makia/docs/apps/backend/domain-model.md`.
+- Ruta del `domain-model.md` único: `.makia/docs/specs/apps/backend/domain-model.md`.
 - Las demás unidades (`db`, `frontend`, `infrastructure`) NO crean su propio `domain-model.md`: sus specs lo referencian por ruta relativa dentro de `.makia/docs/`. Ninguna de ellas es un Contexto Delimitado propio: `db` es pura persistencia sin reglas de negocio, `frontend` es pura presentación sin reglas de negocio, `infrastructure` es pura orquestación.
 
 ## Problema

@@ -27,7 +27,7 @@
 - [x] **Tarea 1.2: [P] Tipos TypeScript del contrato API** `[REQ-01]` `[REQ-02]` `[REQ-03]` `[REQ-05]` `[DESIGN §3]` `[DESIGN §5]` — implementar `src/types/api.ts` espejando **exactamente** los schemas Pydantic/OpenAPI del backend (`design.md` backend §4.2): `ProjectResponse`, `ProjectCreateRequest`, `ProjectUpdateRequest`, `ProjectDetailResponse`, `ActivityCreateRequest`, `ActivityUpdateRequest`, `ActivityWithIndicatorsResponse`, `EvmIndicators` (campos `cpi`/`spi`/`eac`/`vac` nullable), `HTTPValidationError`, `HTTPError`. JSON en **snake_case**; sin entidades de dominio propias ni tipos camelCase duplicados.
 
 ### Fase 2: Cliente API
-- [ ] **Tarea 2.1: Cliente HTTP base (`api/client.ts`)** `[REQ-02]` `[REQ-05]` `[RN-UI-05]` `[DESIGN §4]` `[DESIGN §7.1]` — implementar wrapper `fetch` (o axios si se documenta en design) con base URL desde `import.meta.env.VITE_API_BASE_URL`, headers `Content-Type: application/json`, parseo de respuestas JSON. Clase/función de error tipada (`ApiError`) que distingue: **422** (`detail[]` con `loc`/`msg`), **404** (`detail` string), errores de red/5xx genéricos. Exportar helpers `get`, `post`, `put`, `delete` usados por los módulos de dominio API. Sin lógica de negocio EVM.
+- [x] **Tarea 2.1: Cliente HTTP base (`api/client.ts`)** `[REQ-02]` `[REQ-05]` `[RN-UI-05]` `[DESIGN §4]` `[DESIGN §7.1]` — implementar wrapper `fetch` (o axios si se documenta en design) con base URL desde `import.meta.env.VITE_API_BASE_URL`, headers `Content-Type: application/json`, parseo de respuestas JSON. Clase/función de error tipada (`ApiError`) que distingue: **422** (`detail[]` con `loc`/`msg`), **404** (`detail` string), errores de red/5xx genéricos. Exportar helpers `get`, `post`, `put`, `delete` usados por los módulos de dominio API. Sin lógica de negocio EVM.
 - [ ] **Tarea 2.2: [P] Módulos `api/projects.ts` y `api/activities.ts`** `[REQ-01]` `[REQ-02]` `[DESIGN §4]` `[DESIGN §5]` — implementar **10 métodos** 1:1 con endpoints backend §4.2:
   - `projects.ts`: `listProjects()`, `createProject(body)`, `getProject(projectId)`, `updateProject(projectId, body)`, `deleteProject(projectId)`.
   - `activities.ts`: `listActivitiesByProject(projectId)`, `createActivity(projectId, body)`, `getActivity(activityId)`, `updateActivity(activityId, body)`, `deleteActivity(activityId)`.
@@ -53,10 +53,10 @@
 | Fase | Total Tareas | Completadas | Estado |
 |:---|:---:|:---:|:---|
 | Fase 1: Scaffolding y toolchain | 2 | 2 | `Completado` |
-| Fase 2: Cliente API | 2 | 0 | `Pending` |
+| Fase 2: Cliente API | 2 | 1 | `En progreso` |
 | Fase 3: Dashboard y componentes UI | 7 | 0 | `Pending` |
 | Fase 4: Docker, verificación y polish | 3 | 0 | `Pending` |
-| **Total Global** | **14** | **2** | **~14%** |
+| **Total Global** | **14** | **3** | **~21%** |
 
 ---
 

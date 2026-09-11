@@ -17,11 +17,13 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 | Fase | Estado |
 |:---|:---:|
 | Fase 1: Scaffolding | `Completado` (2/2 tareas) |
-| Fase 2: API client | `En progreso` |
+| Fase 2: API client | `En progreso` (1/2 tareas) |
 | Fase 3: Dashboard componentes | `Pendiente` |
 | Fase 4: Docker / verificación | `Pendiente` |
 
-**Progreso global:** `~14%` (2 de 14 tareas)
+**Progreso global:** `~21%` (3 de 14 tareas)
+
+**Tarea 2.1 completada:** cliente HTTP base en `src/api/client.ts` — wrapper `fetch` con `VITE_API_BASE_URL`, helpers `get`/`post`/`put`/`delete`, clase `ApiError` tipada (422 validación, 404 not found, red status 0, 5xx genérico); sin lógica EVM.
 
 ## Qué puede hacer ya el usuario / Qué falta
 
@@ -30,9 +32,11 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 - Toolchain operativa: `npm run build`, `npm run lint` y `npm run format` pasan sin errores.
 - Shell mínimo en `src/App.tsx` listo para integrar componentes del dashboard.
 - Tipos TypeScript del contrato API en `src/types/api.ts` (snake_case, alineados con OpenAPI backend).
+- Cliente HTTP base en `src/api/client.ts` (`ApiError`, `apiFetch`, helpers REST tipados).
 
 **Pendiente:**
-- Cliente HTTP, módulos API, componentes del dashboard e integración con backend.
+- Módulos `api/projects.ts` y `api/activities.ts` (10 métodos del contrato backend).
+- Componentes del dashboard e integración con backend.
 
 ## Coordinación multi-unidad
 

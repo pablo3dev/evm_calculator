@@ -17,15 +17,19 @@ Ofrecer al líder de proyecto una API REST confiable que centralice la gestión 
 | Fase | Estado |
 |:---|:---:|
 | Fase 1: Dominio EVM | `Completado` |
-| Fase 2: Application / ports | `Pendiente` |
+| Fase 2: Application / ports | `En progreso` |
 | Fase 3: Infra HTTP + SQL | `Pendiente` |
 | Fase 4: Tests integración + Swagger | `Pendiente` |
 
-**Progreso global:** `~18%` (2 de 11 tareas completadas)
+**Progreso global:** `~36%` (4 de 11 tareas completadas)
 
 **Tarea 1.1 completada:** entidades de dominio implementadas en `apps/backend/src/evm_project_tool/domain/` — `Project`, `Activity` (con value objects `ProgressPercentage` y `MonetaryAmount`), y `EvmIndicatorSet`.
 
 **Tarea 1.2 completada:** `EvmCalculationService` con tests unitarios EC-01..EC-06; cobertura de `domain/` ≥ 96 %.
+
+**Fase 2 en progreso:** Tarea 2.1 (puertos de entrada en `application/ports/in/`) y Tarea 2.2 (casos de uso CRUD de proyectos y actividades con tests unitarios) completadas. Pendiente Tarea 2.3 (consultas con indicadores EVM).
+
+**Nota técnica:** el paquete `ports/in/` usa `importlib` como workaround porque `in` es palabra reservada de Python y no puede importarse con la sintaxis estándar.
 
 ## Qué puede hacer ya el usuario / Qué falta
 

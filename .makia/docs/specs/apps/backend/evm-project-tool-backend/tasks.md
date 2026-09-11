@@ -26,8 +26,8 @@
 - [x] **Tarea 1.2: `EvmCalculationService` y tests unitarios de dominio** `[REQ-03]` `[REQ-04]` `[REQ-05]` `[RN-01..RN-13]` `[EC-01..EC-09]` `[DESIGN §3.1]` `[DESIGN §8.1]` — implementar `evm_calculation_service.py` con `calculate_for_activity(activity) -> EvmIndicatorSet` (RN-01..RN-08, RN-09) y `aggregate(activities: list[Activity]) -> EvmIndicatorSet` (RN-12, RN-13). Crear `tests/unit/domain/test_evm_calculation_service.py` cubriendo EC-01..EC-09. Verificar cobertura ≥ 80 % sobre `domain/` antes de cerrar la tarea (`pytest-cov` acotado a `src/evm_project_tool/domain/`).
 
 ### Fase 2: Capa application
-- [ ] **Tarea 2.1: [P] Puertos de entrada (repositorios)** `[REQ-01]` `[REQ-02]` `[DESIGN §4.1]` `[DESIGN §5]` — definir Protocols en `application/ports/in/project_repository.py` (`create`, `get_by_id`, `list_all`, `update`, `delete`) y `activity_repository.py` (`create`, `get_by_id`, `list_by_project_id`, `update`, `delete`, `exists_project`). Sin implementación concreta; solo contratos tipados hacia persistencia.
-- [ ] **Tarea 2.2: Casos de uso CRUD de proyectos y actividades** `[REQ-01]` `[REQ-02]` `[DESIGN §4.1]` `[DESIGN §5]` — implementar use cases: `create_project`, `list_projects`, `update_project`, `delete_project`, `create_activity`, `update_activity`, `delete_activity`. Validar `name` no vacío (422 vía excepción de aplicación traducible en infra); propagar 404 cuando recurso inexistente; en `create_activity` verificar `exists_project` → 404 si `project_id` no existe (EC-07). Tests unitarios con mocks de repositorios en `tests/unit/application/test_use_cases.py` (orquestación CRUD, sin cálculo EVM aún).
+- [x] **Tarea 2.1: [P] Puertos de entrada (repositorios)** `[REQ-01]` `[REQ-02]` `[DESIGN §4.1]` `[DESIGN §5]` — definir Protocols en `application/ports/in/project_repository.py` (`create`, `get_by_id`, `list_all`, `update`, `delete`) y `activity_repository.py` (`create`, `get_by_id`, `list_by_project_id`, `update`, `delete`, `exists_project`). Sin implementación concreta; solo contratos tipados hacia persistencia.
+- [x] **Tarea 2.2: Casos de uso CRUD de proyectos y actividades** `[REQ-01]` `[REQ-02]` `[DESIGN §4.1]` `[DESIGN §5]` — implementar use cases: `create_project`, `list_projects`, `update_project`, `delete_project`, `create_activity`, `update_activity`, `delete_activity`. Validar `name` no vacío (422 vía excepción de aplicación traducible en infra); propagar 404 cuando recurso inexistente; en `create_activity` verificar `exists_project` → 404 si `project_id` no existe (EC-07). Tests unitarios con mocks de repositorios en `tests/unit/application/test_use_cases.py` (orquestación CRUD, sin cálculo EVM aún).
 - [ ] **Tarea 2.3: Casos de uso de consulta con indicadores** `[REQ-03]` `[REQ-04]` `[REQ-05]` `[DESIGN §4.1]` `[DESIGN §4.2]` — implementar `get_project` (detalle + `consolidated_indicators` vía `EvmCalculationService.aggregate`, RN-12/RN-13), `list_activities` (cada fila con indicadores por actividad), `get_activity` (detalle con indicadores). Indicadores calculados en lectura, nunca persistidos. Extender tests unitarios de application verificando invocación de dominio e inclusión de interpretaciones CPI/SPI (REQ-04).
 
 ### Fase 3: Infraestructura HTTP y persistencia
@@ -46,10 +46,10 @@
 | Fase | Total Tareas | Completadas | Estado |
 |:---|:---:|:---:|:---|
 | Fase 1: Dominio EVM y entidades | 2 | 2 | `Completed` |
-| Fase 2: Capa application | 3 | 0 | `Pending` |
+| Fase 2: Capa application | 3 | 2 | `In Progress` |
 | Fase 3: Infraestructura HTTP y persistencia | 4 | 0 | `Pending` |
 | Fase 4: Tests integración y verificación | 2 | 0 | `Pending` |
-| **Total Global** | **11** | **2** | **~18%** |
+| **Total Global** | **11** | **4** | **~36%** |
 
 ---
 

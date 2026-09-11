@@ -10,11 +10,14 @@ from evm_project_tool.application.use_cases import (
     create_project,
     delete_activity,
     delete_project,
+    get_activity,
+    get_project,
+    list_activities,
     list_projects,
     update_activity,
     update_project,
 )
-from evm_project_tool.domain import Activity, Project
+from evm_project_tool.domain import Activity, EvmIndicatorSet, Project
 
 
 @pytest.fixture
@@ -40,6 +43,21 @@ def _activity(*, project_id=None) -> Activity:
         plannedProgressPercentage=Decimal("50"),
         actualProgressPercentage=Decimal("40"),
         actualCost=Decimal("400"),
+    )
+
+
+def _indicators(
+    *,
+    cpi_interpretation: str = "Bajo presupuesto",
+    spi_interpretation: str = "Adelantado",
+) -> EvmIndicatorSet:
+    return EvmIndicatorSet(
+        pv=Decimal("500"),
+        ev=Decimal("600"),
+        cpi=Decimal("1.2"),
+        spi=Decimal("1.2"),
+        cpiInterpretation=cpi_interpretation,
+        spiInterpretation=spi_interpretation,
     )
 
 
@@ -250,3 +268,134 @@ class TestDeleteActivity:
 
         with pytest.raises(NotFoundError, match=f"Activity {activity_id} not found"):
             delete_activity(activity_id, activity_repository)
+
+
+class TestGetProject:
+    def test_happy_path(
+        self, project_repository: MagicMock, activity_repository: MagicMock
+    ) -> None:
+        project = _project()
+        activities = [_activity(project_id=project.id), _activity(project_id=project.id)]
+        consolidated = _indicators()
+        evm_service = MagicMock()
+        evm_service.aggregate.return_value = consolidated
+        project_repository.get_by_id.return_value = project
+        activity_repository.list_by_project_id.return_value = activities
+
+        result = get_project(
+            project.id, project_repository, activity_repository, evm_service
+        )
+
+        assert result.project is project
+        assert result.consolidated_indicators is consolidated
+        assert result.consolidated_indicators.cpiInterpretation == "Bajo presupuesto"
+        assert result.consolidated_indicators.spiInterpretation == "Adelantado"
+        project_repository.get_by_id.assert_called_once_with(project.id)
+        activity_repository.list_by_project_id.assert_called_once_with(project.id)
+        evm_service.aggregate.assert_called_once_with(activities)
+
+    def test_not_found_raises(
+        self, project_repository: MagicMock, activity_repository: MagicMock
+    ) -> None:
+        project_id = uuid4()
+        project_repository.get_by_id.return_value = None
+
+        with pytest.raises(NotFoundError, match=f"Project {project_id} not found"):
+            get_project(project_id, project_repository, activity_repository)
+
+        activity_repository.list_by_project_id.assert_not_called()
+
+    def test_uses_evm_calculation_service_aggregate(
+        self, project_repository: MagicMock, activity_repository: MagicMock
+    ) -> None:
+        project = _project()
+        activities = [_activity(project_id=project.id)]
+        evm_service = MagicMock()
+        evm_service.aggregate.return_value = _indicators()
+        project_repository.get_by_id.return_value = project
+        activity_repository.list_by_project_id.return_value = activities
+
+        get_project(project.id, project_repository, activity_repository, evm_service)
+
+        evm_service.aggregate.assert_called_once_with(activities)
+
+
+class TestListActivities:
+    def test_happy_path(self, activity_repository: MagicMock) -> None:
+        project_id = uuid4()
+        activities = [_activity(project_id=project_id), _activity(project_id=project_id)]
+        indicators_a = _indicators(
+            cpi_interpretation="Bajo presupuesto",
+            spi_interpretation="Adelantado",
+        )
+        indicators_b = _indicators(
+            cpi_interpretation="Sobre presupuesto",
+            spi_interpretation="Retrasado",
+        )
+        evm_service = MagicMock()
+        evm_service.calculate_for_activity.side_effect = [indicators_a, indicators_b]
+        activity_repository.exists_project.return_value = True
+        activity_repository.list_by_project_id.return_value = activities
+
+        result = list_activities(project_id, activity_repository, evm_service)
+
+        assert len(result) == 2
+        assert result[0].activity is activities[0]
+        assert result[0].indicators is indicators_a
+        assert result[0].indicators.cpiInterpretation == "Bajo presupuesto"
+        assert result[0].indicators.spiInterpretation == "Adelantado"
+        assert result[1].activity is activities[1]
+        assert result[1].indicators is indicators_b
+        assert result[1].indicators.cpiInterpretation == "Sobre presupuesto"
+        assert result[1].indicators.spiInterpretation == "Retrasado"
+
+    def test_project_not_found_raises(self, activity_repository: MagicMock) -> None:
+        project_id = uuid4()
+        activity_repository.exists_project.return_value = False
+
+        with pytest.raises(NotFoundError, match=f"Project {project_id} not found"):
+            list_activities(project_id, activity_repository)
+
+        activity_repository.list_by_project_id.assert_not_called()
+
+    def test_calculate_for_activity_called_per_activity(
+        self, activity_repository: MagicMock
+    ) -> None:
+        project_id = uuid4()
+        activities = [_activity(project_id=project_id), _activity(project_id=project_id)]
+        evm_service = MagicMock()
+        evm_service.calculate_for_activity.return_value = _indicators()
+        activity_repository.exists_project.return_value = True
+        activity_repository.list_by_project_id.return_value = activities
+
+        list_activities(project_id, activity_repository, evm_service)
+
+        assert evm_service.calculate_for_activity.call_count == 2
+        evm_service.calculate_for_activity.assert_any_call(activities[0])
+        evm_service.calculate_for_activity.assert_any_call(activities[1])
+
+
+class TestGetActivity:
+    def test_happy_path(self, activity_repository: MagicMock) -> None:
+        activity = _activity()
+        indicators = _indicators()
+        evm_service = MagicMock()
+        evm_service.calculate_for_activity.return_value = indicators
+        activity_repository.get_by_id.return_value = activity
+
+        result = get_activity(activity.id, activity_repository, evm_service)
+
+        assert result.activity is activity
+        assert result.indicators is indicators
+        assert result.indicators.cpiInterpretation == "Bajo presupuesto"
+        assert result.indicators.spiInterpretation == "Adelantado"
+        evm_service.calculate_for_activity.assert_called_once_with(activity)
+
+    def test_not_found_raises(self, activity_repository: MagicMock) -> None:
+        activity_id = uuid4()
+        activity_repository.get_by_id.return_value = None
+
+        with pytest.raises(NotFoundError, match=f"Activity {activity_id} not found"):
+            get_activity(activity_id, activity_repository)
+
+        activity_repository.get_by_id.assert_called_once_with(activity_id)

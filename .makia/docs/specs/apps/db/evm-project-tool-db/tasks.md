@@ -30,8 +30,8 @@
 - [x] **Tarea 3.2: Verificar aplicación de la migración `0002` y constraints** `[REQ-2.2, EC-01, EC-02, EC-03, EC-04]` `[DESIGN §8.2]` — aplicar `yoyo apply --batch` en secuencia sobre la base de datos con `0001` ya aplicada, y verificar manualmente (consultas SQL directas) que: (a) insertar una `activity` con `project_id` inexistente es rechazado (EC-01), (b) eliminar un `project` con actividades asociadas elimina esas actividades en cascada (EC-02), (c) insertar una `activity` con porcentaje fuera de rango 0-100 es rechazado (EC-03), (d) insertar una `activity` con `budget_at_completion`/`actual_cost` negativo es rechazado (EC-04).
 
 ### Fase 4: Verificación de integridad referencial y documentación
-- [ ] **Tarea 4.1: Re-ejecución idempotente de migraciones** `[EC-05]` `[DESIGN §8.2]` — ejecutar `yoyo apply --batch` una segunda vez sobre la base de datos ya migrada y confirmar que no falla ni re-aplica migraciones ya aplicadas.
-- [ ] **Tarea 4.2: `apps/db/.gitignore` y documentación mínima** `[DESIGN §5]` — crear `apps/db/.gitignore` con las entradas propias de `yoyo-migrations` (caché/estado local si aplica), sin documentación en prosa adicional fuera de lo que este spec ya define (esta unidad no requiere `README.md` propio — el `README.md` general del proyecto, con comandos de ejecución, es responsabilidad transversal fuera del alcance de esta unidad).
+- [x] **Tarea 4.1: Re-ejecución idempotente de migraciones** `[EC-05]` `[DESIGN §8.2]` — ejecutar `yoyo apply --batch` una segunda vez sobre la base de datos ya migrada y confirmar que no falla ni re-aplica migraciones ya aplicadas.
+- [x] **Tarea 4.2: `apps/db/.gitignore` y documentación mínima** `[DESIGN §5]` — crear `apps/db/.gitignore` con las entradas propias de `yoyo-migrations` (caché/estado local si aplica), sin documentación en prosa adicional fuera de lo que este spec ya define (esta unidad no requiere `README.md` propio — el `README.md` general del proyecto, con comandos de ejecución, es responsabilidad transversal fuera del alcance de esta unidad).
 
 ---
 
@@ -41,15 +41,15 @@
 | Fase 1: Configuración de verificación local (lefthook) | 1 | 1 | `Completed` |
 | Fase 2: Esquema y migraciones de `projects` | 2 | 2 | `Completed` |
 | Fase 3: Esquema y migraciones de `activities` | 2 | 2 | `Completed` |
-| Fase 4: Verificación de integridad referencial y documentación | 2 | 0 | `Pending` |
-| **Total Global** | **7** | **5** | **~71%** |
+| Fase 4: Verificación de integridad referencial y documentación | 2 | 2 | `Completed` |
+| **Total Global** | **7** | **7** | **100%** |
 
 ---
 
 ## 5. Definition of Done (DoD) Gate
-- [ ] Todas las tareas están marcadas como completadas (`[x]`).
-- [ ] Todos los criterios EARS de `requirements.md` pasan las pruebas asociadas.
-- [ ] La estructura de archivos coincide con el mapeo de `design.md`.
+- [x] Todas las tareas están marcadas como completadas (`[x]`).
+- [x] Todos los criterios EARS de `requirements.md` pasan las pruebas asociadas.
+- [x] La estructura de archivos coincide con el mapeo de `design.md`.
 - [ ] Todos los tests unitarios, de integración y E2E pasan sin advertencias críticas.
 - [ ] La fila del spec en el `INDEX.md` de specs (`.makia/docs/specs/<categoría>/INDEX.md`) está sincronizada con el `Estado global` de `summary.md`.
 

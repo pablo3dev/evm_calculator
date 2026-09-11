@@ -16,19 +16,19 @@ Proveer el punto de entrada local único del monorepo EVM Project Tool: un `dock
 
 | Fase | Estado |
 | :--- | :--- |
-| Fase 1: Configuración de `compose.yaml` y variables de entorno (`.env.example`) | `Pendiente` |
-| Fase 2: Servicio `migrate` (contenedor one-shot con `yoyo apply --batch`) | `Pendiente` |
-| Fase 3: Wiring de servicios (`db` → `migrate` → `backend` → `frontend`, puertos y healthchecks) | `Pendiente` |
-| Fase 4: Verificación E2E (`docker compose up` stack completo sin pasos manuales) | `Pendiente` |
+| Fase 1: Configuración de `compose.yaml` y variables de entorno (`.env.example`) | `Completada` |
+| Fase 2: Servicio `migrate` (contenedor one-shot con `yoyo apply --batch`) | `Completada` |
+| Fase 3: Wiring de servicios (`db` → `migrate` → `backend` → `frontend`, puertos y healthchecks) | `Completada` |
+| Fase 4: Verificación E2E (`docker compose up` stack completo sin pasos manuales) | `Completada` |
 
 ## Qué puede hacer ya el usuario / Qué falta
 
-- [ ] Levantar el stack completo con `docker compose up` desde `apps/infrastructure/` (PostgreSQL 18 + migraciones + backend + frontend).
-- [ ] Contar con `compose.yaml` (Docker Compose V2) que orqueste los cuatro servicios: `db`, `migrate`, `backend` y `frontend`.
-- [ ] Disponer de `.env.example` versionado con credenciales y URLs documentadas; `.env` local gitignored.
-- [ ] Ejecutar migraciones automáticamente en arranque mediante servicio `migrate` one-shot (`yoyo apply --batch`) antes de que arranque el backend.
-- [ ] Acceder a la UI en `http://localhost:8080` y a la API/OpenAPI en `http://localhost:8000` tras un único comando, sin intervención manual intermedia.
-- [ ] Resetear el entorno local documentado (`docker compose down -v`) cuando sea necesario.
+- [x] Levantar el stack completo con `docker compose up` desde `apps/infrastructure/` (PostgreSQL 18 + migraciones + backend + frontend).
+- [x] Contar con `compose.yaml` (Docker Compose V2) que orqueste los cuatro servicios: `db`, `migrate`, `backend` y `frontend`.
+- [x] Disponer de `.env.example` versionado con credenciales y URLs documentadas; `.env` local gitignored.
+- [x] Ejecutar migraciones automáticamente en arranque mediante servicio `migrate` one-shot (`yoyo apply --batch`) antes de que arranque el backend.
+- [x] Acceder a la UI en `http://localhost:8080` y a la API/OpenAPI en `http://localhost:8000` tras un único comando, sin intervención manual intermedia.
+- [x] Resetear el entorno local documentado (`docker compose down -v`) cuando sea necesario.
 
 ## Coordinación multi-unidad
 

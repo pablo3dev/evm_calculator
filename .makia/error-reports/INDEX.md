@@ -15,3 +15,7 @@
 | [ER-011](./ER-011-evm-project-tool-frontend.md) | evm-project-tool-frontend (idea: evm-project-tool) | D-07 | CR-05 | Abierto | 2026-09-11 |
 | [ER-012](./ER-012-evm-project-tool-frontend.md) | evm-project-tool-frontend (idea: evm-project-tool) | D-01 | CR-05 | Abierto | 2026-09-11 |
 | [ER-013](./ER-013-evm-project-tool-frontend.md) | evm-project-tool-frontend (idea: evm-project-tool) | D-02 | CR-04 (secundaria: CR-08) | Abierto | 2026-09-11 |
+| [ER-014](./ER-014-evm-project-tool-infrastructure.md) | evm-project-tool-infrastructure (idea: evm-project-tool) | D-07 | CR-05 (secundaria: CR-04) | Abierto | 2026-09-11 |
+| [ER-015](./ER-015-evm-project-tool-infrastructure.md) | evm-project-tool-infrastructure (idea: evm-project-tool) | D-07 | CR-05 | Abierto | 2026-09-11 |
+| [ER-016](./ER-016-evm-project-tool-infrastructure.md) | evm-project-tool-infrastructure (idea: evm-project-tool) | D-07 | CR-05 | Abierto | 2026-09-11 |
+| [ER-017](./ER-017-evm-project-tool-infrastructure.md) | evm-project-tool-infrastructure (idea: evm-project-tool) | D-01 | CR-08 | Abierto | 2026-09-11 |

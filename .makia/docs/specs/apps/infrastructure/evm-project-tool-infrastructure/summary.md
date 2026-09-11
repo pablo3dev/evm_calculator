@@ -32,7 +32,7 @@ Proveer el punto de entrada local único del monorepo EVM Project Tool: un `dock
 - [x] Acceder a la UI en `http://localhost:8080` y a la API/OpenAPI en `http://localhost:8000` tras un único comando, sin intervención manual intermedia.
 - [x] Resetear el entorno local documentado (`docker compose down -v`) cuando sea necesario.
 
-**Cierre:** TEST global y AUDIT completados — spec marcado `Completado` (2026-09-11). Veredicto AUDIT ciclo 1: **PASA_CON_OBSERVACIONES** (H-01..H-04). Observaciones ciclo 1 cerradas en implementación (2026-09-11); pendiente re-AUDIT.
+**Cierre:** TEST global y AUDIT completados — spec marcado `Completado` (2026-09-11). Veredicto AUDIT ciclo 2: **PASA**; H-01..H-04 cerrados; INDEX `Completado`.
 
 ## Coordinación multi-unidad
 

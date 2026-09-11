@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 |:---:|:---:|
-| `En progreso` | `2026-09-11` |
+| `Completado` | `2026-09-11` |
 
 ## Objetivo
 
@@ -27,8 +27,6 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 
 **Fase 4 completada:** Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático; ESLint/Prettier limpios; verificación manual 4.3 documentada (ver § Verificación manual 4.3).
 
-> **Estado global `En progreso`:** IMPLEMENT cerrado (14/14 tareas); pendiente de orquestación TEST + AUDIT antes de marcar la unidad como finalizada.
-
 ## Qué puede hacer ya el usuario / Qué falta
 
 **Ya disponible:**
@@ -46,8 +44,7 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 - **H-02 cerrado:** anti doble-submit en eliminación desde tabla (`useMutationWithLock` en `Dashboard`, `LoadingButton`/`actionsDisabled` en `ActivitiesTable`).
 - **H-03/H-04 (menores):** listado muestra description y fechas; nulls numéricos como `N/A` en `formatDisplay.ts`.
 
-**Pendiente:**
-- Re-auditoría ciclo 2 (AUDIT) tras correcciones H-01/H-02.
+**Cierre:** TEST global y AUDIT ciclo 2 completados — spec marcado `Completado` (2026-09-11). Veredicto AUDIT ciclo 2: **PASA**.
 
 ## Verificación manual 4.3
 

@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 |:---:|:---:|
-| `Completado` | `2026-09-11` |
+| `En progreso` | `2026-09-11` |
 
 ## Objetivo
 
@@ -20,12 +20,15 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 | Fase 2: API client | `Completado` (2/2 tareas) |
 | Fase 3: Dashboard componentes | `Completado` (7/7 tareas) |
 | Fase 4: Docker / verificación | `Completado` (3/3 tareas) |
+| Fase 5: Internacionalización, Tooltip y selector de idioma | `Pendiente` (0/6 tareas) |
 
-**Progreso global:** `100%` (14 de 14 tareas)
+**Progreso global:** `70%` (14 de 20 tareas)
 
 **Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
 
 **Fase 4 completada:** Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático; ESLint/Prettier limpios; verificación manual 4.3 documentada (ver § Verificación manual 4.3).
+
+**Actualización en curso (2026-09-11):** se reabrió el spec (previamente `Completado`) para incorporar tres capacidades nuevas pedidas por el usuario: (a) selector de idioma Español/English visible y persistente durante la sesión, que cierra un gap de cumplimiento contra la regla de i18n obligatorio de `code.md`; (b) componente Tooltip reutilizable aplicado a los indicadores EVM y controles no obvios, mostrando nombre en ES, nombre en EN, descripción y fórmula; y (c) regla de que toda sigla EVM (PV, EV, CV, SV, CPI, SPI, EAC, VAC) se muestra siempre en inglés invariable junto a su nombre completo localizado. `requirements.md`, `design.md` y `tasks.md` (nueva Fase 5, 6 tareas) ya fueron actualizados; la implementación queda pendiente a cargo de IMPLEMENT.
 
 ## Qué puede hacer ya el usuario / Qué falta
 
@@ -44,7 +47,14 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 - **H-02 cerrado:** anti doble-submit en eliminación desde tabla (`useMutationWithLock` en `Dashboard`, `LoadingButton`/`actionsDisabled` en `ActivitiesTable`).
 - **H-03/H-04 (menores):** listado muestra description y fechas; nulls numéricos como `N/A` en `formatDisplay.ts`.
 
-**Cierre:** TEST global y AUDIT ciclo 2 completados — spec marcado `Completado` (2026-09-11). Veredicto AUDIT ciclo 2: **PASA**.
+**Cierre ciclo anterior:** TEST global y AUDIT ciclo 2 completados con veredicto **PASA** (2026-09-11). El spec se reabre en esta misma fecha para la Fase 5.
+
+**Pendiente (Fase 5, actualización en curso):**
+- Selector de idioma Español/English, visible y persistente durante la sesión.
+- Catálogo i18n en `src/i18n/`.
+- Componente `Tooltip.tsx` reutilizable (nombre ES, nombre EN, descripción, fórmula).
+- Aplicación de sigla invariable en inglés + nombre localizado + tooltip a los indicadores EVM existentes (PV, EV, CV, SV, CPI, SPI, EAC, VAC).
+- Reemplazo de strings hardcodeados por claves i18n en los componentes del dashboard.
 
 ## Verificación manual 4.3
 

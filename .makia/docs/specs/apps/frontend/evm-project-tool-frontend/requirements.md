@@ -13,6 +13,7 @@ Este documento es la **fuente de verdad funcional** de la unidad de presentació
 | Contrato API | Los endpoints, schemas y códigos de error referenciados coinciden exactamente con el contrato REST del backend (`../../backend/evm-project-tool-backend/design.md` §4.2). |
 | Reglas UI | RN-UI-XX y edge cases EC-XX definen comportamiento observable ante datos nulos, errores HTTP y accesibilidad. |
 | Requerimientos EARS | Cada REQ-XX es verificable de forma independiente (historia de usuario + criterios de aceptación). |
+| Idioma y tooltips | El selector de idioma (RN-UI-10, REQ-13), la regla de siglas invariables (RN-UI-11, REQ-15) y los tooltips explicativos (RN-UI-12, REQ-14) están completos y son autosuficientes para aprobar sin consultar design.md. |
 
 **Veredicto esperado tras implementación:** la UI cumple todos los REQ-XX, respeta RN-UI-XX y maneja EC-XX sin calcular métricas EVM en cliente.
 
@@ -46,6 +47,8 @@ Los gestores de proyecto que aplican **Earned Value Management (EVM)** necesitan
 
 Hoy, sin una capa de presentación dedicada, esos datos y cálculos (realizados en backend) no son accesibles de forma clara para usuarios no técnicos. Se requiere una **interfaz web** que traduzca las respuestas del API en tablas, indicadores y gráficas comprensibles, con **accesibilidad** y **prevención de errores de uso** (doble envío, valores inválidos en formularios), **sin duplicar reglas de cálculo EVM** en el navegador.
 
+Adicionalmente, se han identificado dos brechas sobre el dashboard actual. Primero, las abreviaturas EVM (PV, EV, AC, CV, SV, CPI, SPI, EAC, VAC, BAC, ETC, TCPI, etc.) son difíciles de memorizar para un gestor que no las usa a diario, y hoy no existe ninguna ayuda contextual que explique su significado o fórmula sin salir de la aplicación. Segundo, el dashboard carece de un selector de idioma visible, lo cual incumple la regla obligatoria de internacionalización del proyecto (código.md § i18n) que exige inglés y español disponibles desde el primer commit de la interfaz. Este documento incorpora los requerimientos para cerrar ambas brechas.
+
 ---
 
 ## Solución
@@ -57,6 +60,7 @@ Aplicación web SPA (React + Vite) que:
 3. **Permite CRUD de actividades** desde el dashboard; tras cada mutación, la UI refleja los indicadores recalculados **re-fetching** o usando la respuesta del API que ya incluye `indicators`.
 4. **Muestra errores de validación y recursos no encontrados** del backend en lenguaje claro, preservando datos del formulario cuando corresponda.
 5. Se **despliega como assets estáticos** tras build, servidos por nginx en contenedor Docker.
+6. Ofrece **selector de idioma Español/English** visible y persistente durante la sesión, y **tooltips explicativos** en toda convención de UI no obvia (abreviaturas EVM y otros controles).
 
 Toda métrica EVM (PV, EV, CV, SV, CPI, SPI, EAC, VAC e interpretaciones) **proviene del backend**; la UI solo formatea y presenta.
 
@@ -73,6 +77,8 @@ Toda métrica EVM (PV, EV, CV, SV, CPI, SPI, EAC, VAC e interpretaciones) **prov
 | Robustez de formularios | Anti doble-submit en guardar/eliminar; campos numéricos con restricciones HTML adecuadas; nulls del API mostrados como N/A o texto interpretativo, nunca NaN/Infinity. |
 | Integración backend | Peticiones JSON snake_case a `/api/v1`; manejo de 422 y 404 según contrato. |
 | Entrega desplegable | Build de producción genera `dist/` servible por nginx en imagen Docker documentada en restricciones operativas. |
+| Claridad de indicadores | Todo indicador EVM muestra su abreviatura en inglés invariable junto a su nombre completo localizado y un tooltip con la explicación/fórmula. |
+| Idioma conmutable | El usuario cambia entre Español y English mediante un control visible; todo texto claro de la UI (no las abreviaturas EVM) se actualiza sin recargar la página. |
 
 ---
 
@@ -97,6 +103,10 @@ flowchart LR
   C --> G[CRUD actividades]
   G --> H[API recalcula indicadores]
   H --> C
+  C --> I[Cambia idioma ES/English]
+  I --> C
+  C --> J[Consulta tooltip de abreviatura EVM]
+  J --> C
 ```
 
 1. El gestor abre la aplicación y ve la lista de proyectos (`GET /projects`).
@@ -104,6 +114,8 @@ flowchart LR
 3. En el dashboard del proyecto (`GET /projects/{id}` + `GET /projects/{id}/activities`) observa consolidados, tabla y gráfica.
 4. Crea, edita o elimina actividades; la UI envía mutaciones y **actualiza la vista con datos del API** (respuesta directa o re-fetch).
 5. Ante errores de validación o recurso inexistente, recibe feedback claro sin perder contexto innecesariamente.
+6. Cambia el idioma de la interfaz entre Español y English mediante el selector visible; los textos claros se actualizan de inmediato.
+7. Pasa el cursor o el foco de teclado sobre una abreviatura EVM (p. ej. CPI) y consulta el tooltip con nombre en español, nombre en inglés y fórmula.
 
 ---
 
@@ -122,17 +134,20 @@ flowchart LR
 - Lint/format: ESLint 10.10.0 flat + Prettier 3.9.6.
 - Dockerfile multi-stage: build con `node:24-slim`, runtime `nginx:stable-alpine` sirviendo `dist/`.
 - Referencia al domain model compartido en [`../../backend/domain-model.md`](../../backend/domain-model.md).
+- Internacionalización de la UI (Español/English): capa de i18n para todo texto claro visible, selector de idioma visible y persistente durante la sesión, y regla de abreviatura EVM invariable en inglés (RN-UI-10, RN-UI-11).
+- Componente Tooltip reutilizable aplicado a indicadores EVM y a cualquier otro control de UI cuyo significado no sea obvio (RN-UI-12).
 
 ### Out of Scope
 
 - **Autenticación y autorización** (sin login, roles ni tokens en esta unidad).
-- **Cálculo o fórmulas EVM en cliente** (PV, EV, CPI, SPI, EAC, VAC, interpretaciones).
+- **Cálculo o fórmulas EVM en cliente** (PV, EV, CPI, SPI, EAC, VAC, interpretaciones); los tooltips (REQ-14) muestran la fórmula únicamente como texto explicativo, nunca la ejecutan ni la recalculan.
 - **Definición o generación de OpenAPI** (responsabilidad backend).
 - **Esquema de base de datos y migraciones** (unidad db).
 - **docker-compose completo** (unidad infrastructure).
 - **Creación o modificación de `lefthook.yml`** (ya definido en unit-spec db con entradas `frontend-lint` / `frontend-format`; no duplicar aquí).
 - Cobertura de tests frontend obligatoria con umbral porcentual (ver restricciones operativas: tests opcionales).
-- Internacionalización multi-idioma (UI en español según este spec; no i18n framework obligatorio).
+- Idiomas adicionales a Español/English (solo estos dos, ver RN-UI-10).
+- Persistencia del idioma elegido más allá de la sesión de navegador actual (p. ej. cuenta de usuario, backend) — ver RN-UI-10.
 - Modo offline o persistencia local más allá del estado de sesión de UI.
 
 ---
@@ -152,6 +167,9 @@ Estas reglas gobiernan **comportamiento de presentación e interacción**. No su
 | **RN-UI-07** | Valores numéricos null en indicadores (p. ej. `cpi`, `spi`, `eac`, `vac`) se muestran como **"N/A"** o texto interpretativo del API; nunca como `NaN`, `Infinity` o cadena vacía ambigua. |
 | **RN-UI-08** | El formato de intercambio con el API es **JSON snake_case** en request y response; la UI serializa/deserializa respetando nombres del contrato. |
 | **RN-UI-09** | Listado de proyectos ordenado según criterio de presentación definido en implementación (p. ej. `updated_at` descendente), sin alterar datos en servidor salvo lo que permitan endpoints existentes. |
+| **RN-UI-10** | La UI soporta exactamente dos idiomas de presentación: Español y English, seleccionables mediante un control visible en la interfaz (p. ej. en la cabecera/layout principal). El idioma activo persiste durante la sesión del navegador (no requiere persistencia entre sesiones ni en backend); al cambiarlo, todo texto claro de la UI (labels, botones, mensajes, nombres completos de indicadores, tooltips) se actualiza sin recargar la página. Ningún texto visible para el usuario vive hardcodeado en el código de presentación: todo string pasa por la capa de i18n. |
+| **RN-UI-11** | Todo indicador EVM se identifica ante el usuario mediante su abreviatura en inglés (PV, EV, AC, CV, SV, CPI, SPI, EAC, VAC, BAC, ETC, TCPI, etc.), la cual nunca se traduce ni varía con el idioma activo. Junto a la abreviatura se muestra el nombre completo del indicador localizado al idioma activo (p. ej. "PV — Valor Planificado" en Español, "PV — Planned Value" en English). |
+| **RN-UI-12** | Todo indicador EVM y todo control de UI cuyo significado no sea evidente a simple vista (abreviaturas, íconos de estado, campos de formulario con convención propia) expone un tooltip reutilizable activable por hover o foco de teclado, que muestra: nombre en español, nombre en inglés, y una descripción de qué representa — incluyendo la fórmula cuando el indicador la tenga (p. ej. CPI = EV / AC). El tooltip es accesible: alcanzable y activable por teclado, con `aria-describedby` o patrón equivalente vinculando el control con su contenido. |
 
 ### Interpretaciones CPI/SPI del backend (mostrar en UI, no recalcular)
 
@@ -170,6 +188,8 @@ Estas reglas gobiernan **comportamiento de presentación e interacción**. No su
 | SPI < 1 | "Atrasado" |
 
 La UI debe preferir los campos `cpi_interpretation` y `spi_interpretation` de la respuesta cuando estén presentes; si solo hay valor numérico/null, mapear a los textos anteriores de forma consistente.
+
+**Nota de idioma:** los textos de esta subsección son textos claros que pasan por la capa de i18n (RN-UI-10) y se traducen según el idioma activo; solo las siglas CPI/SPI permanecen invariables (RN-UI-11).
 
 ---
 
@@ -410,6 +430,53 @@ Convención EARS: **[Ubicación/Evento]**, el sistema **[debe/shall]** **[compor
 
 ---
 
+### REQ-13 — Selector de idioma
+
+**Historia:** Como gestor, quiero un control visible para cambiar entre Español y English, para usar la interfaz en el idioma que prefiera.
+
+**En el layout principal de la aplicación**, el sistema **debe** ofrecer un control visible (no oculto en submenú profundo) que permita alternar entre Español y English, aplicando el cambio de inmediato sin recargar la página.
+
+**Criterios de aceptación:**
+
+- CA-13.1: El control de idioma es visible en el layout principal en toda pantalla de la aplicación (no solo en una vista puntual).
+- CA-13.2: Al cambiar de idioma, todo texto claro visible se actualiza inmediatamente, sin recarga de página.
+- CA-13.3: Si el idioma del navegador no es "es" ni "en", el idioma por defecto al cargar la aplicación es **English**.
+- CA-13.4: El idioma seleccionado persiste mientras dure la sesión del navegador (RN-UI-10); no se exige persistencia entre sesiones ni en backend.
+- CA-13.5: Tras el cambio de idioma, ningún texto claro queda sin traducir (sin strings hardcodeados residuales).
+- CA-13.6: Las abreviaturas EVM (PV, EV, CPI, SPI, etc.) no cambian con el idioma activo (RN-UI-11).
+
+---
+
+### REQ-14 — Tooltip explicativo en indicadores EVM y controles no obvios
+
+**Historia:** Como gestor, quiero pasar el cursor o el foco sobre una abreviatura EVM u otro control no obvio y ver una explicación, para entender qué significa sin salir de la app.
+
+**Cuando el usuario pasa el cursor (hover) o el foco de teclado sobre un indicador EVM o un control de UI no obvio**, el sistema **debe** mostrar un tooltip con nombre en español, nombre en inglés, descripción y fórmula (cuando aplique), conforme a RN-UI-12.
+
+**Criterios de aceptación:**
+
+- CA-14.1: El tooltip aparece tanto por hover de mouse como por foco de teclado (Tab).
+- CA-14.2: El contenido mínimo del tooltip incluye: nombre en español, nombre en inglés, descripción, y fórmula cuando el indicador la tenga (p. ej. CPI = EV / AC).
+- CA-14.3: El tooltip no bloquea ni impide la interacción con el control subyacente (p. ej. sigue siendo posible hacer clic/editar).
+- CA-14.4: El tooltip se cierra con la tecla Escape o al perder el foco/hover.
+- CA-14.5: El tooltip aplica a todos los indicadores EVM mostrados en tabla de actividades, bloque de consolidados y badges CPI/SPI, y a otros controles no obvios del dashboard (p. ej. íconos de estado).
+
+---
+
+### REQ-15 — Abreviatura EVM invariable + nombre completo localizado
+
+**Historia:** Como gestor, quiero que la sigla del indicador (PV, EV, CPI, etc.) sea siempre la misma sin importar el idioma, para comunicarme con otros gestores usando el estándar EVM internacional, mientras el nombre completo se traduce.
+
+**Cuando se muestra un indicador EVM en cualquier parte de la UI**, el sistema **debe** presentar la sigla en inglés siempre visible junto al nombre completo localizado al idioma activo, con formato consistente en toda la aplicación.
+
+**Criterios de aceptación:**
+
+- CA-15.1: La sigla en inglés (p. ej. "CPI") se muestra siempre, sin importar el idioma activo.
+- CA-15.2: El nombre completo localizado acompaña a la sigla con formato consistente (p. ej. "PV — Valor Planificado" en Español, "PV — Planned Value" en English).
+- CA-15.3: El formato sigla + nombre se aplica de manera uniforme en todas las apariciones: tabla de actividades, bloque de consolidados, gráfica PV/EV/AC y tooltips.
+
+---
+
 ## Edge cases
 
 Comportamiento **visual/interacción** ante condiciones límite. Errores de negocio/cálculo están definidos en backend; aquí se especifica **cómo debe reaccionar la UI**.
@@ -428,6 +495,9 @@ Comportamiento **visual/interacción** ante condiciones límite. Errores de nego
 | **EC-10** | Respuesta 200 con `indicators` parcialmente null en gráfica Recharts | Excluir o segmentar series null sin romper escala; leyenda coherente; no excepción JavaScript en consola visible al usuario. |
 | **EC-11** | Eliminación de última actividad del proyecto | Tabla pasa a estado EC-03; consolidados actualizados tras re-fetch de detalle proyecto. |
 | **EC-12** | CPI/SPI numérico en límite (=1 exacto) | Texto "En presupuesto" / "En plan"; ícono neutral; no clasificar erróneamente como favorable/desfavorable. |
+| **EC-13** | Usuario cambia de idioma con un formulario de actividad/proyecto abierto con datos sin guardar | Los datos ingresados en el formulario no se pierden; solo cambian labels/textos, valores del formulario se conservan intactos. |
+| **EC-14** | Tooltip de un indicador con `cpi`/`spi` en `null` | El tooltip sigue mostrando nombre/descripción/fórmula de forma informativa, independiente del valor actual del indicador. |
+| **EC-15** | Idioma del navegador no es "es" ni "en" | La UI cae a English (mismo default fijado en REQ-13), sin error visible para el usuario. |
 
 ---
 
@@ -539,6 +609,9 @@ Scaffolding inicial: `npm create vite@latest apps/frontend -- --template react-t
 | CPI / SPI | Índices nullable mostrados con interpretación textual del API. |
 | Dashboard | Vista principal por proyecto (REQ-06). |
 | Consolidados | `consolidated_indicators` a nivel proyecto. |
+| Sigla EVM | Abreviatura estándar de un indicador (PV, EV, CPI, etc.); nunca se traduce, ver RN-UI-11. |
+| Tooltip | Componente reutilizable que muestra nombre ES, nombre EN, descripción y fórmula de un indicador o control no obvio, ver RN-UI-12. |
+| i18n | Capa de internacionalización que traduce todo texto claro de la UI según el idioma activo, ver RN-UI-10. |
 
 ---
 

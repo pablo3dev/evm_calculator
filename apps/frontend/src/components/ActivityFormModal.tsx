@@ -7,6 +7,8 @@ import type {
   ActivityWithIndicatorsResponse,
 } from '../types/api.ts'
 import { useMutationWithLock } from '../hooks/useMutationWithLock.ts'
+import { useI18n } from '../i18n/useI18n.ts'
+import type { TranslationKey } from '../i18n/types.ts'
 import { ErrorBanner } from './ErrorBanner.tsx'
 import { LoadingButton } from './LoadingButton.tsx'
 
@@ -47,7 +49,10 @@ function fieldsFromActivity(
   }
 }
 
-function formatMutationError(error: unknown): string {
+function formatMutationError(
+  error: unknown,
+  t: (key: TranslationKey) => string,
+): string {
   if (error instanceof ApiError) {
     if (error.isValidationError()) {
       return error.body.detail.map((item) => item.msg).join('; ')
@@ -67,7 +72,7 @@ function formatMutationError(error: unknown): string {
     }
   }
 
-  return 'Failed to save activity.'
+  return t('activityForm.errorSaveFailed')
 }
 
 function buildRequestBody(
@@ -99,6 +104,7 @@ function ActivityFormModalContent({
 }: ActivityFormModalContentProps) {
   const isEditMode = Boolean(activity)
   const { isLocked, runMutation } = useMutationWithLock()
+  const { t } = useI18n()
   const [fields, setFields] = useState<ActivityFormFields>(() =>
     activity ? fieldsFromActivity(activity) : EMPTY_FIELDS,
   )
@@ -121,7 +127,7 @@ function ActivityFormModalContent({
         }
         return await createActivity(projectId, body)
       } catch (err: unknown) {
-        setError(formatMutationError(err))
+        setError(formatMutationError(err, t))
         throw err
       }
     })
@@ -138,7 +144,7 @@ function ActivityFormModalContent({
     }
 
     const confirmed = window.confirm(
-      `Delete activity "${fields.name}"? This action cannot be undone.`,
+      t('activityForm.confirmDelete').replace('{name}', fields.name),
     )
 
     if (!confirmed) {
@@ -151,7 +157,7 @@ function ActivityFormModalContent({
       try {
         await onDelete()
       } catch (err: unknown) {
-        setError(formatMutationError(err))
+        setError(formatMutationError(err, t))
         throw err
       }
     })
@@ -173,13 +179,15 @@ function ActivityFormModalContent({
       >
         <header className="modal-header">
           <h2 id="activity-form-title">
-            {isEditMode ? 'Edit activity' : 'New activity'}
+            {isEditMode
+              ? t('activityForm.titleEdit')
+              : t('activityForm.titleCreate')}
           </h2>
           <button
             type="button"
             className="modal-close"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('common.close')}
           >
             ×
           </button>
@@ -189,7 +197,7 @@ function ActivityFormModalContent({
           {error && <ErrorBanner message={error} />}
 
           <div className="form-field">
-            <label htmlFor="activity-name">Name</label>
+            <label htmlFor="activity-name">{t('activityForm.fieldName')}</label>
             <input
               id="activity-name"
               type="text"
@@ -201,7 +209,9 @@ function ActivityFormModalContent({
           </div>
 
           <div className="form-field">
-            <label htmlFor="activity-bac">Budget at completion (BAC)</label>
+            <label htmlFor="activity-bac">
+              {t('activityForm.fieldBudgetAtCompletion')}
+            </label>
             <input
               id="activity-bac"
               type="number"
@@ -218,7 +228,7 @@ function ActivityFormModalContent({
 
           <div className="form-field">
             <label htmlFor="activity-planned-progress">
-              Planned progress (%)
+              {t('activityForm.fieldPlannedProgress')}
             </label>
             <input
               id="activity-planned-progress"
@@ -237,7 +247,7 @@ function ActivityFormModalContent({
 
           <div className="form-field">
             <label htmlFor="activity-actual-progress">
-              Actual progress (%)
+              {t('activityForm.fieldActualProgress')}
             </label>
             <input
               id="activity-actual-progress"
@@ -255,7 +265,9 @@ function ActivityFormModalContent({
           </div>
 
           <div className="form-field">
-            <label htmlFor="activity-actual-cost">Actual cost (AC)</label>
+            <label htmlFor="activity-actual-cost">
+              {t('activityForm.fieldActualCost')}
+            </label>
             <input
               id="activity-actual-cost"
               type="number"
@@ -278,7 +290,7 @@ function ActivityFormModalContent({
                 loading={isLocked}
                 onClick={handleDelete}
               >
-                Delete
+                {t('common.delete')}
               </LoadingButton>
             )}
             <div className="modal-footer-actions">
@@ -288,10 +300,12 @@ function ActivityFormModalContent({
                 onClick={onClose}
                 disabled={isLocked}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <LoadingButton type="submit" loading={isLocked}>
-                {isEditMode ? 'Save changes' : 'Create activity'}
+                {isEditMode
+                  ? t('activityForm.submitLabelEdit')
+                  : t('activityForm.submitLabelCreate')}
               </LoadingButton>
             </div>
           </footer>

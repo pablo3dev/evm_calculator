@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ApiError } from '../api/client.ts'
 import { listProjects } from '../api/projects.ts'
+import { useI18n } from '../i18n/useI18n.ts'
+import type { TranslationKey } from '../i18n/types.ts'
 import type { ProjectResponse } from '../types/api.ts'
 import { formatDateTime } from '../utils/formatDisplay.ts'
 import { ErrorBanner } from './ErrorBanner.tsx'
@@ -12,10 +14,13 @@ interface ProjectSelectorProps {
   onChange: (id: string | null) => void
 }
 
-function formatLoadError(error: unknown): string {
+function formatLoadError(
+  error: unknown,
+  t: (key: TranslationKey) => string,
+): string {
   if (error instanceof ApiError) {
     if (error.isNetworkError()) {
-      return 'Unable to reach the server. Check that the API is running.'
+      return t('common.errorNetwork')
     }
     if (error.isNotFound() && error.body.detail) {
       return error.body.detail
@@ -32,17 +37,19 @@ function formatLoadError(error: unknown): string {
     }
   }
 
-  return 'Failed to load projects.'
+  return t('projectSelector.errorLoadFailed')
 }
 
 function sortProjects(projects: ProjectResponse[]): ProjectResponse[] {
   return [...projects].sort(
     (left, right) =>
-      new Date(right.updated_at).getTime() - new Date(left.updated_at).getTime(),
+      new Date(right.updated_at).getTime() -
+      new Date(left.updated_at).getTime(),
   )
 }
 
 export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
+  const { t } = useI18n()
   const [projects, setProjects] = useState<ProjectResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -68,7 +75,7 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
       })
       .catch((err: unknown) => {
         if (!cancelled) {
-          setError(formatLoadError(err))
+          setError(formatLoadError(err, t))
         }
       })
       .finally(() => {
@@ -80,7 +87,7 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [t])
 
   const openCreateModal = () => {
     setEditingProject(null)
@@ -116,12 +123,12 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
 
       onChange(result.id)
     } catch (err: unknown) {
-      setError(formatLoadError(err))
+      setError(formatLoadError(err, t))
     }
   }
 
   if (loading) {
-    return <p className="project-selector-status">Loading projects…</p>
+    return <p className="project-selector-status">{t('common.loading')}</p>
   }
 
   if (error && projects.length === 0) {
@@ -133,15 +140,17 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
       {error && <ErrorBanner message={error} />}
 
       <div className="project-selector-header">
-        <h2 className="project-selector-title">Projects</h2>
+        <h2 className="project-selector-title">
+          {t('dashboard.selectProject')}
+        </h2>
         <LoadingButton type="button" onClick={openCreateModal}>
-          New project
+          {t('projectForm.titleCreate')}
         </LoadingButton>
       </div>
 
       {projects.length === 0 ? (
         <p className="project-selector-status">
-          No projects yet. Create a project to get started.
+          {t('dashboard.noProjectsFound')}
         </p>
       ) : (
         <ul className="project-list">
@@ -166,7 +175,9 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
                     </span>
                   )}
                   <span className="project-list-dates">
-                    Created: {formatDateTime(project.created_at)} · Updated:{' '}
+                    {t('projectSelector.createdLabel')}:{' '}
+                    {formatDateTime(project.created_at)} ·{' '}
+                    {t('projectSelector.updatedLabel')}:{' '}
                     {formatDateTime(project.updated_at)}
                   </span>
                 </button>
@@ -179,7 +190,7 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
       {value && (
         <div className="project-selector-actions">
           <LoadingButton type="button" onClick={openEditModal}>
-            Edit project
+            {t('projectForm.titleEdit')}
           </LoadingButton>
         </div>
       )}

@@ -12,11 +12,12 @@
 ---
 
 ## 2. Execution Guidelines
-- **Sequential Ordering:** ejecutar las fases en orden estricto (Fase 1 → 2 → 3 → 4); dentro de cada fase, respetar dependencias entre tareas (p. ej. 2.2 depende de 2.1; 3.7 depende de 3.1–3.6).
+- **Sequential Ordering:** ejecutar las fases en orden estricto (Fase 1 → 2 → 3 → 4 → 5); dentro de cada fase, respetar dependencias entre tareas (p. ej. 2.2 depende de 2.1; 3.7 depende de 3.1–3.6).
 - **Test-Verified:** cada funcionalidad debe tener su prueba correspondiente antes de marcarse `[x]` (lint/format como mínimo; tests de componente Vitest opcionales según `design.md` §8).
 - **Traceability Tags:** cada tarea referencia su origen en `requirements.md` (ej. `[REQ-06]`) y su componente en `design.md` (ej. `[DESIGN §4]`).
 - **Sin lógica EVM en cliente:** el frontend **nunca** calcula PV/EV/CPI/etc.; solo consume y presenta valores del API (`RN-UI-01`). Referencia conceptual de dominio (solo lectura): [`../../backend/domain-model.md`](../../backend/domain-model.md).
 - **Dependencia externa:** requiere backend API implementado y accesible (`evm-project-tool-backend` — contrato REST §4.2 en [`../../backend/evm-project-tool-backend/design.md`](../../backend/evm-project-tool-backend/design.md)) antes de Fase 3.7 (integración dashboard) y Fase 4.3 (verificación manual).
+- **Orden Fase 5:** catálogo i18n base (5.1) antes que cualquier tarea que consuma `useI18n()`; Tooltip (5.2) puede ejecutarse en paralelo a 5.1; selector de idioma (5.3) depende de 5.1; aplicar a indicadores EVM (5.4) depende de 5.1 y 5.2; derivación local de interpretación CPI/SPI (5.5a) depende de 5.1; reemplazo del resto de strings hardcodeados (5.5b) depende de 5.1 y 5.5a; verificación y tests (5.6) depende de 5.1–5.5b.
 
 ---
 
@@ -47,6 +48,15 @@
 - [x] **Tarea 4.2: Limpieza ESLint/Prettier; tests componente opcionales** `[DESIGN §8]` `[DESIGN §5]` — ejecutar `npx eslint .` y `npx prettier --check .` sobre `apps/frontend/` sin errores (también cubierto por `lefthook.yml` de db spec en pre-commit). Si `design.md` §8 define tests Vitest + React Testing Library: configurar Vitest mínimo y al menos 1 test de humo (p. ej. `CpiSpiBadge` renderiza texto de interpretación); **no** es obligación de cobertura % en frontend. Sin code smells: sin imports muertos, sin `console.log` de debug.
 - [x] **Tarea 4.3: Verificación manual del dashboard contra backend local** `[REQ-06]` `[REQ-02]` `[REQ-03]` `[REQ-04]` `[REQ-05]` `[EC-01]` `[EC-02]` `[EC-03]` `[DESIGN §8.3]` — con backend + DB en local (o staging): (1) seleccionar proyecto existente; (2) ver tabla con indicadores e interpretaciones CPI/SPI; (3) ver bloque consolidado; (4) ver gráfica PV/EV/AC; (5) crear actividad → indicadores actualizados tras save; (6) editar actividad → refetch correcto; (7) eliminar actividad → tabla y consolidado actualizados; (8) proyecto sin actividades → UI estable sin errores; (9) actividad con AC=0 → CPI null mostrado como N/A + interpretación, no Infinity. Documentar resultado (pass/fail) en comentario de PR o nota mínima en `summary.md` al cerrar IMPLEMENT.
 
+### Fase 5: Internacionalización, Tooltip y selector de idioma
+- [x] **Tarea 5.1: Catálogo i18n base** `[RN-UI-10]` `[RN-UI-11]` `[REQ-13]` `[REQ-15]` `[DESIGN §2.7]` `[DESIGN §5]` — crear `src/i18n/types.ts` con la unión de claves `TranslationKey` usada por todo el árbol de componentes; `src/i18n/en.ts` y `src/i18n/es.ts` con diccionarios tipados que implementan `Record<TranslationKey, string>` (o estructura equivalente exhaustiva verificada por el compilador); `src/i18n/evmIndicatorsCatalog.ts` con el catálogo de siglas EVM invariables (PV, EV, AC, CV, SV, CPI, SPI, EAC, VAC, BAC, ETC, TCPI), cada una con nombre completo ES/EN, descripción y fórmula; `src/i18n/I18nProvider.tsx` implementando el contexto React con detección inicial de idioma en el orden `sessionStorage` (clave `evm_locale`) → `navigator.language` (mapeado a `es`/`en`) → fallback `en`, y persistencia del idioma elegido en `sessionStorage` bajo esa misma clave; `src/i18n/useI18n.ts` exponiendo el hook `{ locale, setLocale, t }`. Integrar `I18nProvider` envolviendo todo el árbol en `App.tsx`/`main.tsx` (por encima de `ProjectSelector`/`Dashboard`). Sin esta tarea ninguna otra de Fase 5 puede consumir `useI18n()`.
+- [x] **Tarea 5.2: `[P]` Componente `Tooltip.tsx` reutilizable** `[RN-UI-12]` `[REQ-14]` `[DESIGN §2.8]` `[DESIGN §5]` — implementar `src/components/Tooltip.tsx` con props `nameEs`, `nameEn`, `description`, `formula?` (opcional, para controles no numéricos sin fórmula) y `children` (elemento disparador). Apertura por hover **y** por foco de teclado (`onFocus`/`onBlur`), cierre con `Escape` o `blur`; posicionamiento con CSS simple (sin librería externa); accesibilidad vía `role="tooltip"` en el contenido emergente y `aria-describedby` en el trigger apuntando a un `id` generado con `useId()`. El componente recibe los textos ya resueltos como props (no invoca `useI18n()` internamente), por lo que puede implementarse y probarse en paralelo a la Tarea 5.1; el llamador es responsable de pasarle el nombre/descr. ya localizados.
+- [x] **Tarea 5.3: `LanguageSwitcher.tsx`** `[RN-UI-10]` `[REQ-13]` `[DESIGN §2.9]` `[DESIGN §5]` — implementar `src/components/LanguageSwitcher.tsx` conectado a `useI18n().setLocale`, reproduciendo **exactamente** el patrón de control cerrado en `design.md` §2.9 (toggle o par de botones ES|EN tal como está descrito en esa sección) sin introducir un patrón visual alternativo. Ubicar el selector en la cabecera/`App.tsx` según la posición fijada en `design.md` §2.9. El cambio de idioma debe re-renderizar los textos visibles sin recargar la página. Depende de 5.1 (requiere `I18nProvider` ya integrado).
+- [x] **Tarea 5.4: Aplicar sigla + nombre localizado + Tooltip a indicadores EVM** `[RN-UI-11]` `[RN-UI-12]` `[REQ-14]` `[REQ-15]` `[DESIGN §2.7]` `[DESIGN §2.8]` — modificar `ActivitiesTable.tsx`, `ConsolidatedIndicators.tsx`, `CpiSpiBadge.tsx` y `PvEvAcChart.tsx` (encabezados de tabla, leyenda y tooltips nativos del gráfico) para que cada aparición de una sigla EVM muestre: (a) la sigla invariable en inglés (PV, EV, AC, CV, SV, CPI, SPI, EAC, VAC, BAC, ETC, TCPI según aplique al componente) junto al nombre completo localizado vía `useI18n()` + `evmIndicatorsCatalog.ts`; y (b) el mismo texto envuelto en el `Tooltip` reutilizable de la Tarea 5.2, con `nameEs`/`nameEn`/`description`/`formula` provenientes del catálogo. Depende de 5.1 (catálogo + hook) y 5.2 (componente Tooltip).
+- [x] **Tarea 5.5a: Derivación local de interpretación CPI/SPI** `[RN-UI-13]` `[REQ-07]` `[DESIGN §2.7.6]` — implementar `src/i18n/evmInterpretation.ts` con las funciones `getCpiInterpretationKey(cpi: number | null)` y `getSpiInterpretationKey(spi: number | null)` (firmas exactas en `design.md` §2.7.6), que clasifican el valor numérico/null en una de 4 categorías fijas por indicador (null / >1 / =1 / <1). Agregar el namespace `evmInterpretation` (8 claves: 4 CPI + 4 SPI) a `i18n/types.ts`/`en.ts`/`es.ts` con los textos ya fijados en `design.md` §2.7.6. Modificar `CpiSpiBadge.tsx` y `ConsolidatedIndicators.tsx` para que consuman `t(evmInterpretation.<key>)` derivado localmente, **dejando de leer** `indicators.cpi_interpretation`/`indicators.spi_interpretation` del API en cualquier componente de presentación (esos campos siguen existiendo en el tipo `EvmIndicators` por fidelidad al contrato REST, pero ningún componente los usa para mostrar texto). Depende de 5.1 (catálogo i18n base). Sin ambigüedad: esta tarea reemplaza cualquier lectura previa del campo `*_interpretation` del backend.
+- [x] **Tarea 5.5b: Reemplazar strings hardcodeados restantes de la UI** `[RN-UI-10]` `[REQ-13]` `[DESIGN §2.7]` — recorrer todos los componentes existentes (`ErrorBanner`, `ActivityFormModal`, `ProjectSelector`, `ProjectFormModal` si existe, estados vacíos, confirmaciones de eliminar, botones, placeholders, títulos de sección, mensajes de loading/error genéricos) y sustituir cada string visible hardcodeado por una llamada a `t('clave')` contra el diccionario de la Tarea 5.1, añadiendo las claves faltantes a `types.ts`/`en.ts`/`es.ts`. Depende de 5.1 y 5.5a (las claves de interpretación CPI/SPI ya deben existir en el diccionario antes de esta tarea).
+- [x] **Tarea 5.6: Tests opcionales i18n/Tooltip/LanguageSwitcher y verificación manual end-to-end** `[EC-13]` `[EC-14]` `[EC-15]` `[DESIGN §8]` — (opcionales, mismo criterio que el resto del spec: no obligan cobertura %) tests de humo sugeridos: `LanguageSwitcher` cambia `locale` y provoca el re-render de textos visibles (ES↔EN); `Tooltip` se abre al recibir foco de teclado y se cierra con `Escape`; test de regresión que verifique que `evmIndicatorsCatalog.ts` nunca traduce la sigla (la sigla en inglés es idéntica en ambos locales, solo cambia el nombre completo/descr.). Verificación manual adicional: (1) cambiar idioma con formulario `ActivityFormModal` abierto y datos ya ingresados → los datos del formulario no se pierden al cambiar de locale (EC-13); (2) abrir el Tooltip de un indicador EVM cuyo valor es `null`/`N/A` → el Tooltip muestra igualmente nombre/descripción/fórmula sin error (EC-14); (3) simular `navigator.language` con un idioma distinto de `es`/`en` (p. ej. `fr`) sin valor previo en `sessionStorage` → la UI cae a `en` sin error (EC-15). Depende de 5.1–5.5b.
+
 ---
 
 ## 4. Execution Progress Tracker
@@ -56,12 +66,13 @@
 | Fase 2: Cliente API | 2 | 2 | `Completado` |
 | Fase 3: Dashboard y componentes UI | 7 | 7 | `Completado` |
 | Fase 4: Docker, verificación y polish | 3 | 3 | `Completado` |
-| **Total Global** | **14** | **14** | **100%** |
+| Fase 5: Internacionalización, Tooltip y selector de idioma | 7 | 7 | `Completado` |
+| **Total Global** | **21** | **21** | **100%** |
 
 ---
 
 ## 5. Definition of Done (DoD) Gate
-- [x] Todas las tareas están marcadas como completadas (`[x]`).
+- [x] Todas las tareas de Fases 1-4 están marcadas como completadas (`[x]`).
 - [x] Todos los criterios EARS de `requirements.md` (REQ-01..REQ-06) pasan las pruebas asociadas o verificación manual documentada.
 - [x] Reglas `RN-UI-01`..`RN-UI-05` verificadas; edge cases UI EC-01..EC-09 con comportamiento visual correcto (nulls, tabla vacía, errores 422/404).
 - [x] La estructura de archivos coincide con el mapeo de `design.md` §5 (footprint exclusivo `apps/frontend/`).
@@ -73,7 +84,11 @@
 - [x] Verificación manual Fase 4.3 completada contra backend local.
 - [x] **No** se creó ni modificó `lefthook.yml` desde este spec.
 - [x] **No** hay cálculos EVM en código cliente (solo presentación de datos del API).
-- [ ] La fila del spec en el `INDEX.md` de specs (`.makia/docs/specs/<categoría>/INDEX.md`) está sincronizada con el `Estado global` de `summary.md`.
+- [x] Selector de idioma visible cambia entre Español/English sin recargar página, aplicando RN-UI-10.
+- [x] Toda sigla EVM se muestra invariable en inglés junto a su nombre completo localizado (RN-UI-11).
+- [x] Todo indicador EVM y todo control no obvio identificado expone el Tooltip reutilizable con nombre ES/EN/descripción/fórmula (RN-UI-12).
+- [x] Ningún string visible de la UI queda hardcodeado fuera del catálogo i18n.
+- [x] La fila del spec en el `INDEX.md` de specs (`.makia/docs/specs/<categoría>/INDEX.md`) está sincronizada con el `Estado global` de `summary.md`.
 
 ---
 

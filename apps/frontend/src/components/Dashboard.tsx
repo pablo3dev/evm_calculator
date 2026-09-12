@@ -3,6 +3,8 @@ import { deleteActivity, listActivitiesByProject } from '../api/activities.ts'
 import { ApiError } from '../api/client.ts'
 import { getProject } from '../api/projects.ts'
 import { useMutationWithLock } from '../hooks/useMutationWithLock.ts'
+import { useI18n } from '../i18n/useI18n.ts'
+import type { TranslationKey } from '../i18n/types.ts'
 import type {
   ActivityWithIndicatorsResponse,
   ProjectDetailResponse,
@@ -17,10 +19,13 @@ export interface DashboardProps {
   projectId: string
 }
 
-function formatLoadError(error: unknown): string {
+function formatLoadError(
+  error: unknown,
+  t: (key: TranslationKey) => string,
+): string {
   if (error instanceof ApiError) {
     if (error.isNetworkError()) {
-      return 'Unable to reach the server. Check that the API is running.'
+      return t('common.errorNetwork')
     }
     if (error.isNotFound() && error.body.detail) {
       return error.body.detail
@@ -37,10 +42,11 @@ function formatLoadError(error: unknown): string {
     }
   }
 
-  return 'Failed to load dashboard data.'
+  return t('dashboard.errorLoadFailed')
 }
 
 export function Dashboard({ projectId }: DashboardProps) {
+  const { t } = useI18n()
   const [project, setProject] = useState<ProjectDetailResponse | null>(null)
   const [activities, setActivities] = useState<
     ActivityWithIndicatorsResponse[]
@@ -73,7 +79,7 @@ export function Dashboard({ projectId }: DashboardProps) {
       })
       .catch((err: unknown) => {
         if (!cancelled) {
-          setError(formatLoadError(err))
+          setError(formatLoadError(err, t))
           setProject(null)
           setActivities([])
         }
@@ -87,11 +93,11 @@ export function Dashboard({ projectId }: DashboardProps) {
     return () => {
       cancelled = true
     }
-  }, [projectId])
+  }, [projectId, t])
 
   const handleMutationSuccess = () => {
     refetch().catch((err: unknown) => {
-      setError(formatLoadError(err))
+      setError(formatLoadError(err, t))
     })
   }
 
@@ -113,10 +119,10 @@ export function Dashboard({ projectId }: DashboardProps) {
 
   const handleDeleteFromTable = async (activityId: string) => {
     const activity = activities.find((item) => item.id === activityId)
-    const name = activity?.name ?? 'this activity'
+    const name = activity?.name ?? t('activityForm.fallbackName')
 
     const confirmed = window.confirm(
-      `Delete activity "${name}"? This action cannot be undone.`,
+      t('activityForm.confirmDelete').replace('{name}', name),
     )
 
     if (!confirmed) {
@@ -128,7 +134,7 @@ export function Dashboard({ projectId }: DashboardProps) {
         await deleteActivity(activityId)
         await refetch()
       } catch (err: unknown) {
-        setError(formatLoadError(err))
+        setError(formatLoadError(err, t))
         throw err
       }
     })
@@ -147,7 +153,7 @@ export function Dashboard({ projectId }: DashboardProps) {
       {error && <ErrorBanner message={error} />}
 
       {loading ? (
-        <p className="dashboard-status">Loading dashboard…</p>
+        <p className="dashboard-status">{t('common.loading')}</p>
       ) : project ? (
         <>
           <ConsolidatedIndicators
@@ -155,13 +161,15 @@ export function Dashboard({ projectId }: DashboardProps) {
           />
 
           <div className="dashboard-activities-header">
-            <h2 className="dashboard-activities-title">Activities</h2>
+            <h2 className="dashboard-activities-title">
+              {t('dashboard.activitiesTitle')}
+            </h2>
             <button
               type="button"
               className="loading-button"
               onClick={openCreateModal}
             >
-              New activity
+              {t('activityForm.titleCreate')}
             </button>
           </div>
 

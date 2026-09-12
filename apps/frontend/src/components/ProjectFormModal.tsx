@@ -1,11 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { ApiError } from '../api/client.ts'
-import {
-  createProject,
-  deleteProject,
-  updateProject,
-} from '../api/projects.ts'
+import { createProject, deleteProject, updateProject } from '../api/projects.ts'
 import { useMutationWithLock } from '../hooks/useMutationWithLock.ts'
+import { useI18n } from '../i18n/useI18n.ts'
+import type { TranslationKey } from '../i18n/types.ts'
 import type {
   ProjectCreateRequest,
   ProjectResponse,
@@ -38,7 +36,10 @@ function fieldsFromProject(project: ProjectResponse): ProjectFormFields {
   }
 }
 
-function formatMutationError(error: unknown): string {
+function formatMutationError(
+  error: unknown,
+  t: (key: TranslationKey) => string,
+): string {
   if (error instanceof ApiError) {
     if (error.isValidationError()) {
       return error.body.detail.map((item) => item.msg).join('; ')
@@ -58,7 +59,7 @@ function formatMutationError(error: unknown): string {
     }
   }
 
-  return 'Failed to save project.'
+  return t('projectForm.errorSaveFailed')
 }
 
 function buildRequestBody(
@@ -85,6 +86,7 @@ function ProjectFormModalContent({
 }: ProjectFormModalContentProps) {
   const isEditMode = Boolean(project)
   const { isLocked, runMutation } = useMutationWithLock()
+  const { t } = useI18n()
   const [fields, setFields] = useState<ProjectFormFields>(() =>
     project ? fieldsFromProject(project) : EMPTY_FIELDS,
   )
@@ -107,7 +109,7 @@ function ProjectFormModalContent({
         }
         return await createProject(body)
       } catch (err: unknown) {
-        setError(formatMutationError(err))
+        setError(formatMutationError(err, t))
         throw err
       }
     })
@@ -124,7 +126,7 @@ function ProjectFormModalContent({
     }
 
     const confirmed = window.confirm(
-      `Delete project "${fields.name}"? This action cannot be undone.`,
+      t('projectForm.confirmDelete').replace('{name}', fields.name),
     )
 
     if (!confirmed) {
@@ -138,7 +140,7 @@ function ProjectFormModalContent({
         await deleteProject(project.id)
         return 'deleted' as const
       } catch (err: unknown) {
-        setError(formatMutationError(err))
+        setError(formatMutationError(err, t))
         throw err
       }
     })
@@ -160,13 +162,15 @@ function ProjectFormModalContent({
       >
         <header className="modal-header">
           <h2 id="project-form-title">
-            {isEditMode ? 'Edit project' : 'New project'}
+            {isEditMode
+              ? t('projectForm.titleEdit')
+              : t('projectForm.titleCreate')}
           </h2>
           <button
             type="button"
             className="modal-close"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('common.close')}
             disabled={isLocked}
           >
             ×
@@ -177,7 +181,7 @@ function ProjectFormModalContent({
           {error && <ErrorBanner message={error} />}
 
           <div className="form-field">
-            <label htmlFor="project-name">Name</label>
+            <label htmlFor="project-name">{t('projectForm.fieldName')}</label>
             <input
               id="project-name"
               type="text"
@@ -189,7 +193,9 @@ function ProjectFormModalContent({
           </div>
 
           <div className="form-field">
-            <label htmlFor="project-description">Description (optional)</label>
+            <label htmlFor="project-description">
+              {t('projectForm.fieldDescription')}
+            </label>
             <textarea
               id="project-description"
               rows={3}
@@ -209,7 +215,7 @@ function ProjectFormModalContent({
                 loading={isLocked}
                 onClick={handleDelete}
               >
-                Delete
+                {t('common.delete')}
               </LoadingButton>
             )}
             <div className="modal-footer-actions">
@@ -219,10 +225,12 @@ function ProjectFormModalContent({
                 onClick={onClose}
                 disabled={isLocked}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <LoadingButton type="submit" loading={isLocked}>
-                {isEditMode ? 'Save changes' : 'Create project'}
+                {isEditMode
+                  ? t('projectForm.submitLabelEdit')
+                  : t('projectForm.submitLabelCreate')}
               </LoadingButton>
             </div>
           </footer>

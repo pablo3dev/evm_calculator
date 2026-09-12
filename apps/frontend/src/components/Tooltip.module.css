@@ -1,0 +1,64 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  display: inline-flex;
+}
+
+.content {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  max-width: 260px;
+  width: max-content;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--tooltip-border);
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.content.above {
+  bottom: calc(100% + 0.375rem);
+}
+
+.content.below {
+  top: calc(100% + 0.375rem);
+}
+
+.name {
+  font-weight: 600;
+  margin: 0 0 0.125rem;
+}
+
+.description {
+  margin: 0;
+}
+
+.formula {
+  margin: 0.25rem 0 0;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+:root {
+  --tooltip-bg: #1e293b;
+  --tooltip-text: #f8fafc;
+  --tooltip-border: #334155;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tooltip-bg: #f8fafc;
+    --tooltip-text: #1e293b;
+    --tooltip-border: #cbd5e1;
+  }
+}

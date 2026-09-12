@@ -10,6 +10,13 @@
   max-width: 100%;
 }
 
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
 .icon {
   display: inline-flex;
   flex-shrink: 0;

@@ -561,6 +561,8 @@ También se deben agregar tooltips reutilizables para todas las convenciones de 
 Actualmente no se visualiza el botón de cambiar idioma a Español/English como lo establecen las reglas de Frontend de MakIA en CODE
 ```
 
+Mis iteraciones fueron de aprobar y luego autorizar paso a PROD
+
 # Reflexión
 
 Cuando uso SDD y DDD el código sale preciso y predecible con la calidad esperada. El problema es que aumenta el tiempo revisando y aprobando documentos. Eso me consumió parte importante del tiempo: empecé ~10:00 y el correo pedía entrega a las 14:00 del mismo día. No llegué a esa meta de reloj, pero el proyecto queda escalable: specs y modelo de dominio son la fuente de verdad y el código es la materialización. Es un flujo de desarrollo empresarial/corporativo donde la IA es parte del proceso.

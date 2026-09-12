@@ -5,54 +5,69 @@
 - **Ruta:** `.makia/docs/specs/apps/frontend/evm-project-tool-frontend`
 - **Fecha de Auditoría:** `2026-09-11`
 - **Auditor:** `AUDIT`
-- **Ciclo de Auditoría:** `2`
+- **Ciclo de Auditoría:** `3`
 
 ---
 
 ## 2. Alcance de la Verificación
 - [x] El código implementado cumple con `requirements.md` (criterios EARS) y `design.md` (contratos, estructura de archivos).
-- [x] El spec (`requirements.md`/`design.md`) está alineado con `domain-model.md` (lenguaje ubicuo, límites del Contexto Delimitado, entidades y reglas de negocio) — el frontend no es dueño del dominio; consume el contrato REST del backend sin duplicar entidades.
+- [x] El spec (`requirements.md`/`design.md`) está alineado con `domain-model.md` (lenguaje ubicuo, límites del Contexto Delimitado, entidades y reglas de negocio) — el frontend no es dueño del dominio; consume el contrato REST del backend sin duplicar entidades ni calcular EVM.
 
 **Fuentes contrastadas:**
-- `../../backend/domain-model.md` — referencia conceptual (indicadores EVM calculados en backend)
-- `requirements.md` — RN-UI-01..RN-UI-09, REQ-01..REQ-12, EC-01..EC-12
-- `design.md` — arquitectura presentación pura, contrato 10 endpoints §4.2, estructura §5
-- Código: `apps/frontend/src/` (commits de corrección `0d40b4d`, `100c766`, `56e23e4`, `e190e49`)
-- Evidencia TEST (informada por Orquestador): lint/build/vitest PASS tras fixes; browser visual no ejecutado
+- `../../backend/domain-model.md` — indicadores EVM e interpretaciones CPI/SPI se calculan en backend; UI solo presenta.
+- `requirements.md` — RN-UI-01..RN-UI-13, REQ-01..REQ-15, EC-01..EC-15
+- `design.md` — i18n §2.7, Tooltip §2.8, LanguageSwitcher §2.9, interpretación local §2.7.6, footprint §5, checklist §9
+- `tasks.md` / `summary.md` — Fase 5 7/7 `[x]`; IMPLEMENT 21/21
+- Código: `apps/frontend/src/` (HEAD `88df493`)
+- Evidencia TEST (informada por Orquestador; AUDIT no reejecutó la suite): ver subsección siguiente
+
+### Evidencia TEST global (informada por Orquestador)
+
+HEAD: `88df49344df8b9f0bf36ad05a2f641c465b0ab32` — veredicto TEST **PASA**.
+
+| Comando / escenario | Resultado |
+|:---|:---|
+| `npm run test` | exit 0 — 4/4 Vitest (`CpiSpiBadge`, `Tooltip`, `LanguageSwitcher`, `evmIndicatorsCatalog`) |
+| `npm run lint` | exit 0 |
+| `npx prettier --check .` | exit 0 |
+| `npm run build` | exit 0 |
+| Browser / EC-13 / EC-14 / EC-15 | **no ejecutado** (backend `localhost:8000` timeout; MCP browser sin pestaña) |
+| Warning no bloqueante | chunk JS > 500 kB |
+
+La no ejecución de browser y de EC-13/14/15 **no es bloqueante**: `tasks.md` Tarea 5.6 y `requirements.md` marcan esos escenarios como verificación manual opcional (sin umbral de cobertura frontend). Quedan como recomendaciones (R-02, R-06).
 
 **Verificaciones de negocio UI (muestreo representativo):**
 
 | Regla / REQ | Evidencia en código | Resultado |
 |:---|:---|:---:|
-| RN-UI-01 | Sin fórmulas PV/EV/CPI/SPI/EAC/VAC en `src/`; componentes solo leen `indicators` / `consolidated_indicators` del API | OK |
-| RN-UI-02 / REQ-08 | `CpiSpiBadge.tsx`: color + ícono SVG + texto `interpretation` + `aria-label` + `role="status"` | OK |
-| RN-UI-03 / REQ-09 | `ProjectFormModal`, `ActivityFormModal` y `Dashboard.handleDeleteFromTable` con `useMutationWithLock` + `LoadingButton`; `ActivitiesTable` recibe `actionsDisabled={isLocked}` | OK |
-| RN-UI-04 | `ActivityFormModal`: inputs `type="number"` con `min`/`max`/`step` | OK |
-| RN-UI-05 / REQ-10 | `ErrorBanner`, `ApiError` parsea 422/404; sin stack traces ni JSON crudo | OK |
-| RN-UI-06 / REQ-06 | `Dashboard.refetch()` tras mutaciones exitosas en modal y delete desde tabla | OK |
-| RN-UI-07 / EC-01/02 | `formatDisplay.ts`: `MISSING_VALUE = 'N/A'`; `CpiSpiBadge` muestra interpretación del API | OK |
-| RN-UI-08 | Tipos y payloads en snake_case (`types/api.ts`, `api/client.ts`) | OK |
-| RN-UI-09 | `ProjectSelector.sortProjects`: orden `updated_at` descendente en cliente | OK |
-| Contrato 10 endpoints | `api/projects.ts` (5) + `api/activities.ts` (5) alineados con design §4.2 | OK (cliente) |
-| REQ-01 | `ProjectSelector`: lista con `name`, `description` (si existe), `created_at`/`updated_at` formateados; estado vacío explícito | OK |
-| REQ-02 / REQ-03 | `ProjectFormModal` + `ProjectSelector`: create/edit/delete vía `createProject`/`updateProject`/`deleteProject`; confirmación antes de delete; refetch y deselección si proyecto activo eliminado | OK |
-| REQ-06 dashboard | `Dashboard.tsx`: `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, CRUD actividades | OK |
-| REQ-12 | `Dockerfile` multi-stage `node:24-slim` → `nginx:stable-alpine`; `nginx.conf` SPA fallback | OK |
+| RN-UI-01 | Sin fórmulas PV/EV/CPI/SPI/EAC/VAC ejecutadas en cliente; `PvEvAcChart` lee `indicators.pv`/`ev` y `actual_cost`; catálogo solo guarda fórmulas como texto | OK |
+| RN-UI-02 / REQ-08 | `CpiSpiBadge.tsx`: color + ícono SVG + texto `t(evmInterpretation.*)` + `aria-label` + `role="status"` | OK |
+| RN-UI-03 / REQ-09 | `ProjectFormModal`, `ActivityFormModal`, `Dashboard.handleDeleteFromTable` con `useMutationWithLock` + `LoadingButton`; `actionsDisabled={isLocked}` | OK |
+| RN-UI-04 | `ActivityFormModal`: `type="number"` con `min`/`max` en BAC, AC y porcentajes | OK |
+| RN-UI-05 / REQ-10 | `ErrorBanner` + `ApiError` 422/404; mensajes de red vía `t('common.errorNetwork')` | OK |
+| RN-UI-06 / REQ-06 | `Dashboard.refetch()` tras mutaciones; dashboard orquesta tabla, consolidados, gráfica y CRUD | OK |
+| RN-UI-07 / EC-01/02 | `formatDisplay.ts`: `MISSING_VALUE = 'N/A'`; interpretación local si CPI/SPI null | OK |
+| RN-UI-08 | Tipos y payloads snake_case (`types/api.ts`, `api/client.ts`) | OK |
+| RN-UI-09 | `ProjectSelector.sortProjects`: `updated_at` descendente | OK |
+| RN-UI-10 / REQ-13 | `LanguageSwitcher` ES\|EN visible en cabecera `App.tsx`; `I18nProvider` persiste `sessionStorage['evm_locale']`; `setLocale` re-render sin reload; fallback `navigator.language` → `en` (EC-15 en código) | OK |
+| RN-UI-11 / REQ-15 | `evmIndicatorsCatalog.ts`: `code` invariable; patrón `SIGLA — nombre` en tabla, consolidados, badges y leyenda Recharts | OK |
+| RN-UI-12 / REQ-14 | `Tooltip.tsx`: hover + foco, Escape, `role="tooltip"`, `aria-describedby` + `useId()` | OK (limitación Recharts en hover de barras: R-07) |
+| RN-UI-13 / REQ-07 | `evmInterpretation.ts` `getCpiInterpretationKey`/`getSpiInterpretationKey`; componentes no leen `cpi_interpretation`/`spi_interpretation` (solo existen en `types/api.ts`) | OK |
+| Contrato 10 endpoints | `api/projects.ts` (5) + `api/activities.ts` (5) | OK |
+| REQ-01..REQ-12 | CRUD proyectos/actividades, dashboard, Docker, tipos — sin regresiones respecto al ciclo 2 | OK |
+| REQ-13/14/15 | Selector, tooltips, sigla + nombre localizado | OK |
+| Strings vía `t()` | Componentes de UI usan `useI18n().t()`; siglas y catálogo EVM fuera del `Dictionary` según §2.7.3 | OK |
 
 ---
 
 ## 3. Hallazgos y Desviaciones
 
-### Ciclo 1 — resolución de bloqueantes
+H-01 (ciclo 1, resuelto): CRUD de proyectos en `ProjectFormModal`/`ProjectSelector`.
+H-02 (ciclo 1, resuelto): anti doble-submit en delete desde `ActivitiesTable` (`useMutationWithLock`).
+H-03 (ciclo 1, resuelto): listado de proyectos con descripción y fechas.
+H-04 (ciclo 1, resuelto): nulls numéricos como `N/A` en `formatDisplay.ts`.
 
-| ID | Estado | Evidencia de corrección |
-|:---|:---:|:---|
-| **H-01** | **Resuelto** | `ProjectFormModal.tsx` invoca `createProject`/`updateProject`/`deleteProject` con `useMutationWithLock` y `LoadingButton`. `ProjectSelector.tsx` expone «New project», listado enriquecido (nombre, descripción, fechas), «Edit project» y refetch tras mutación; `App.tsx` integra selector + dashboard. Cumple REQ-02, REQ-03, CA-03.4, CA-03.6, CA-03.7. |
-| **H-02** | **Resuelto** | `Dashboard.tsx` L53-54, L114-134: `useMutationWithLock` envuelve `deleteActivity` + `refetch`. `ActivitiesTable.tsx` L14, L86-97: prop `actionsDisabled` deshabilita Edit y activa loader en Delete durante la petición. Cumple RN-UI-03 y REQ-09 CA-09.1/CA-09.2 para eliminación desde tabla. |
-| **H-03** | **Resuelto** | `ProjectSelector.tsx` L163-170: muestra `description` y fechas con `formatDateTime`. Cumple REQ-01 CA-01.1. |
-| **H-04** | **Resuelto** | `formatDisplay.ts` L1: `MISSING_VALUE = 'N/A'` en `formatMoney`, `formatPercent`, `formatIndicator`. Cumple RN-UI-07 y EC-01/EC-02. |
-
-### Ciclo 2 — nuevos hallazgos
+### Ciclo 3 — nuevos hallazgos
 
 | ID | Descripción | Severidad | Referencia (REQ/DESIGN/domain-model) |
 |:---|:---|:---:|:---|
@@ -61,7 +76,11 @@
 ---
 
 ## 4. Supuestos Detectados
-Sin supuestos detectados en ciclo 2. Las correcciones de IMPLEMENT iteración 1 están respaldadas por el spec funcional (`requirements.md` REQ-02, REQ-03, RN-UI-03, RN-UI-07).
+Sin supuestos que alteren el negocio. Notas de implementación alineadas con `design.md` (no con el texto más rígido de `tasks.md` Tarea 5.2):
+
+- `Tooltip` usa `useI18n().locale` internamente para elegir `nameEs`/`nameEn`, tal como cierra `design.md` §2.8 (la Tarea 5.2 decía no invocar `useI18n` dentro del componente).
+- `I18nProvider` envuelve el árbol en `main.tsx` (equivalente funcional a `App.tsx` §2.7.4).
+- `LanguageSwitcher` vive en la barra del título (`h1`), no en la misma fila que `ProjectSelector`; sigue visible en todas las pantallas (CA-13.1).
 
 ---
 
@@ -73,21 +92,29 @@ Sin preguntas abiertas.
 ## 6. Recomendaciones
 > Mejoras sugeridas que **no** son bloqueantes — no afectan negocio ni funcionalidad, quedan a criterio de una futura iteración.
 
-- **R-01:** Textos de UI en inglés (`Loading projects…`, `New activity`, etc.) mientras `requirements.md` indica UI en español sin framework i18n — alinear copy en iteración de polish.
-- **R-02:** Verificación visual en navegador no ejecutada en TEST (browser MCP no disponible); confirmar manualmente layout dashboard, contraste WCAG AA de `CpiSpiBadge` y gráfica Recharts.
-- **R-03:** Entorno local: `npm ci` EPERM reportado por TEST; documentar workaround (`npm install`) o permisos Windows si persiste en CI.
-- **R-05:** Ampliar cobertura Vitest más allá del smoke de `CpiSpiBadge` (formulario actividad, `ErrorBanner` 422) según `design.md` §8.1 — opcional por spec.
+R-01 (ciclo 2, resuelto): UI localizada ES/EN vía `t()` y catálogo i18n (Fase 5, RN-UI-10 / REQ-13).
+
+- **R-02:** Verificación visual en navegador no ejecutada en TEST de este ciclo (MCP browser sin pestaña / backend local timeout). Confirmar manualmente layout, contraste WCAG AA de `CpiSpiBadge` y gráfica Recharts. No bloquea: spec no exige E2E de esta unidad.
+- **R-03:** Entorno local: `npm ci` EPERM reportado en un TEST anterior; no revalidado en este ciclo. Documentar workaround si persiste en CI.
+- **R-05 (ciclo 2, parcialmente resuelto):** Vitest cubre ahora 4 humos (badge, Tooltip, LanguageSwitcher, catálogo). Siguen opcionales los casos de `ActivityFormModal` / `ErrorBanner` 422 de `design.md` §8.1.
+- **R-06:** EC-13 / EC-14 / EC-15 no ejecutados en TEST (formulario abierto al cambiar idioma; tooltip con valor null; fallback `navigator.language` distinto de es/en). El código cubre EC-14 (tooltip independiente del valor) y EC-15 (`detectInitialLocale` → `'en'`). Ejecutar los tres de forma manual cuando haya browser; no son gate de AUDIT.
+- **R-07:** Tooltip nativo de Recharts al hover de barras usa texto plano `"SIGLA — Nombre"` (limitación de tipos documentada en `PvEvAcChart.tsx` y `summary.md`). La leyenda sí usa el `Tooltip` reutilizable. Aceptado; no exige corrección.
+
+Nota de spec (no código): RN-UI-12 / CA-14.2 piden nombre ES y EN simultáneos en el tooltip; `design.md` §2.8 cierra mostrar un solo nombre según locale. IMPLEMENT siguió el design. Si se desea ambos nombres a la vez, es un ajuste de spec, no un defecto de negocio actual.
 
 ---
 
 ## 7. Veredicto Final
 
-**Veredicto:** `PASA`
+**Veredicto:** `PASA_CON_OBSERVACIONES`
 
-Los hallazgos bloqueantes del ciclo 1 (**H-01** CRUD de proyectos, **H-02** anti doble-submit en delete desde tabla) quedaron corregidos y verificados en código. Los menores **H-03** (listado enriquecido) y **H-04** (nulls como «N/A») también se resolvieron. La capa de presentación cumple RN-UI-01..RN-UI-09, REQ-01..REQ-12 relevantes, contrato API de 10 endpoints, dashboard operativo y build/Docker (REQ-12). Quedan únicamente recomendaciones de polish (R-01, R-02, R-03, R-05), sin impacto funcional.
+La Fase 5 (i18n, Tooltip, LanguageSwitcher, interpretación local CPI/SPI) está aplicada en código de forma alineada con RN-UI-10..13 y REQ-13..15, sin romper RN-UI-01..09 / REQ-01..12. El frontend sigue siendo presentación pura: no calcula EVM y no usa `cpi_interpretation`/`spi_interpretation` del API para mostrar texto. Los 10 endpoints REST y los tipos snake_case permanecen intactos.
 
-**Datos para error-report (D-02):**
-| Hallazgo ciclo 1 | Estado | Commits de corrección |
+No hay hallazgos bloqueantes (D-02 no aplica). Las observaciones abiertas (R-02, R-06 principalmente) se resuelven con verificación manual opcional, no corrigiendo código (D-03 no aplica).
+
+**Hallazgos ciclo 1 (cerrados, referencia):**
+
+| Hallazgo ciclo 1 | Estado | Commits de corrección (ciclo 1) |
 |:---|:---|:---|
 | H-01 | Cerrado | `0d40b4d` |
 | H-02 | Cerrado | `100c766` |

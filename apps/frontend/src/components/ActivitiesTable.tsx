@@ -89,14 +89,14 @@ export function ActivitiesTable({
                 <td>{formatIndicator(indicators.ev)}</td>
                 <td>{formatIndicator(indicators.cv)}</td>
                 <td>{formatIndicator(indicators.sv)}</td>
-                <td>
+                <td className="activities-table-badge-cell">
                   <CpiSpiBadge
                     value={indicators.cpi}
                     metric="cpi"
                     label="CPI"
                   />
                 </td>
-                <td>
+                <td className="activities-table-badge-cell">
                   <CpiSpiBadge
                     value={indicators.spi}
                     metric="spi"

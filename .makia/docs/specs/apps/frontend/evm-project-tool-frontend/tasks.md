@@ -61,6 +61,9 @@
 - [x] **Tarea 6.1: Superficie solo sigla + `EvmIndicatorLabel`** `[RN-UI-11]` `[RN-UI-12]` `[REQ-14]` `[REQ-15]` `[DESIGN §2.8]` — introducir `EvmIndicatorLabel` (wrapper reutilizable de `Tooltip` + catálogo). En consolidados, tabla, badges CPI/SPI y leyenda de gráfica, mostrar **solo** la abreviatura inglesa; el nombre localizado, descripción y fórmula salen al hover/foco. Portal + posición `fixed` para no recortar tooltips. Overlay Recharts de barras con nombre/fórmula. Botón Eliminar de la tabla con contraste legible (no texto blanco sobre fondo blanco).
 - [x] **Tarea 6.2: Tests de humo del patrón compacto** `[REQ-14]` `[REQ-15]` `[DESIGN §8]` — Vitest: `EvmIndicatorLabel` no muestra el nombre localizado hasta hover; `Tooltip` sigue abriendo/cerrando; catálogo de siglas invariable.
 
+### Fase 7: Tabla de actividades al ancho del contenido
+- [x] **Tarea 7.1: Layout de tabla y badges sin wrap por carácter** `[REQ-08]` `[CA-08.4]` `[DESIGN §7.4]` — `ActivitiesTable` usa `width: max-content` + `min-width: 100%` con scroll horizontal en el wrapper; celdas numéricas/badge `white-space: nowrap`; `CpiSpiBadge` en una línea (`flex-wrap: nowrap`, sin `overflow-wrap: anywhere`). El nombre de actividad puede envolver con `max-width` acotado.
+
 ---
 
 ## 4. Execution Progress Tracker
@@ -72,7 +75,8 @@
 | Fase 4: Docker, verificación y polish | 3 | 3 | `Completado` |
 | Fase 5: Internacionalización, Tooltip y selector de idioma | 7 | 7 | `Completado` |
 | Fase 6: Compactar siglas EVM y tooltips de hover | 2 | 2 | `Completado` |
-| **Total Global** | **23** | **23** | **100%** |
+| Fase 7: Tabla de actividades al ancho del contenido | 1 | 1 | `Completado` |
+| **Total Global** | **24** | **24** | **100%** |
 
 ---
 

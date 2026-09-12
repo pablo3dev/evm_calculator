@@ -64,6 +64,9 @@
 ### Fase 7: Tabla de actividades al ancho del contenido
 - [x] **Tarea 7.1: Layout de tabla y badges sin wrap por carácter** `[REQ-08]` `[CA-08.4]` `[DESIGN §7.4]` — `ActivitiesTable` usa `width: max-content` + `min-width: 100%` con scroll horizontal en el wrapper; celdas numéricas/badge `white-space: nowrap`; `CpiSpiBadge` en una línea (`flex-wrap: nowrap`, sin `overflow-wrap: anywhere`). El nombre de actividad puede envolver con `max-width` acotado.
 
+### Fase 8: Consolidados CPI/SPI apilados
+- [x] **Tarea 8.1: Badge stacked en indicadores consolidados** `[REQ-08]` `[CA-08.5]` `[DESIGN §7.4]` — `CpiSpiBadge` acepta `layout="inline"|"stacked"`. En consolidados: columna (sigla, ícono, texto) con wrap por palabra y ancho máximo de tarjeta. La tabla conserva `inline` nowrap.
+
 ---
 
 ## 4. Execution Progress Tracker
@@ -76,7 +79,8 @@
 | Fase 5: Internacionalización, Tooltip y selector de idioma | 7 | 7 | `Completado` |
 | Fase 6: Compactar siglas EVM y tooltips de hover | 2 | 2 | `Completado` |
 | Fase 7: Tabla de actividades al ancho del contenido | 1 | 1 | `Completado` |
-| **Total Global** | **24** | **24** | **100%** |
+| Fase 8: Consolidados CPI/SPI apilados | 1 | 1 | `Completado` |
+| **Total Global** | **25** | **25** | **100%** |
 
 ---
 

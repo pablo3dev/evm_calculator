@@ -12,6 +12,8 @@ export interface CpiSpiBadgeProps {
   value: number | null
   metric: 'cpi' | 'spi'
   label?: EvmIndicatorCode
+  /** `inline` (tabla): una línea. `stacked` (consolidados): sigla, ícono y texto en tres renglones. */
+  layout?: 'inline' | 'stacked'
 }
 
 type BadgeVariant = 'neutral' | 'nominal' | 'favorable' | 'unfavorable'
@@ -134,7 +136,12 @@ function buildAriaLabel(
   return interpretation
 }
 
-export function CpiSpiBadge({ value, metric, label }: CpiSpiBadgeProps) {
+export function CpiSpiBadge({
+  value,
+  metric,
+  label,
+  layout = 'inline',
+}: CpiSpiBadgeProps) {
   const { t } = useI18n()
   const variant = getVariant(value)
   const Icon = ICON_BY_VARIANT[variant]
@@ -148,7 +155,8 @@ export function CpiSpiBadge({ value, metric, label }: CpiSpiBadgeProps) {
   return (
     <span
       role="status"
-      className={`${styles.badge} ${styles[variant]}`}
+      className={`${styles.badge} ${styles[variant]} ${styles[layout]}`}
+      data-layout={layout}
       aria-label={ariaLabel}
     >
       {label && (

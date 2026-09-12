@@ -387,6 +387,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
+  max-width: 100%;
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.375rem;
@@ -395,6 +397,7 @@
 
 .consolidated-indicator-badge {
   min-height: auto;
+  align-items: center;
   justify-content: center;
 }
 

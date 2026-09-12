@@ -375,6 +375,7 @@ Convención EARS: **[Ubicación/Evento]**, el sistema **[debe/shall]** **[compor
 - CA-08.2: Ícono diferenciado para estados favorable / neutral / desfavorable (mapeo coherente con interpretación).
 - CA-08.3: Contraste de color cumple WCAG AA como objetivo de implementación (restricción operativa).
 - CA-08.4: En la tabla de actividades, el texto de interpretación CPI/SPI no se parte por carácter ni se apila en una columna estrecha: la tabla crece al ancho del contenido (`width: max-content`, `min-width: 100%`) y el contenedor hace scroll horizontal si hace falta.
+- CA-08.5: En el bloque de indicadores consolidados, CPI/SPI usan layout apilado (sigla, ícono e interpretación en tres renglones) con `max-width` acotado al de las demás tarjetas; no expanden la cuadrícula. La tabla sigue usando el layout en línea de CA-08.4.
 
 ---
 

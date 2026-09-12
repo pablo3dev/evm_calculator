@@ -44,10 +44,20 @@ export function ConsolidatedIndicators({
         <IndicatorCard code="CV" value={formatIndicator(indicators.cv)} />
         <IndicatorCard code="SV" value={formatIndicator(indicators.sv)} />
         <div className="consolidated-indicator-card consolidated-indicator-badge">
-          <CpiSpiBadge value={indicators.cpi} metric="cpi" label="CPI" />
+          <CpiSpiBadge
+            value={indicators.cpi}
+            metric="cpi"
+            label="CPI"
+            layout="stacked"
+          />
         </div>
         <div className="consolidated-indicator-card consolidated-indicator-badge">
-          <CpiSpiBadge value={indicators.spi} metric="spi" label="SPI" />
+          <CpiSpiBadge
+            value={indicators.spi}
+            metric="spi"
+            label="SPI"
+            layout="stacked"
+          />
         </div>
         <IndicatorCard code="EAC" value={formatIndicator(indicators.eac)} />
         <IndicatorCard code="VAC" value={formatIndicator(indicators.vac)} />

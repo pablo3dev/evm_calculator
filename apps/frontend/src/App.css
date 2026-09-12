@@ -9,6 +9,18 @@
   font-size: 1.75rem;
 }
 
+.app-header-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.app-header-bar h1 {
+  flex: 1 1 auto;
+}
+
 .project-selector {
   display: flex;
   flex-direction: column;

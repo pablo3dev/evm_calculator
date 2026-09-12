@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { Dashboard } from './components/Dashboard.tsx'
+import { LanguageSwitcher } from './components/LanguageSwitcher.tsx'
 import { ProjectSelector } from './components/ProjectSelector.tsx'
 
 function App() {
@@ -9,7 +10,10 @@ function App() {
   return (
     <main className="dashboard-shell">
       <header>
-        <h1>EVM Project Tool</h1>
+        <div className="app-header-bar">
+          <h1>EVM Project Tool</h1>
+          <LanguageSwitcher />
+        </div>
         <ProjectSelector
           value={activeProjectId}
           onChange={(id) => setActiveProjectId(id)}

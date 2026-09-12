@@ -21,14 +21,15 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 | Fase 3: Dashboard componentes | `Completado` (7/7 tareas) |
 | Fase 4: Docker / verificación | `Completado` (3/3 tareas) |
 | Fase 5: Internacionalización, Tooltip y selector de idioma | `Completado` (7/7 tareas) |
+| Fase 6: Compactar siglas EVM y tooltips de hover | `Completado` (2/2 tareas) |
 
-**Progreso global:** `100%` (21 de 21 tareas)
+**Progreso global:** `100%` (23 de 23 tareas)
 
 **Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
 
 **Fase 4 completada:** Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático; ESLint/Prettier limpios; verificación manual 4.3 documentada (ver § Verificación manual 4.3).
 
-**Actualización en curso (2026-09-11):** se reabrió el spec (previamente `Completado`) para incorporar tres capacidades nuevas pedidas por el usuario: (a) selector de idioma Español/English visible y persistente durante la sesión, que cierra un gap de cumplimiento contra la regla de i18n obligatorio de `code.md`; (b) componente Tooltip reutilizable aplicado a los indicadores EVM y controles no obvios, mostrando nombre en ES, nombre en EN, descripción y fórmula; y (c) regla de que toda sigla EVM (PV, EV, CV, SV, CPI, SPI, EAC, VAC) se muestra siempre en inglés invariable junto a su nombre completo localizado. `requirements.md`, `design.md` y `tasks.md` (nueva Fase 5, 6 tareas) ya fueron actualizados; la implementación queda pendiente a cargo de IMPLEMENT.
+**Corrección 2026-09-11 (Fase 6):** las siglas EVM en superficie son solo abreviaturas inglesas (PV, CPI, …). El nombre en el idioma activo, la descripción y la fórmula se muestran en el `Tooltip` reutilizable (`EvmIndicatorLabel`). Misma regla en consolidados, tabla, badges y gráfica. Botón Eliminar de la tabla con contraste legible.
 
 ## Qué puede hacer ya el usuario / Qué falta
 

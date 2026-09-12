@@ -1,10 +1,9 @@
 import type { EvmIndicatorCode } from '../i18n/evmIndicatorsCatalog.ts'
-import { evmIndicatorsCatalog } from '../i18n/evmIndicatorsCatalog.ts'
 import { useI18n } from '../i18n/useI18n.ts'
 import type { EvmIndicators } from '../types/api.ts'
 import { formatIndicator } from '../utils/formatDisplay.ts'
 import { CpiSpiBadge } from './CpiSpiBadge.tsx'
-import { Tooltip } from './Tooltip.tsx'
+import { EvmIndicatorLabel } from './EvmIndicatorLabel.tsx'
 
 export interface ConsolidatedIndicatorsProps {
   indicators: EvmIndicators
@@ -16,24 +15,10 @@ interface IndicatorCardProps {
 }
 
 function IndicatorCard({ code, value }: IndicatorCardProps) {
-  const { locale } = useI18n()
-  const entry = evmIndicatorsCatalog[code]
-
   return (
     <div className="consolidated-indicator-card">
       <span className="consolidated-indicator-label">
-        <Tooltip
-          nameEs={entry.nameEs}
-          nameEn={entry.nameEn}
-          description={
-            locale === 'es' ? entry.descriptionEs : entry.descriptionEn
-          }
-          formula={entry.formula}
-        >
-          <span>{code}</span>
-        </Tooltip>
-        {' — '}
-        {locale === 'es' ? entry.nameEs : entry.nameEn}
+        <EvmIndicatorLabel code={code} />
       </span>
       <span className="consolidated-indicator-value">{value}</span>
     </div>

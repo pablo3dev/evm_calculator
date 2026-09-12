@@ -1,5 +1,4 @@
 import type { EvmIndicatorCode } from '../i18n/evmIndicatorsCatalog.ts'
-import { evmIndicatorsCatalog } from '../i18n/evmIndicatorsCatalog.ts'
 import { useI18n } from '../i18n/useI18n.ts'
 import type { ActivityWithIndicatorsResponse } from '../types/api.ts'
 import {
@@ -8,8 +7,8 @@ import {
   formatPercent,
 } from '../utils/formatDisplay.ts'
 import { CpiSpiBadge } from './CpiSpiBadge.tsx'
+import { EvmIndicatorLabel } from './EvmIndicatorLabel.tsx'
 import { LoadingButton } from './LoadingButton.tsx'
-import { Tooltip } from './Tooltip.tsx'
 
 export interface ActivitiesTableProps {
   activities: ActivityWithIndicatorsResponse[]
@@ -18,29 +17,8 @@ export interface ActivitiesTableProps {
   actionsDisabled?: boolean
 }
 
-interface EvmColumnHeaderProps {
-  code: EvmIndicatorCode
-  locale: 'es' | 'en'
-}
-
-function EvmColumnHeader({ code, locale }: EvmColumnHeaderProps) {
-  const entry = evmIndicatorsCatalog[code]
-  return (
-    <>
-      <Tooltip
-        nameEs={entry.nameEs}
-        nameEn={entry.nameEn}
-        description={
-          locale === 'es' ? entry.descriptionEs : entry.descriptionEn
-        }
-        formula={entry.formula}
-      >
-        <span>{code}</span>
-      </Tooltip>
-      {' — '}
-      {locale === 'es' ? entry.nameEs : entry.nameEn}
-    </>
-  )
+function EvmColumnHeader({ code }: { code: EvmIndicatorCode }) {
+  return <EvmIndicatorLabel code={code} />
 }
 
 export function ActivitiesTable({
@@ -49,7 +27,7 @@ export function ActivitiesTable({
   onDelete,
   actionsDisabled = false,
 }: ActivitiesTableProps) {
-  const { locale, t } = useI18n()
+  const { t } = useI18n()
 
   if (activities.length === 0) {
     return (
@@ -70,28 +48,28 @@ export function ActivitiesTable({
             <th scope="col">{t('activitiesTable.columnActualProgress')}</th>
             <th scope="col">{t('activitiesTable.columnActualCost')}</th>
             <th scope="col">
-              <EvmColumnHeader code="PV" locale={locale} />
+              <EvmColumnHeader code="PV" />
             </th>
             <th scope="col">
-              <EvmColumnHeader code="EV" locale={locale} />
+              <EvmColumnHeader code="EV" />
             </th>
             <th scope="col">
-              <EvmColumnHeader code="CV" locale={locale} />
+              <EvmColumnHeader code="CV" />
             </th>
             <th scope="col">
-              <EvmColumnHeader code="SV" locale={locale} />
+              <EvmColumnHeader code="SV" />
             </th>
             <th scope="col">
-              <EvmColumnHeader code="CPI" locale={locale} />
+              <EvmColumnHeader code="CPI" />
             </th>
             <th scope="col">
-              <EvmColumnHeader code="SPI" locale={locale} />
+              <EvmColumnHeader code="SPI" />
             </th>
             <th scope="col">
-              <EvmColumnHeader code="EAC" locale={locale} />
+              <EvmColumnHeader code="EAC" />
             </th>
             <th scope="col">
-              <EvmColumnHeader code="VAC" locale={locale} />
+              <EvmColumnHeader code="VAC" />
             </th>
             <th scope="col">{t('activitiesTable.columnActions')}</th>
           </tr>
@@ -137,6 +115,7 @@ export function ActivitiesTable({
                   </button>
                   <LoadingButton
                     type="button"
+                    className="activities-table-delete"
                     loading={actionsDisabled}
                     onClick={() => onDelete(activity.id)}
                   >

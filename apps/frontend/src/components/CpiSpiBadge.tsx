@@ -1,12 +1,11 @@
 import type { ReactElement } from 'react'
 import type { EvmIndicatorCode } from '../i18n/evmIndicatorsCatalog.ts'
-import { evmIndicatorsCatalog } from '../i18n/evmIndicatorsCatalog.ts'
 import {
   getCpiInterpretationKey,
   getSpiInterpretationKey,
 } from '../i18n/evmInterpretation.ts'
 import { useI18n } from '../i18n/useI18n.ts'
-import { Tooltip } from './Tooltip.tsx'
+import { EvmIndicatorLabel } from './EvmIndicatorLabel.tsx'
 import styles from './CpiSpiBadge.module.css'
 
 export interface CpiSpiBadgeProps {
@@ -136,7 +135,7 @@ function buildAriaLabel(
 }
 
 export function CpiSpiBadge({ value, metric, label }: CpiSpiBadgeProps) {
-  const { locale, t } = useI18n()
+  const { t } = useI18n()
   const variant = getVariant(value)
   const Icon = ICON_BY_VARIANT[variant]
   const interpretationKey =
@@ -145,7 +144,6 @@ export function CpiSpiBadge({ value, metric, label }: CpiSpiBadgeProps) {
       : getSpiInterpretationKey(value)
   const interpretation = t(`evmInterpretation.${interpretationKey}`)
   const ariaLabel = buildAriaLabel(label, interpretation)
-  const entry = label ? evmIndicatorsCatalog[label] : undefined
 
   return (
     <span
@@ -153,20 +151,9 @@ export function CpiSpiBadge({ value, metric, label }: CpiSpiBadgeProps) {
       className={`${styles.badge} ${styles[variant]}`}
       aria-label={ariaLabel}
     >
-      {entry && (
+      {label && (
         <span className={styles.label}>
-          <Tooltip
-            nameEs={entry.nameEs}
-            nameEn={entry.nameEn}
-            description={
-              locale === 'es' ? entry.descriptionEs : entry.descriptionEn
-            }
-            formula={entry.formula}
-          >
-            <span>{label}</span>
-          </Tooltip>
-          {' — '}
-          {locale === 'es' ? entry.nameEs : entry.nameEn}
+          <EvmIndicatorLabel code={label} />
         </span>
       )}
       <span className={styles.icon}>

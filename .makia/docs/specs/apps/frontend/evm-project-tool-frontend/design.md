@@ -386,17 +386,21 @@ const cpi = evmIndicatorsCatalog.CPI;
 </Tooltip>
 ```
 
-El texto visible dentro de `<span>` es **siempre la sigla invariable** (`CPI`), nunca el nombre traducido; el nombre completo localizado se renderiza **junto a** la sigla fuera del propio trigger del tooltip, siguiendo el patrón "SIGLA — Nombre completo localizado" (RN-UI-11/REQ-15):
+El texto visible dentro del trigger es **siempre la sigla invariable** (`CPI`), nunca el nombre traducido. El nombre completo localizado, la descripción y la fórmula **solo** aparecen dentro del tooltip (RN-UI-11/REQ-15). No se concatena `" — " + nombre` en superficie.
+
+El patrón de uso cerrado para indicadores EVM es el wrapper `EvmIndicatorLabel` (no duplicar `Tooltip` + catálogo en cada vista):
 
 ```tsx
-<Tooltip nameEs={cpi.nameEs} nameEn={cpi.nameEn} description={...} formula={cpi.formula}>
-  <span>CPI</span>
-</Tooltip>
-{' — '}
-{locale === 'es' ? cpi.nameEs : cpi.nameEn}
+import { EvmIndicatorLabel } from './EvmIndicatorLabel';
+
+<EvmIndicatorLabel code="CPI" />
 ```
 
-Este es el patrón único que `ActivitiesTable`, `ConsolidatedIndicators` y `PvEvAcChart` (leyenda/ejes) deben usar para cada indicador EVM visible.
+`EvmIndicatorLabel` resuelve `getEvmTooltipContent(code, locale)` y envuelve la sigla en `Tooltip`. Este es el patrón único que `ActivitiesTable`, `ConsolidatedIndicators`, `CpiSpiBadge` y `PvEvAcChart` (leyenda) deben usar.
+
+En la gráfica PV/EV/AC, el overlay nativo de Recharts al hover de barras **no** puede hospedar el `Tooltip` interactivo; usa un contenido propio (`ChartHoverTooltip`) con la misma información (sigla, nombre localizado, valor, fórmula si aplica). La leyenda sí usa `EvmIndicatorLabel`.
+
+`Tooltip` se renderiza con `createPortal` a `document.body` y posición `fixed` anclada al trigger, para no recortarse por `overflow` de tabla o gráfica.
 
 **Controles no obvios (no indicadores EVM):** se reutiliza el mismo `Tooltip` genérico, pasando literales locales en vez de una entrada del catálogo EVM. Ejemplo — el icono de estado en `CpiSpiBadge`:
 
@@ -678,11 +682,12 @@ apps/frontend/
         ├── ActivitiesTable.tsx           (columnas: actividad, BAC, avances, AC, PV/EV/CV/SV/CPI/SPI/EAC/VAC, badges, Tooltip por indicador)
         ├── ConsolidatedIndicators.tsx    (bloque desde GET project detail consolidated_indicators, Tooltip por indicador)
         ├── CpiSpiBadge.tsx               (color + icono + texto interpretación + Tooltip en icono)
-        ├── PvEvAcChart.tsx               (Recharts BarChart/ComposedChart grouped bars: pv, ev, ac; leyenda con siglas + Tooltip)
+        ├── PvEvAcChart.tsx               (Recharts BarChart grouped bars: pv, ev, ac; leyenda EvmIndicatorLabel; overlay hover con nombre/fórmula)
         ├── ActivityFormModal.tsx         (create/edit; validación HTML5 number; submit lock; textos vía t())
         ├── ErrorBanner.tsx               (422/404/network errors; textos vía t())
         ├── LoadingButton.tsx             (botón deshabilitado + spinner durante mutación)
         ├── Tooltip.tsx                   (tooltip reutilizable — §2.8)
+        ├── EvmIndicatorLabel.tsx         (wrapper de Tooltip + catálogo; solo sigla en superficie)
         └── LanguageSwitcher.tsx          (selector ES|EN — §2.9)
 ```
 
@@ -706,8 +711,8 @@ sin términos críticos afectados
 | REQ-06 (dashboard visual) | §2.2 diagrama, §5 componentes dashboard | `Dashboard.tsx`, `ActivitiesTable.tsx`, `PvEvAcChart.tsx`, `CpiSpiBadge.tsx` |
 | RN-09 (display null CPI/SPI) | §5 `CpiSpiBadge` mapeo visual null | `CpiSpiBadge.tsx` |
 | RN-UI-10 / REQ-13 (idioma ES/EN, persistencia de sesión, cambio inmediato) | §2.7.1, §2.7.4, §2.7.5, §2.9 | `i18n/I18nProvider.tsx`, `i18n/useI18n.ts`, `i18n/types.ts`, `i18n/en.ts`, `i18n/es.ts`, `components/LanguageSwitcher.tsx` |
-| RN-UI-11 / REQ-15 (sigla invariable + nombre localizado) | §2.7.3, §2.8 (patrón de uso) | `i18n/evmIndicatorsCatalog.ts`, `components/Tooltip.tsx`, `ActivitiesTable.tsx`, `ConsolidatedIndicators.tsx`, `PvEvAcChart.tsx` |
-| RN-UI-12 / REQ-14 (tooltip accesible con nombre/descripción/fórmula) | §2.8 | `components/Tooltip.tsx`, `i18n/evmIndicatorsCatalog.ts` |
+| RN-UI-11 / REQ-15 (sigla invariable en superficie; nombre en tooltip) | §2.7.3, §2.8 (patrón de uso) | `i18n/evmIndicatorsCatalog.ts`, `components/EvmIndicatorLabel.tsx`, `components/Tooltip.tsx`, `ActivitiesTable.tsx`, `ConsolidatedIndicators.tsx`, `CpiSpiBadge.tsx`, `PvEvAcChart.tsx` |
+| RN-UI-12 / REQ-14 (tooltip accesible con nombre/descripción/fórmula) | §2.8 | `components/Tooltip.tsx`, `components/EvmIndicatorLabel.tsx`, `i18n/evmIndicatorsCatalog.ts` |
 | RN-UI-13 (interpretación CPI/SPI derivada localmente, no leída del API) | §2.7.6 | `i18n/evmInterpretation.ts`, `components/CpiSpiBadge.tsx`, `components/ConsolidatedIndicators.tsx` |
 | Seguridad UI (anti double-submit) | §7.2, §5 `useMutationWithLock`, `LoadingButton` | `hooks/useMutationWithLock.ts`, `LoadingButton.tsx`, `ActivityFormModal.tsx` |
 | Validación captura (HTML5) | §7.2 inputs number | `ActivityFormModal.tsx` |
@@ -753,19 +758,20 @@ El badge **siempre** renderiza un texto de interpretación como contenido visibl
 | **Neutral cronograma** | SPI = 1 | Gris/verde tenue | Check neutro | `t(evmInterpretation.spiEqualOne)` (*"En plan"*) |
 | **Desfavorable cronograma** | SPI < 1 | Rojo o amber | Warning / flecha abajo | `t(evmInterpretation.spiBelowOne)` (*"Atrasado"*) |
 
-Atributos de accesibilidad sugeridos: `role="status"`, `aria-label` combinando nombre del indicador + interpretación textual. El icono de estado se envuelve además en `Tooltip` (§2.8) con nombre ES/EN y descripción del indicador.
+Atributos de accesibilidad sugeridos: `role="status"`, `aria-label` combinando nombre del indicador + interpretación textual. La sigla CPI/SPI en el badge usa `EvmIndicatorLabel` (§2.8); el texto de interpretación permanece visible.
 
 ### 7.4 Componentes dashboard — responsabilidades
 
 | Componente | Fuente de datos | Responsabilidad |
 |------------|-----------------|-----------------|
 | `ProjectSelector` | `listProjects()` | Dropdown/lista de proyectos; emite `project_id` activo |
-| `ConsolidatedIndicators` | `getProject(id).consolidated_indicators` | Bloque KPI consolidado del proyecto; cada indicador envuelto en `Tooltip` con sigla + nombre localizado |
-| `ActivitiesTable` | `listActivitiesByProject(project_id)` | Tabla con columnas: actividad, BAC, `% planificado`, `% real`, AC, PV, EV, CV, SV, CPI, SPI, EAC, VAC + `CpiSpiBadge` en CPI/SPI; encabezados de columnas EVM con `Tooltip` |
-| `PvEvAcChart` | Misma lista de actividades | Recharts grouped bar por actividad con series `pv`, `ev`, `ac` (de `indicators`); leyenda con sigla + `Tooltip` |
+| `ConsolidatedIndicators` | `getProject(id).consolidated_indicators` | Bloque KPI consolidado; cada indicador usa `EvmIndicatorLabel` (solo sigla; tooltip con nombre/descripción/fórmula) |
+| `ActivitiesTable` | `listActivitiesByProject(project_id)` | Tabla con columnas: actividad, BAC, `% planificado`, `% real`, AC, PV, EV, CV, SV, CPI, SPI, EAC, VAC + `CpiSpiBadge` en CPI/SPI; encabezados EVM con `EvmIndicatorLabel`; botón Eliminar con contraste legible |
+| `PvEvAcChart` | Misma lista de actividades | Recharts grouped bar por actividad con series `pv`, `ev`, `ac`; leyenda con `EvmIndicatorLabel`; overlay hover con nombre localizado, valor y fórmula |
 | `ActivityFormModal` | — / actividad seleccionada | Create/edit; campos snake_case mapeados a request body; submit vía `createActivity`/`updateActivity`; textos de labels vía `t()`; estado del formulario local al componente (no depende del `locale`, ver §7.5 EC-13) |
 | `LanguageSwitcher` | `useI18n()` | Toggle ES/EN visible en cabecera; `setLocale` inmediato |
-| `Tooltip` | Trigger + props estáticas | Contenido accesible por hover/foco, cierre con Escape |
+| `Tooltip` | Trigger + props estáticas | Contenido accesible por hover/foco, cierre con Escape; portal a `document.body` |
+| `EvmIndicatorLabel` | Catálogo EVM + `locale` | Wrapper reutilizable: sigla inglesa en superficie + `Tooltip` |
 | `Dashboard` | Compone los anteriores | Estado `activeProjectId`, loading global, refresh coordinado |
 
 ### 7.5 Edge cases de internacionalización (EC-13, EC-14, EC-15)
@@ -796,6 +802,7 @@ No hay obligación de porcentaje de cobertura en frontend (IDEA cierra cobertura
 - `ErrorBanner`: muestra mensajes 422 parseados de `HTTPValidationError`.
 - `LanguageSwitcher`: al hacer clic en "EN" invoca `setLocale('en')` y los textos renderizados (vía `t()`) cambian sin desmontar el árbol.
 - `Tooltip`: se abre al recibir foco de teclado (`focus` del trigger) y se cierra al presionar `Escape`.
+- `EvmIndicatorLabel`: en superficie solo la sigla inglesa; el nombre localizado aparece al hover.
 - `evmIndicatorsCatalog`: test de regresión simple que verifica que `code` de cada entrada coincide exactamente con la sigla en inglés esperada y que ningún `nameEs`/`nameEn` sobreescribe accidentalmente el campo `code`.
 
 ### 8.2 Verificación manual / E2E
@@ -816,6 +823,7 @@ E2E cross-unidad (`docker compose up` completo) es responsabilidad de `evm-proje
 - [ ] Contrato §4.2 coincide con [`../../backend/evm-project-tool-backend/design.md`](../../backend/evm-project-tool-backend/design.md) §4.2 (10 endpoints, schemas snake_case).
 - [ ] Si el spec cambia la semántica de un término crítico, el barrido §5.1 cubre TODAS sus menciones; de lo contrario permanece *"sin términos críticos afectados"*.
 - [ ] El catálogo de siglas EVM es invariable en inglés y separado del catálogo de nombres/descripciones traducidos (RN-UI-11).
+- [ ] En superficie solo se muestra la sigla inglesa; nombre, descripción y fórmula van en `Tooltip` / `EvmIndicatorLabel` (RN-UI-11, RN-UI-12).
 - [ ] El componente `Tooltip` es accesible por teclado (foco) y por hover, cierra con Escape, y está correctamente anunciado (`role="tooltip"`, `aria-describedby`) (RN-UI-12).
 - [ ] El selector de idioma es visible sin necesidad de abrir un menú oculto y persiste solo durante la sesión del navegador vía `sessionStorage` (RN-UI-10).
 - [ ] Ningún componente de presentación lee `indicators.cpi_interpretation`/`indicators.spi_interpretation` del API; la interpretación CPI/SPI se deriva localmente por valor numérico/null vía `getCpiInterpretationKey`/`getSpiInterpretationKey` + i18n (RN-UI-13).

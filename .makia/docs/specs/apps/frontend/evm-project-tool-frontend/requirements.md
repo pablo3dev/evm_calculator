@@ -77,7 +77,7 @@ Toda métrica EVM (PV, EV, CV, SV, CPI, SPI, EAC, VAC e interpretaciones) **prov
 | Robustez de formularios | Anti doble-submit en guardar/eliminar; campos numéricos con restricciones HTML adecuadas; nulls del API mostrados como N/A o texto interpretativo, nunca NaN/Infinity. |
 | Integración backend | Peticiones JSON snake_case a `/api/v1`; manejo de 422 y 404 según contrato. |
 | Entrega desplegable | Build de producción genera `dist/` servible por nginx en imagen Docker documentada en restricciones operativas. |
-| Claridad de indicadores | Todo indicador EVM muestra su abreviatura en inglés invariable junto a su nombre completo localizado y un tooltip con la explicación/fórmula. |
+| Claridad de indicadores | Todo indicador EVM muestra solo su abreviatura en inglés invariable en superficie; el nombre localizado, la descripción y la fórmula viven en un tooltip de hover/foco. |
 | Idioma conmutable | El usuario cambia entre Español y English mediante un control visible; todo texto claro de la UI (no las abreviaturas EVM) se actualiza sin recargar la página. |
 
 ---
@@ -168,8 +168,8 @@ Estas reglas gobiernan **comportamiento de presentación e interacción**. No su
 | **RN-UI-08** | El formato de intercambio con el API es **JSON snake_case** en request y response; la UI serializa/deserializa respetando nombres del contrato. |
 | **RN-UI-09** | Listado de proyectos ordenado según criterio de presentación definido en implementación (p. ej. `updated_at` descendente), sin alterar datos en servidor salvo lo que permitan endpoints existentes. |
 | **RN-UI-10** | La UI soporta exactamente dos idiomas de presentación: Español y English, seleccionables mediante un control visible en la interfaz (p. ej. en la cabecera/layout principal). El idioma activo persiste durante la sesión del navegador (no requiere persistencia entre sesiones ni en backend); al cambiarlo, todo texto claro de la UI (labels, botones, mensajes, nombres completos de indicadores, tooltips) se actualiza sin recargar la página. Ningún texto visible para el usuario vive hardcodeado en el código de presentación: todo string pasa por la capa de i18n. |
-| **RN-UI-11** | Todo indicador EVM se identifica ante el usuario mediante su abreviatura en inglés (PV, EV, AC, CV, SV, CPI, SPI, EAC, VAC, BAC, ETC, TCPI, etc.), la cual nunca se traduce ni varía con el idioma activo. Junto a la abreviatura se muestra el nombre completo del indicador localizado al idioma activo (p. ej. "PV — Valor Planificado" en Español, "PV — Planned Value" en English). |
-| **RN-UI-12** | Todo indicador EVM y todo control de UI cuyo significado no sea evidente a simple vista (abreviaturas, íconos de estado, campos de formulario con convención propia) expone un tooltip reutilizable activable por hover o foco de teclado, que muestra: nombre en español, nombre en inglés, y una descripción de qué representa — incluyendo la fórmula cuando el indicador la tenga (p. ej. CPI = EV / AC). El tooltip es accesible: alcanzable y activable por teclado, con `aria-describedby` o patrón equivalente vinculando el control con su contenido. |
+| **RN-UI-11** | Todo indicador EVM se identifica en superficie **únicamente** mediante su abreviatura en inglés (PV, EV, AC, CV, SV, CPI, SPI, EAC, VAC, BAC, ETC, TCPI, etc.), la cual nunca se traduce ni varía con el idioma activo. El nombre completo localizado **no** se muestra de forma permanente junto a la sigla (evita desborde); se consulta en el tooltip (RN-UI-12). |
+| **RN-UI-12** | Todo indicador EVM y todo control de UI cuyo significado no sea evidente a simple vista (abreviaturas, íconos de estado, campos de formulario con convención propia) expone un tooltip reutilizable activable por hover o foco de teclado, que muestra: el **nombre del indicador en el idioma activo**, una descripción de qué representa, y la fórmula cuando el indicador la tenga (p. ej. CPI = EV / AC). El tooltip es accesible: alcanzable y activable por teclado, con `aria-describedby` o patrón equivalente vinculando el control con su contenido. |
 | **RN-UI-13** | El frontend deriva su propio texto de interpretación CPI/SPI a partir del valor numérico (o `null`) recibido en `cpi`/`spi`, mapeando por condición a la tabla "Interpretaciones CPI/SPI del backend" de este documento, y pasando ese texto por la capa de i18n (RN-UI-10). El frontend **nunca** usa ni traduce el string literal `cpi_interpretation`/`spi_interpretation` que envía el backend: esos dos campos del API se ignoran a efectos de presentación. Esto no viola RN-UI-01 (el frontend no calcula CPI/SPI ni ninguna métrica EVM): solo clasifica, para fines de presentación localizada, un valor numérico ya calculado por el backend en una de cuatro categorías fijas (`null`, `> 1`, `= 1`, `< 1`). |
 
 ### Interpretaciones CPI/SPI del backend (mostrar en UI, no recalcular)
@@ -453,29 +453,29 @@ Convención EARS: **[Ubicación/Evento]**, el sistema **[debe/shall]** **[compor
 
 **Historia:** Como gestor, quiero pasar el cursor o el foco sobre una abreviatura EVM u otro control no obvio y ver una explicación, para entender qué significa sin salir de la app.
 
-**Cuando el usuario pasa el cursor (hover) o el foco de teclado sobre un indicador EVM o un control de UI no obvio**, el sistema **debe** mostrar un tooltip con nombre en español, nombre en inglés, descripción y fórmula (cuando aplique), conforme a RN-UI-12.
+**Cuando el usuario pasa el cursor (hover) o el foco de teclado sobre un indicador EVM o un control de UI no obvio**, el sistema **debe** mostrar un tooltip con el nombre en el idioma activo, descripción y fórmula (cuando aplique), conforme a RN-UI-12.
 
 **Criterios de aceptación:**
 
 - CA-14.1: El tooltip aparece tanto por hover de mouse como por foco de teclado (Tab).
-- CA-14.2: El contenido mínimo del tooltip incluye: nombre en español, nombre en inglés, descripción, y fórmula cuando el indicador la tenga (p. ej. CPI = EV / AC).
+- CA-14.2: El contenido mínimo del tooltip incluye: nombre localizado al idioma activo, descripción, y fórmula cuando el indicador la tenga (p. ej. CPI = EV / AC).
 - CA-14.3: El tooltip no bloquea ni impide la interacción con el control subyacente (p. ej. sigue siendo posible hacer clic/editar).
 - CA-14.4: El tooltip se cierra con la tecla Escape o al perder el foco/hover.
 - CA-14.5: El tooltip aplica a todos los indicadores EVM mostrados en tabla de actividades, bloque de consolidados y badges CPI/SPI, y a otros controles no obvios del dashboard (p. ej. íconos de estado).
 
 ---
 
-### REQ-15 — Abreviatura EVM invariable + nombre completo localizado
+### REQ-15 — Abreviatura EVM invariable; nombre en tooltip
 
-**Historia:** Como gestor, quiero que la sigla del indicador (PV, EV, CPI, etc.) sea siempre la misma sin importar el idioma, para comunicarme con otros gestores usando el estándar EVM internacional, mientras el nombre completo se traduce.
+**Historia:** Como gestor, quiero que la sigla del indicador (PV, EV, CPI, etc.) sea siempre la misma sin importar el idioma, para comunicarme con otros gestores usando el estándar EVM internacional, mientras el nombre completo se traduce en el tooltip.
 
-**Cuando se muestra un indicador EVM en cualquier parte de la UI**, el sistema **debe** presentar la sigla en inglés siempre visible junto al nombre completo localizado al idioma activo, con formato consistente en toda la aplicación.
+**Cuando se muestra un indicador EVM en cualquier parte de la UI**, el sistema **debe** presentar en superficie solo la sigla en inglés; el nombre completo localizado al idioma activo aparece en el tooltip reutilizable, con el mismo patrón en toda la aplicación.
 
 **Criterios de aceptación:**
 
-- CA-15.1: La sigla en inglés (p. ej. "CPI") se muestra siempre, sin importar el idioma activo.
-- CA-15.2: El nombre completo localizado acompaña a la sigla con formato consistente (p. ej. "PV — Valor Planificado" en Español, "PV — Planned Value" en English).
-- CA-15.3: El formato sigla + nombre se aplica de manera uniforme en todas las apariciones: tabla de actividades, bloque de consolidados, gráfica PV/EV/AC y tooltips.
+- CA-15.1: La sigla en inglés (p. ej. "CPI") se muestra siempre en superficie, sin importar el idioma activo.
+- CA-15.2: El nombre completo localizado no se renderiza de forma permanente junto a la sigla; se muestra en el tooltip (p. ej. "Valor Planificado" en Español, "Planned Value" en English).
+- CA-15.3: El patrón (sigla visible + tooltip con nombre/descripción/fórmula) se aplica de manera uniforme en tabla de actividades, bloque de consolidados, badges CPI/SPI y gráfica PV/EV/AC.
 
 ---
 

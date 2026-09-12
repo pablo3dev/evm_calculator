@@ -1,3 +1,6 @@
+import type { EvmIndicatorCode } from '../i18n/evmIndicatorsCatalog.ts'
+import { evmIndicatorsCatalog } from '../i18n/evmIndicatorsCatalog.ts'
+import { useI18n } from '../i18n/useI18n.ts'
 import type { ActivityWithIndicatorsResponse } from '../types/api.ts'
 import {
   formatIndicator,
@@ -6,6 +9,7 @@ import {
 } from '../utils/formatDisplay.ts'
 import { CpiSpiBadge } from './CpiSpiBadge.tsx'
 import { LoadingButton } from './LoadingButton.tsx'
+import { Tooltip } from './Tooltip.tsx'
 
 export interface ActivitiesTableProps {
   activities: ActivityWithIndicatorsResponse[]
@@ -14,16 +18,43 @@ export interface ActivitiesTableProps {
   actionsDisabled?: boolean
 }
 
+interface EvmColumnHeaderProps {
+  code: EvmIndicatorCode
+  locale: 'es' | 'en'
+}
+
+function EvmColumnHeader({ code, locale }: EvmColumnHeaderProps) {
+  const entry = evmIndicatorsCatalog[code]
+  return (
+    <>
+      <Tooltip
+        nameEs={entry.nameEs}
+        nameEn={entry.nameEn}
+        description={
+          locale === 'es' ? entry.descriptionEs : entry.descriptionEn
+        }
+        formula={entry.formula}
+      >
+        <span>{code}</span>
+      </Tooltip>
+      {' — '}
+      {locale === 'es' ? entry.nameEs : entry.nameEn}
+    </>
+  )
+}
+
 export function ActivitiesTable({
   activities,
   onEdit,
   onDelete,
   actionsDisabled = false,
 }: ActivitiesTableProps) {
+  const { locale, t } = useI18n()
+
   if (activities.length === 0) {
     return (
       <div className="activities-table-empty">
-        <p>No activities yet. Add an activity to see EVM indicators.</p>
+        <p>{t('activitiesTable.emptyState')}</p>
       </div>
     )
   }
@@ -33,20 +64,36 @@ export function ActivitiesTable({
       <table className="activities-table">
         <thead>
           <tr>
-            <th scope="col">Activity</th>
-            <th scope="col">BAC</th>
-            <th scope="col">Planned %</th>
-            <th scope="col">Actual %</th>
-            <th scope="col">AC</th>
-            <th scope="col">PV</th>
-            <th scope="col">EV</th>
-            <th scope="col">CV</th>
-            <th scope="col">SV</th>
-            <th scope="col">CPI</th>
-            <th scope="col">SPI</th>
-            <th scope="col">EAC</th>
-            <th scope="col">VAC</th>
-            <th scope="col">Actions</th>
+            <th scope="col">{t('activitiesTable.columnActivity')}</th>
+            <th scope="col">{t('activitiesTable.columnBudget')}</th>
+            <th scope="col">{t('activitiesTable.columnPlannedProgress')}</th>
+            <th scope="col">{t('activitiesTable.columnActualProgress')}</th>
+            <th scope="col">{t('activitiesTable.columnActualCost')}</th>
+            <th scope="col">
+              <EvmColumnHeader code="PV" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="EV" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="CV" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="SV" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="CPI" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="SPI" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="EAC" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="VAC" locale={locale} />
+            </th>
+            <th scope="col">{t('activitiesTable.columnActions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -67,14 +114,14 @@ export function ActivitiesTable({
                 <td>
                   <CpiSpiBadge
                     value={indicators.cpi}
-                    interpretation={indicators.cpi_interpretation}
+                    metric="cpi"
                     label="CPI"
                   />
                 </td>
                 <td>
                   <CpiSpiBadge
                     value={indicators.spi}
-                    interpretation={indicators.spi_interpretation}
+                    metric="spi"
                     label="SPI"
                   />
                 </td>
@@ -86,14 +133,14 @@ export function ActivitiesTable({
                     disabled={actionsDisabled}
                     onClick={() => onEdit(activity.id)}
                   >
-                    Edit
+                    {t('common.edit')}
                   </button>
                   <LoadingButton
                     type="button"
                     loading={actionsDisabled}
                     onClick={() => onDelete(activity.id)}
                   >
-                    Delete
+                    {t('common.delete')}
                   </LoadingButton>
                 </td>
               </tr>

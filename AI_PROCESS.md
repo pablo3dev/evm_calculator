@@ -548,6 +548,19 @@ Al final le pedí al orquestador que hiciera el flujo para dejar el documento AI
 Por favor, ejecuta el flujo DEPLOY para dejar el documento AI_PROCESS.md en PROD
 ```
 
+Ultima actualización de mejora:
+
+```
+Por favor, ayúdame a implementar una mejora en el forntend.  contexto del desarrollo actual: .makia\docs\specs\apps\frontend\evm-project-tool-frontend
+
+Los indicadores actualmente son difíciles de memorizar y recordar para el usuario.
+
+Los nombres de las abreviaturas  de indicadores deben seguir en inglés sin importar el idioma Pero los nombres en claro en el idioma seleccionado. 
+También se deben agregar tooltips reutilizables para todas las convenciones de la UI con el nombre en español, Inglés  y una descripción de lo que es, con la formula si es necesario, para que el usuario pueda siempre tener claridad de qué está viendo y que está editando. 
+
+Actualmente no se visualiza el botón de cambiar idioma a Español/English como lo establecen las reglas de Frontend de MakIA en CODE
+```
+
 # Reflexión
 
 Cuando uso SDD y DDD el código sale preciso y predecible con la calidad esperada. El problema es que aumenta el tiempo revisando y aprobando documentos. Eso me consumió parte importante del tiempo: empecé ~10:00 y el correo pedía entrega a las 14:00 del mismo día. No llegué a esa meta de reloj, pero el proyecto queda escalable: specs y modelo de dominio son la fuente de verdad y el código es la materialización. Es un flujo de desarrollo empresarial/corporativo donde la IA es parte del proceso.

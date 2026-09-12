@@ -22,14 +22,17 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 | Fase 4: Docker / verificación | `Completado` (3/3 tareas) |
 | Fase 5: Internacionalización, Tooltip y selector de idioma | `Completado` (7/7 tareas) |
 | Fase 6: Compactar siglas EVM y tooltips de hover | `Completado` (2/2 tareas) |
+| Fase 7: Tabla de actividades al ancho del contenido | `Completado` (1/1 tareas) |
 
-**Progreso global:** `100%` (23 de 23 tareas)
+**Progreso global:** `100%` (24 de 24 tareas)
 
 **Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
 
 **Fase 4 completada:** Dockerfile multi-stage + `nginx.conf` para servir `dist/` estático; ESLint/Prettier limpios; verificación manual 4.3 documentada (ver § Verificación manual 4.3).
 
 **Corrección 2026-09-11 (Fase 6):** las siglas EVM en superficie son solo abreviaturas inglesas (PV, CPI, …). El nombre en el idioma activo, la descripción y la fórmula se muestran en el `Tooltip` reutilizable (`EvmIndicatorLabel`). Misma regla en consolidados, tabla, badges y gráfica. Botón Eliminar de la tabla con contraste legible.
+
+**Corrección 2026-09-11 (Fase 7):** la tabla de actividades se dimensiona al contenido (`max-content`, scroll horizontal). Los badges CPI/SPI no parten el texto por carácter.
 
 ## Qué puede hacer ya el usuario / Qué falta
 

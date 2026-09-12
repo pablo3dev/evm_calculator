@@ -1,5 +1,6 @@
 .badge {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.5rem;
@@ -24,6 +25,7 @@
 
 .text {
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .neutral {

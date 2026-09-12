@@ -318,6 +318,7 @@
   padding: 0.25rem 0.5rem;
   font: inherit;
   font-size: 0.75rem;
+  color: #334155;
   border: 1px solid #cbd5e1;
   border-radius: 0.25rem;
   background-color: #fff;
@@ -326,6 +327,16 @@
 
 .activities-table-actions button:hover {
   background-color: #f1f5f9;
+}
+
+.activities-table-actions .activities-table-delete {
+  color: #b91c1c;
+  border-color: #fca5a5;
+  background-color: #fff;
+}
+
+.activities-table-actions .activities-table-delete:hover {
+  background-color: #fef2f2;
 }
 
 .activities-table-empty,
@@ -371,7 +382,8 @@
 }
 
 .consolidated-indicator-badge {
-  min-height: 4.5rem;
+  min-height: auto;
+  justify-content: center;
 }
 
 .consolidated-indicator-label {
@@ -395,6 +407,57 @@
 .pv-ev-ac-chart-container {
   width: 100%;
   min-height: 360px;
+}
+
+.pv-ev-ac-chart-tooltip {
+  max-width: 22rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.375rem;
+  border: 1px solid #334155;
+  background-color: #1e293b;
+  color: #f8fafc;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pv-ev-ac-chart-tooltip-label {
+  margin: 0 0 0.375rem;
+  font-weight: 600;
+}
+
+.pv-ev-ac-chart-tooltip-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pv-ev-ac-chart-tooltip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  margin: 0 0 0.375rem;
+}
+
+.pv-ev-ac-chart-tooltip-item:last-child {
+  margin-bottom: 0;
+}
+
+.pv-ev-ac-chart-tooltip-swatch {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+  margin-top: 0.25rem;
+  border-radius: 0.125rem;
+}
+
+.pv-ev-ac-chart-tooltip-formula {
+  display: block;
+  margin-top: 0.125rem;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  opacity: 0.9;
 }
 
 .dashboard-status {

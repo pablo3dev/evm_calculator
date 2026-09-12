@@ -57,6 +57,10 @@
 - [x] **Tarea 5.5b: Reemplazar strings hardcodeados restantes de la UI** `[RN-UI-10]` `[REQ-13]` `[DESIGN §2.7]` — recorrer todos los componentes existentes (`ErrorBanner`, `ActivityFormModal`, `ProjectSelector`, `ProjectFormModal` si existe, estados vacíos, confirmaciones de eliminar, botones, placeholders, títulos de sección, mensajes de loading/error genéricos) y sustituir cada string visible hardcodeado por una llamada a `t('clave')` contra el diccionario de la Tarea 5.1, añadiendo las claves faltantes a `types.ts`/`en.ts`/`es.ts`. Depende de 5.1 y 5.5a (las claves de interpretación CPI/SPI ya deben existir en el diccionario antes de esta tarea).
 - [x] **Tarea 5.6: Tests opcionales i18n/Tooltip/LanguageSwitcher y verificación manual end-to-end** `[EC-13]` `[EC-14]` `[EC-15]` `[DESIGN §8]` — (opcionales, mismo criterio que el resto del spec: no obligan cobertura %) tests de humo sugeridos: `LanguageSwitcher` cambia `locale` y provoca el re-render de textos visibles (ES↔EN); `Tooltip` se abre al recibir foco de teclado y se cierra con `Escape`; test de regresión que verifique que `evmIndicatorsCatalog.ts` nunca traduce la sigla (la sigla en inglés es idéntica en ambos locales, solo cambia el nombre completo/descr.). Verificación manual adicional: (1) cambiar idioma con formulario `ActivityFormModal` abierto y datos ya ingresados → los datos del formulario no se pierden al cambiar de locale (EC-13); (2) abrir el Tooltip de un indicador EVM cuyo valor es `null`/`N/A` → el Tooltip muestra igualmente nombre/descripción/fórmula sin error (EC-14); (3) simular `navigator.language` con un idioma distinto de `es`/`en` (p. ej. `fr`) sin valor previo en `sessionStorage` → la UI cae a `en` sin error (EC-15). Depende de 5.1–5.5b.
 
+### Fase 6: Compactar siglas EVM y tooltips de hover
+- [x] **Tarea 6.1: Superficie solo sigla + `EvmIndicatorLabel`** `[RN-UI-11]` `[RN-UI-12]` `[REQ-14]` `[REQ-15]` `[DESIGN §2.8]` — introducir `EvmIndicatorLabel` (wrapper reutilizable de `Tooltip` + catálogo). En consolidados, tabla, badges CPI/SPI y leyenda de gráfica, mostrar **solo** la abreviatura inglesa; el nombre localizado, descripción y fórmula salen al hover/foco. Portal + posición `fixed` para no recortar tooltips. Overlay Recharts de barras con nombre/fórmula. Botón Eliminar de la tabla con contraste legible (no texto blanco sobre fondo blanco).
+- [x] **Tarea 6.2: Tests de humo del patrón compacto** `[REQ-14]` `[REQ-15]` `[DESIGN §8]` — Vitest: `EvmIndicatorLabel` no muestra el nombre localizado hasta hover; `Tooltip` sigue abriendo/cerrando; catálogo de siglas invariable.
+
 ---
 
 ## 4. Execution Progress Tracker
@@ -67,7 +71,8 @@
 | Fase 3: Dashboard y componentes UI | 7 | 7 | `Completado` |
 | Fase 4: Docker, verificación y polish | 3 | 3 | `Completado` |
 | Fase 5: Internacionalización, Tooltip y selector de idioma | 7 | 7 | `Completado` |
-| **Total Global** | **21** | **21** | **100%** |
+| Fase 6: Compactar siglas EVM y tooltips de hover | 2 | 2 | `Completado` |
+| **Total Global** | **23** | **23** | **100%** |
 
 ---
 
@@ -85,8 +90,8 @@
 - [x] **No** se creó ni modificó `lefthook.yml` desde este spec.
 - [x] **No** hay cálculos EVM en código cliente (solo presentación de datos del API).
 - [x] Selector de idioma visible cambia entre Español/English sin recargar página, aplicando RN-UI-10.
-- [x] Toda sigla EVM se muestra invariable en inglés junto a su nombre completo localizado (RN-UI-11).
-- [x] Todo indicador EVM y todo control no obvio identificado expone el Tooltip reutilizable con nombre ES/EN/descripción/fórmula (RN-UI-12).
+- [x] Toda sigla EVM se muestra invariable en inglés en superficie; el nombre localizado vive en el tooltip (RN-UI-11).
+- [x] Todo indicador EVM y todo control no obvio identificado expone el Tooltip reutilizable con nombre localizado/descripción/fórmula (RN-UI-12).
 - [x] Ningún string visible de la UI queda hardcodeado fuera del catálogo i18n.
 - [x] La fila del spec en el `INDEX.md` de specs (`.makia/docs/specs/<categoría>/INDEX.md`) está sincronizada con el `Estado global` de `summary.md`.
 

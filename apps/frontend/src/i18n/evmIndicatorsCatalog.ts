@@ -1,3 +1,5 @@
+export type EvmLocale = 'es' | 'en'
+
 export type EvmIndicatorCode =
   | 'PV'
   | 'EV'
@@ -121,4 +123,17 @@ export const evmIndicatorsCatalog: Record<
       'Cost efficiency required to finish the remaining work within budget.',
     formula: 'TCPI = (BAC - EV) / (BAC - AC)',
   },
+}
+
+export function getEvmTooltipContent(
+  code: EvmIndicatorCode,
+  locale: EvmLocale,
+) {
+  const entry = evmIndicatorsCatalog[code]
+  return {
+    nameEs: entry.nameEs,
+    nameEn: entry.nameEn,
+    description: locale === 'es' ? entry.descriptionEs : entry.descriptionEn,
+    formula: entry.formula,
+  }
 }

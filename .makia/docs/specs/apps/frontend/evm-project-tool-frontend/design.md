@@ -766,7 +766,7 @@ Atributos de accesibilidad sugeridos: `role="status"`, `aria-label` combinando n
 |------------|-----------------|-----------------|
 | `ProjectSelector` | `listProjects()` | Dropdown/lista de proyectos; emite `project_id` activo |
 | `ConsolidatedIndicators` | `getProject(id).consolidated_indicators` | Bloque KPI consolidado; cada indicador usa `EvmIndicatorLabel` (solo sigla; tooltip con nombre/descripción/fórmula) |
-| `ActivitiesTable` | `listActivitiesByProject(project_id)` | Tabla con columnas: actividad, BAC, `% planificado`, `% real`, AC, PV, EV, CV, SV, CPI, SPI, EAC, VAC + `CpiSpiBadge` en CPI/SPI; encabezados EVM con `EvmIndicatorLabel`; botón Eliminar con contraste legible |
+| `ActivitiesTable` | `listActivitiesByProject(project_id)` | Tabla con columnas: actividad, BAC, `% planificado`, `% real`, AC, PV, EV, CV, SV, CPI, SPI, EAC, VAC + `CpiSpiBadge` en CPI/SPI; encabezados EVM con `EvmIndicatorLabel`; botón Eliminar con contraste legible. Layout: `width: max-content; min-width: 100%`; celdas `white-space: nowrap` (el nombre de actividad puede envolver con `max-width`); wrapper `overflow-x: auto`. Badges CPI/SPI en una sola línea (`flex-wrap: nowrap`) |
 | `PvEvAcChart` | Misma lista de actividades | Recharts grouped bar por actividad con series `pv`, `ev`, `ac`; leyenda con `EvmIndicatorLabel`; overlay hover con nombre localizado, valor y fórmula |
 | `ActivityFormModal` | — / actividad seleccionada | Create/edit; campos snake_case mapeados a request body; submit vía `createActivity`/`updateActivity`; textos de labels vía `t()`; estado del formulario local al componente (no depende del `locale`, ver §7.5 EC-13) |
 | `LanguageSwitcher` | `useI18n()` | Toggle ES/EN visible en cabecera; `setLocale` inmediato |
@@ -825,6 +825,7 @@ E2E cross-unidad (`docker compose up` completo) es responsabilidad de `evm-proje
 - [ ] El catálogo de siglas EVM es invariable en inglés y separado del catálogo de nombres/descripciones traducidos (RN-UI-11).
 - [ ] En superficie solo se muestra la sigla inglesa; nombre, descripción y fórmula van en `Tooltip` / `EvmIndicatorLabel` (RN-UI-11, RN-UI-12).
 - [ ] El componente `Tooltip` es accesible por teclado (foco) y por hover, cierra con Escape, y está correctamente anunciado (`role="tooltip"`, `aria-describedby`) (RN-UI-12).
+- [ ] La tabla de actividades se dimensiona al contenido (scroll horizontal, badges CPI/SPI en una línea) (CA-08.4).
 - [ ] El selector de idioma es visible sin necesidad de abrir un menú oculto y persiste solo durante la sesión del navegador vía `sessionStorage` (RN-UI-10).
 - [ ] Ningún componente de presentación lee `indicators.cpi_interpretation`/`indicators.spi_interpretation` del API; la interpretación CPI/SPI se deriva localmente por valor numérico/null vía `getCpiInterpretationKey`/`getSpiInterpretationKey` + i18n (RN-UI-13).
 

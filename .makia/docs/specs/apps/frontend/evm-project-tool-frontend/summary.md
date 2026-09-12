@@ -6,7 +6,7 @@
 
 | Estado global | Última actualización |
 |:---:|:---:|
-| `En progreso` | `2026-09-11` |
+| `Completado` | `2026-09-11` |
 
 ## Objetivo
 
@@ -20,9 +20,9 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 | Fase 2: API client | `Completado` (2/2 tareas) |
 | Fase 3: Dashboard componentes | `Completado` (7/7 tareas) |
 | Fase 4: Docker / verificación | `Completado` (3/3 tareas) |
-| Fase 5: Internacionalización, Tooltip y selector de idioma | `Pendiente` (6/7 tareas) |
+| Fase 5: Internacionalización, Tooltip y selector de idioma | `Completado` (7/7 tareas) |
 
-**Progreso global:** `95%` (20 de 21 tareas)
+**Progreso global:** `100%` (21 de 21 tareas)
 
 **Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
 
@@ -54,6 +54,7 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 - **Tarea 5.4 completada:** sigla invariable + nombre localizado + Tooltip aplicados en `ActivitiesTable`, `ConsolidatedIndicators`, `CpiSpiBadge` y `PvEvAcChart`. TEST: PASA, con nota menor no bloqueante: el tooltip nativo de Recharts al hacer hover en las barras usa texto plano "SIGLA — Nombre" en vez del componente `Tooltip` interactivo, por limitación de tipos de Recharts, documentado y aceptado.
 - **Tarea 5.5a completada:** `evmInterpretation.ts` con `getCpiInterpretationKey`/`getSpiInterpretationKey`; `CpiSpiBadge.tsx`/`ConsolidatedIndicators.tsx`/`ActivitiesTable.tsx` ya derivan la interpretación localmente y dejaron de leer `cpi_interpretation`/`spi_interpretation` del API (esos campos siguen en el tipo `EvmIndicators` por fidelidad al contrato REST, sin uso en presentación). TEST: PASA incluyendo test de humo Vitest de `CpiSpiBadge`.
 - **Tarea 5.5b completada:** se agregaron namespaces nuevos al diccionario i18n (`projectSelector`, `projectForm`, `pvEvAcChart`) y claves nuevas a namespaces existentes (`common`, `dashboard`, `activityForm`, `activitiesTable`, `consolidatedIndicators`); todos los componentes del dashboard (`App.tsx`, `ActivityFormModal`, `ProjectFormModal`, `ProjectSelector`, `ActivitiesTable`, `ConsolidatedIndicators`, `Dashboard`, `PvEvAcChart`) ya usan `t()` para todo string visible salvo siglas EVM invariables e íconos no textuales. TEST: PASA_CON_OBSERVACIONES (única observación no bloqueante: la suite Vitest existente — 1 archivo de test — no cubre los componentes tocados en esta tarea; no se exige cobertura % en este spec, según DoD).
+- **Tarea 5.6 completada (cierre de Fase 5):** Fase 5 finalizada con las 7 tareas en `[x]`. Se incorporó i18n propio mediante React Context (sin librería externa), un componente `Tooltip` reutilizable y accesible (apertura por hover y foco de teclado, cierre con `Escape`, `role="tooltip"` + `aria-describedby`), y `LanguageSwitcher` ES|EN persistente en `sessionStorage`. Toda sigla EVM se muestra invariable en inglés junto a su nombre completo localizado en todos los indicadores. La interpretación CPI/SPI se deriva localmente (`evmInterpretation.ts`); los componentes de presentación ya no leen `cpi_interpretation`/`spi_interpretation` del API. Se reemplazaron todos los strings hardcodeados restantes de la UI por claves del catálogo i18n. TEST cerró con veredicto PASA / PASA_CON_OBSERVACIONES en las 7 tareas de la fase, con observaciones no bloqueantes (cobertura de tests no exigida por el spec). Queda pendiente de **verificación MANUAL** (no automatizable sin navegador) los 3 escenarios de EC-13/EC-14/EC-15 de la Tarea 5.6: (1) cambio de idioma con formulario `ActivityFormModal` abierto sin pérdida de datos ingresados; (2) Tooltip de un indicador con valor `null`; (3) fallback de `navigator.language` no soportado (p. ej. `fr`) a `en` sin valor previo en `sessionStorage`. Estos 3 escenarios deben ejecutarse por el equipo o en una sesión con browser MCP disponible.
 
 ## Verificación manual 4.3
 

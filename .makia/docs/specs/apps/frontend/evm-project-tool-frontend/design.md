@@ -94,7 +94,7 @@ flowchart LR
 | Duplicar lógica EVM en el cliente (promediar CPI/SPI, recalcular indicadores) | Alto — UI muestra datos incorrectos | Prohibición explícita §2.1; tipos espejan respuesta API; code review |
 | Doble envío de formularios (create/edit/delete) | Medio — mutaciones duplicadas | Hook `useMutationWithLock` + componente `LoadingButton` deshabilitado durante petición |
 | CORS mal configurado en despliegue | Medio — dashboard no carga datos | Variable `VITE_API_BASE_URL` documentada; CORS es responsabilidad backend (`CORS_ORIGINS`) |
-| Indicadores `null` mal renderizados (CPI/SPI no aplicables) | Medio — confusión del usuario | `CpiSpiBadge` siempre muestra `cpi_interpretation`/`spi_interpretation` como texto; icono neutro en `null` |
+| Indicadores `null` mal renderizados (CPI/SPI no aplicables) | Medio — confusión del usuario | `CpiSpiBadge` siempre muestra un texto de interpretación derivado localmente vía `getCpiInterpretationKey`/`getSpiInterpretationKey` + i18n (RN-UI-13, §2.7.6), no el campo `cpi_interpretation`/`spi_interpretation` del API; icono neutro en `null` |
 | Desalineación contrato frontend/backend | Alto — errores de parseo o campos faltantes | Tipos en `src/types/api.ts` espejan schemas §4.2 backend; un método API por endpoint |
 | Inconsistencia de traducciones al agregar textos nuevos sin pasar por el catálogo i18n | Medio — strings hardcodeados o mezcla de idiomas | Único archivo de claves tipado (`i18n/types.ts`) que obliga a declarar la clave en ambos diccionarios (`en.ts`/`es.ts`); ESLint/code review rechaza strings literales fuera de `t()` en JSX de texto visible |
 | Tooltip tapando contenido en viewports pequeños (mobile) | Bajo/Medio — indicador oculto detrás del tooltip | Posicionamiento simple con fallback (encima → debajo si no cabe verticalmente); `max-width` acotado; z-index único centralizado |
@@ -283,6 +283,66 @@ Cada llamada a `setLocale(nextLocale)` actualiza el estado de React (re-render i
 
 **Persistencia — decisión cerrada:** `sessionStorage`, no `localStorage`, no memoria pura de React. `sessionStorage` se limpia al cerrar la pestaña/navegador, cumpliendo "persistencia solo de sesión" (RN-UI-10), y evita perder la selección del usuario ante un simple F5, que sería el comportamiento con estado en memoria puro.
 
+#### 2.7.6 Derivación local de interpretación CPI/SPI (RN-UI-13)
+
+**Decisión de negocio ya aprobada (RN-UI-13, cerrada en `requirements.md`):** la UI **ignora** el string literal `cpi_interpretation`/`spi_interpretation` devuelto por el backend y **deriva su propio texto** de interpretación a partir del valor numérico/`null` de `cpi`/`spi`, clasificándolo en una de 4 categorías fijas y localizando el texto vía el mecanismo i18n propio de §2.7.
+
+**Módulo y firmas cerradas:**
+
+```typescript
+// src/i18n/evmInterpretation.ts
+export type EvmInterpretationKey =
+  | 'cpiNull' | 'cpiAboveOne' | 'cpiEqualOne' | 'cpiBelowOne'
+  | 'spiNull' | 'spiAboveOne' | 'spiEqualOne' | 'spiBelowOne';
+
+export function getCpiInterpretationKey(cpi: number | null): EvmInterpretationKey {
+  if (cpi === null) return 'cpiNull';
+  if (cpi > 1) return 'cpiAboveOne';
+  if (cpi === 1) return 'cpiEqualOne';
+  return 'cpiBelowOne';
+}
+
+export function getSpiInterpretationKey(spi: number | null): EvmInterpretationKey {
+  if (spi === null) return 'spiNull';
+  if (spi > 1) return 'spiAboveOne';
+  if (spi === 1) return 'spiEqualOne';
+  return 'spiBelowOne';
+}
+```
+
+**Naturaleza puramente presentacional (no viola RN-UI-01):** `getCpiInterpretationKey`/`getSpiInterpretationKey` no calculan CPI ni SPI — reciben un valor numérico o `null` **ya calculado por el backend** y solo lo clasifican en una de 4 categorías fijas (idéntica tabla de condiciones que hoy documenta el backend en §4.2). El frontend sigue sin contener lógica de negocio EVM: no hay división, no hay fórmula, no hay acceso a `pv`/`ev`/`ac`. Es el mismo tipo de operación que un `switch` de rango para elegir un color de badge.
+
+**Claves i18n (`Dictionary`/`TranslationKey`, `src/i18n/types.ts`):** se agrega un nuevo namespace `evmInterpretation` con las 8 claves de `EvmInterpretationKey`:
+
+```typescript
+// añadido a Dictionary en src/i18n/types.ts
+evmInterpretation: {
+  cpiNull: string;
+  cpiAboveOne: string;
+  cpiEqualOne: string;
+  cpiBelowOne: string;
+  spiNull: string;
+  spiAboveOne: string;
+  spiEqualOne: string;
+  spiBelowOne: string;
+};
+```
+
+Traducciones cerradas (`es.ts`/`en.ts`), usando exactamente los textos ya fijados en `requirements.md`/§4.2 para español y sus equivalentes en inglés definidos aquí:
+
+| Clave | `es.ts` | `en.ts` |
+|-------|---------|---------|
+| `evmInterpretation.cpiNull` | "Sin costo real registrado — CPI no aplicable" | "No actual cost recorded — CPI not applicable" |
+| `evmInterpretation.cpiAboveOne` | "Bajo presupuesto" | "Under budget" |
+| `evmInterpretation.cpiEqualOne` | "En presupuesto" | "On budget" |
+| `evmInterpretation.cpiBelowOne` | "Sobre presupuesto" | "Over budget" |
+| `evmInterpretation.spiNull` | "Sin avance planificado a la fecha — SPI no aplicable" | "No planned progress to date — SPI not applicable" |
+| `evmInterpretation.spiAboveOne` | "Adelantado" | "Ahead of schedule" |
+| `evmInterpretation.spiEqualOne` | "En plan" | "On schedule" |
+| `evmInterpretation.spiBelowOne` | "Atrasado" | "Behind schedule" |
+
+**Consumo cerrado:** `CpiSpiBadge.tsx` y `ConsolidatedIndicators.tsx` obtienen el texto con `t(`evmInterpretation.${getCpiInterpretationKey(cpi)}`)` / `t(`evmInterpretation.${getSpiInterpretationKey(spi)}`)` — **nunca** leen `indicators.cpi_interpretation` ni `indicators.spi_interpretation` del API. Estos dos campos siguen existiendo en el tipo `EvmIndicators` (§3.2) por fidelidad al contrato REST (el backend los sigue enviando en la respuesta), pero **ningún componente de presentación los consume**; quedan documentados como campos "recibidos pero no usados en UI" (ver nota en §3.2).
+
 ---
 
 ### 2.8 Componente Tooltip reutilizable — diseño
@@ -341,16 +401,18 @@ Este es el patrón único que `ActivitiesTable`, `ConsolidatedIndicators` y `PvE
 **Controles no obvios (no indicadores EVM):** se reutiliza el mismo `Tooltip` genérico, pasando literales locales en vez de una entrada del catálogo EVM. Ejemplo — el icono de estado en `CpiSpiBadge`:
 
 ```tsx
+const cpiInterpretationText = t(`evmInterpretation.${getCpiInterpretationKey(cpi)}`);
+
 <Tooltip
   nameEs="Estado del indicador"
   nameEn="Indicator status"
-  description={locale === 'es' ? cpi_interpretation : cpi_interpretation}
+  description={cpiInterpretationText}
 >
   <StatusIcon />
 </Tooltip>
 ```
 
-(Nota: `cpi_interpretation`/`spi_interpretation` ya vienen localizados desde el backend según su `Accept-Language` — fuera de alcance de este documento; si el backend no soporta esto, el texto de interpretación se muestra tal cual llega, sin traducir en cliente, evitando duplicar lógica de negocio.)
+(Nota: el texto de interpretación **no** viene del backend (`cpi_interpretation`/`spi_interpretation` del API se ignoran en presentación) — se deriva localmente del valor numérico/`null` de `cpi`/`spi` vía `getCpiInterpretationKey`/`getSpiInterpretationKey` y se localiza con `t()`, ver RN-UI-13 §2.7.6.)
 
 ---
 
@@ -393,7 +455,9 @@ export interface EvmIndicators {
   spi: number | null;
   eac: number | null;
   vac: number | null;
+  /** Recibido del backend por fidelidad al contrato REST, pero NO se usa en presentación — la UI deriva su propia interpretación vía getCpiInterpretationKey() + i18n (RN-UI-13, §2.7.6) */
   cpi_interpretation: string;
+  /** Recibido del backend por fidelidad al contrato REST, pero NO se usa en presentación — la UI deriva su propia interpretación vía getSpiInterpretationKey() + i18n (RN-UI-13, §2.7.6) */
   spi_interpretation: string;
 }
 
@@ -599,6 +663,7 @@ apps/frontend/
     │   ├── en.ts                         (diccionario inglés completo)
     │   ├── es.ts                         (diccionario español completo)
     │   ├── evmIndicatorsCatalog.ts        (nombres + descripciones + fórmulas EVM por idioma — §2.7.3)
+    │   ├── evmInterpretation.ts          (getCpiInterpretationKey/getSpiInterpretationKey — derivación local RN-UI-13, §2.7.6)
     │   ├── I18nProvider.tsx              (contexto, detección inicial, sessionStorage — §2.7.4/2.7.5)
     │   └── useI18n.ts                    (hook de consumo)
     ├── api/
@@ -643,6 +708,7 @@ sin términos críticos afectados
 | RN-UI-10 / REQ-13 (idioma ES/EN, persistencia de sesión, cambio inmediato) | §2.7.1, §2.7.4, §2.7.5, §2.9 | `i18n/I18nProvider.tsx`, `i18n/useI18n.ts`, `i18n/types.ts`, `i18n/en.ts`, `i18n/es.ts`, `components/LanguageSwitcher.tsx` |
 | RN-UI-11 / REQ-15 (sigla invariable + nombre localizado) | §2.7.3, §2.8 (patrón de uso) | `i18n/evmIndicatorsCatalog.ts`, `components/Tooltip.tsx`, `ActivitiesTable.tsx`, `ConsolidatedIndicators.tsx`, `PvEvAcChart.tsx` |
 | RN-UI-12 / REQ-14 (tooltip accesible con nombre/descripción/fórmula) | §2.8 | `components/Tooltip.tsx`, `i18n/evmIndicatorsCatalog.ts` |
+| RN-UI-13 (interpretación CPI/SPI derivada localmente, no leída del API) | §2.7.6 | `i18n/evmInterpretation.ts`, `components/CpiSpiBadge.tsx`, `components/ConsolidatedIndicators.tsx` |
 | Seguridad UI (anti double-submit) | §7.2, §5 `useMutationWithLock`, `LoadingButton` | `hooks/useMutationWithLock.ts`, `LoadingButton.tsx`, `ActivityFormModal.tsx` |
 | Validación captura (HTML5) | §7.2 inputs number | `ActivityFormModal.tsx` |
 | Errores 422/404 | §7.1 | `ErrorBanner.tsx`, `api/client.ts` |
@@ -675,17 +741,17 @@ sin términos críticos afectados
 
 ### 7.3 Componente `CpiSpiBadge` — accesibilidad y mapeo visual
 
-El badge **siempre** renderiza el texto de interpretación (`cpi_interpretation` o `spi_interpretation`) como contenido visible accesible. El color y el icono son complemento, nunca el único canal de información (REQ-06).
+El badge **siempre** renderiza un texto de interpretación como contenido visible accesible. Ese texto **se deriva localmente** vía `getCpiInterpretationKey`/`getSpiInterpretationKey` + `t(evmInterpretation.<key>)` (RN-UI-13, §2.7.6) — **no** se lee `indicators.cpi_interpretation`/`indicators.spi_interpretation` del API. El color y el icono son complemento, nunca el único canal de información (REQ-06).
 
 | Estado del indicador | Condición | Color sugerido | Icono sugerido | Texto (obligatorio) |
 |----------------------|-----------|----------------|----------------|---------------------|
-| **No aplicable** | valor `null` | Gris neutro (`neutral`) | Icono neutral (ej. guion/minus en círculo) | Texto backend RN-09 (ej. *"Sin costo real registrado — CPI no aplicable"*) |
-| **Favorable costo** | CPI > 1 | Verde | Check / flecha arriba | `cpi_interpretation` (*"Bajo presupuesto"*) |
-| **Neutral costo** | CPI = 1 | Gris/verde tenue | Check neutro | `cpi_interpretation` (*"En presupuesto"*) |
-| **Desfavorable costo** | CPI < 1 | Rojo o amber | Warning / flecha abajo | `cpi_interpretation` (*"Sobre presupuesto"*) |
-| **Favorable cronograma** | SPI > 1 | Verde | Check / flecha arriba | `spi_interpretation` (*"Adelantado"*) |
-| **Neutral cronograma** | SPI = 1 | Gris/verde tenue | Check neutro | `spi_interpretation` (*"En plan"*) |
-| **Desfavorable cronograma** | SPI < 1 | Rojo o amber | Warning / flecha abajo | `spi_interpretation` (*"Atrasado"*) |
+| **No aplicable** | valor `null` | Gris neutro (`neutral`) | Icono neutral (ej. guion/minus en círculo) | `t(evmInterpretation.cpiNull)` (*"Sin costo real registrado — CPI no aplicable"*) |
+| **Favorable costo** | CPI > 1 | Verde | Check / flecha arriba | `t(evmInterpretation.cpiAboveOne)` (*"Bajo presupuesto"*) |
+| **Neutral costo** | CPI = 1 | Gris/verde tenue | Check neutro | `t(evmInterpretation.cpiEqualOne)` (*"En presupuesto"*) |
+| **Desfavorable costo** | CPI < 1 | Rojo o amber | Warning / flecha abajo | `t(evmInterpretation.cpiBelowOne)` (*"Sobre presupuesto"*) |
+| **Favorable cronograma** | SPI > 1 | Verde | Check / flecha arriba | `t(evmInterpretation.spiAboveOne)` (*"Adelantado"*) |
+| **Neutral cronograma** | SPI = 1 | Gris/verde tenue | Check neutro | `t(evmInterpretation.spiEqualOne)` (*"En plan"*) |
+| **Desfavorable cronograma** | SPI < 1 | Rojo o amber | Warning / flecha abajo | `t(evmInterpretation.spiBelowOne)` (*"Atrasado"*) |
 
 Atributos de accesibilidad sugeridos: `role="status"`, `aria-label` combinando nombre del indicador + interpretación textual. El icono de estado se envuelve además en `Tooltip` (§2.8) con nombre ES/EN y descripción del indicador.
 
@@ -752,6 +818,7 @@ E2E cross-unidad (`docker compose up` completo) es responsabilidad de `evm-proje
 - [ ] El catálogo de siglas EVM es invariable en inglés y separado del catálogo de nombres/descripciones traducidos (RN-UI-11).
 - [ ] El componente `Tooltip` es accesible por teclado (foco) y por hover, cierra con Escape, y está correctamente anunciado (`role="tooltip"`, `aria-describedby`) (RN-UI-12).
 - [ ] El selector de idioma es visible sin necesidad de abrir un menú oculto y persiste solo durante la sesión del navegador vía `sessionStorage` (RN-UI-10).
+- [ ] Ningún componente de presentación lee `indicators.cpi_interpretation`/`indicators.spi_interpretation` del API; la interpretación CPI/SPI se deriva localmente por valor numérico/null vía `getCpiInterpretationKey`/`getSpiInterpretationKey` + i18n (RN-UI-13).
 
 ---
 

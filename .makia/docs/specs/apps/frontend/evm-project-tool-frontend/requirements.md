@@ -13,7 +13,7 @@ Este documento es la **fuente de verdad funcional** de la unidad de presentació
 | Contrato API | Los endpoints, schemas y códigos de error referenciados coinciden exactamente con el contrato REST del backend (`../../backend/evm-project-tool-backend/design.md` §4.2). |
 | Reglas UI | RN-UI-XX y edge cases EC-XX definen comportamiento observable ante datos nulos, errores HTTP y accesibilidad. |
 | Requerimientos EARS | Cada REQ-XX es verificable de forma independiente (historia de usuario + criterios de aceptación). |
-| Idioma y tooltips | El selector de idioma (RN-UI-10, REQ-13), la regla de siglas invariables (RN-UI-11, REQ-15) y los tooltips explicativos (RN-UI-12, REQ-14) están completos y son autosuficientes para aprobar sin consultar design.md. |
+| Idioma y tooltips | El selector de idioma (RN-UI-10, REQ-13), la regla de siglas invariables (RN-UI-11, REQ-15), los tooltips explicativos (RN-UI-12, REQ-14) y la derivación local de interpretaciones CPI/SPI (RN-UI-13, REQ-07) están completos y son autosuficientes para aprobar sin consultar design.md. |
 
 **Veredicto esperado tras implementación:** la UI cumple todos los REQ-XX, respeta RN-UI-XX y maneja EC-XX sin calcular métricas EVM en cliente.
 
@@ -159,7 +159,7 @@ Estas reglas gobiernan **comportamiento de presentación e interacción**. No su
 | ID | Regla |
 |----|-------|
 | **RN-UI-01** | El frontend **no calcula** PV, EV, CV, SV, CPI, SPI, EAC, VAC ni interpretaciones. Solo muestra valores y textos recibidos en `indicators` / `consolidated_indicators` del API. |
-| **RN-UI-02** | La indicación de estado CPI y SPI debe incluir **tres canales simultáneos**: color de fondo/borde o badge, **ícono** semántico (p. ej. tendencia arriba/abajo/neutral) y **texto legible** (usar `cpi_interpretation` / `spi_interpretation` del API o etiqueta equivalente visible). **Nunca** comunicar el estado solo mediante color. |
+| **RN-UI-02** | La indicación de estado CPI y SPI debe incluir **tres canales simultáneos**: color de fondo/borde o badge, **ícono** semántico (p. ej. tendencia arriba/abajo/neutral) y **texto legible** (texto de interpretación derivado localmente según RN-UI-13, nunca el string `cpi_interpretation`/`spi_interpretation` del API). **Nunca** comunicar el estado solo mediante color. |
 | **RN-UI-03** | Durante cualquier petición HTTP de mutación (POST, PUT, DELETE), los botones **Guardar**, **Eliminar** y acciones equivalentes deben estar **deshabilitados** o mostrar **loader/indicador de progreso** visible hasta resolución (éxito o error). |
 | **RN-UI-04** | Campos `budget_at_completion`, `actual_cost`, `planned_progress_percentage` y `actual_progress_percentage` usan `<input type="number">` con atributos HTML acordes: mínimos/máximos (`min="0"`, porcentajes `max="100"`), `step` apropiado y teclado numérico en dispositivos móviles cuando el SO lo permita. |
 | **RN-UI-05** | Errores HTTP **422** y **404** del API se presentan al usuario en **lenguaje claro** (mensajes derivados de `detail`), sin stack traces ni payloads técnicos crudos. |
@@ -170,6 +170,7 @@ Estas reglas gobiernan **comportamiento de presentación e interacción**. No su
 | **RN-UI-10** | La UI soporta exactamente dos idiomas de presentación: Español y English, seleccionables mediante un control visible en la interfaz (p. ej. en la cabecera/layout principal). El idioma activo persiste durante la sesión del navegador (no requiere persistencia entre sesiones ni en backend); al cambiarlo, todo texto claro de la UI (labels, botones, mensajes, nombres completos de indicadores, tooltips) se actualiza sin recargar la página. Ningún texto visible para el usuario vive hardcodeado en el código de presentación: todo string pasa por la capa de i18n. |
 | **RN-UI-11** | Todo indicador EVM se identifica ante el usuario mediante su abreviatura en inglés (PV, EV, AC, CV, SV, CPI, SPI, EAC, VAC, BAC, ETC, TCPI, etc.), la cual nunca se traduce ni varía con el idioma activo. Junto a la abreviatura se muestra el nombre completo del indicador localizado al idioma activo (p. ej. "PV — Valor Planificado" en Español, "PV — Planned Value" en English). |
 | **RN-UI-12** | Todo indicador EVM y todo control de UI cuyo significado no sea evidente a simple vista (abreviaturas, íconos de estado, campos de formulario con convención propia) expone un tooltip reutilizable activable por hover o foco de teclado, que muestra: nombre en español, nombre en inglés, y una descripción de qué representa — incluyendo la fórmula cuando el indicador la tenga (p. ej. CPI = EV / AC). El tooltip es accesible: alcanzable y activable por teclado, con `aria-describedby` o patrón equivalente vinculando el control con su contenido. |
+| **RN-UI-13** | El frontend deriva su propio texto de interpretación CPI/SPI a partir del valor numérico (o `null`) recibido en `cpi`/`spi`, mapeando por condición a la tabla "Interpretaciones CPI/SPI del backend" de este documento, y pasando ese texto por la capa de i18n (RN-UI-10). El frontend **nunca** usa ni traduce el string literal `cpi_interpretation`/`spi_interpretation` que envía el backend: esos dos campos del API se ignoran a efectos de presentación. Esto no viola RN-UI-01 (el frontend no calcula CPI/SPI ni ninguna métrica EVM): solo clasifica, para fines de presentación localizada, un valor numérico ya calculado por el backend en una de cuatro categorías fijas (`null`, `> 1`, `= 1`, `< 1`). |
 
 ### Interpretaciones CPI/SPI del backend (mostrar en UI, no recalcular)
 
@@ -187,9 +188,9 @@ Estas reglas gobiernan **comportamiento de presentación e interacción**. No su
 | SPI = 1 | "En plan" |
 | SPI < 1 | "Atrasado" |
 
-La UI debe preferir los campos `cpi_interpretation` y `spi_interpretation` de la respuesta cuando estén presentes; si solo hay valor numérico/null, mapear a los textos anteriores de forma consistente.
+La UI **nunca** usa los campos `cpi_interpretation`/`spi_interpretation` de la respuesta del API: siempre deriva el texto de esta tabla a partir del valor numérico/null de `cpi`/`spi` (RN-UI-13), de forma agnóstica al idioma en que el backend redacte esos campos.
 
-**Nota de idioma:** los textos de esta subsección son textos claros que pasan por la capa de i18n (RN-UI-10) y se traducen según el idioma activo; solo las siglas CPI/SPI permanecen invariables (RN-UI-11).
+**Nota de idioma:** los textos de esta subsección son textos claros que pasan por la capa de i18n (RN-UI-10) y se traducen según el idioma activo; solo las siglas CPI/SPI permanecen invariables (RN-UI-11). El mapeo de condición numérica a texto (RN-UI-13) es la única fuente de la interpretación mostrada al usuario.
 
 ---
 
@@ -350,14 +351,15 @@ Convención EARS: **[Ubicación/Evento]**, el sistema **[debe/shall]** **[compor
 **Cuando se muestran `EvmIndicators`**, el sistema **debe**:
 
 - Formatear moneda/números según convención de implementación (consistente en toda la app).
-- Mostrar `cpi_interpretation` y `spi_interpretation` del API en UI de estado.
+- Derivar el texto de interpretación de CPI y de SPI a partir del valor numérico/null de `cpi`/`spi`, mapeando por condición a la tabla "Interpretaciones CPI/SPI del backend" y localizando ese texto vía i18n (RN-UI-13); **ignorar** los campos `cpi_interpretation`/`spi_interpretation` que envía el API.
 - Aplicar RN-UI-07 para campos null.
 
 **Criterios de aceptación:**
 
-- CA-07.1: `cpi: null` con interpretación del API visible; numérico CPI formateado cuando no es null.
+- CA-07.1: `cpi: null` muestra la interpretación derivada localmente ("Sin costo real registrado — CPI no aplicable" o su equivalente localizado), nunca el string `cpi_interpretation` del API; numérico CPI formateado cuando no es null.
 - CA-07.2: Misma lógica para SPI.
 - CA-07.3: No aparece "NaN" ni "Infinity" en ningún componente ante EC-01/EC-02.
+- CA-07.4: La interpretación mostrada cambia de idioma junto con el resto de la UI al usar el selector de idioma (REQ-13), sin depender del idioma en que el backend haya redactado `cpi_interpretation`/`spi_interpretation`.
 
 ---
 

@@ -20,9 +20,9 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 | Fase 2: API client | `Completado` (2/2 tareas) |
 | Fase 3: Dashboard componentes | `Completado` (7/7 tareas) |
 | Fase 4: Docker / verificación | `Completado` (3/3 tareas) |
-| Fase 5: Internacionalización, Tooltip y selector de idioma | `Pendiente` (3/7 tareas) |
+| Fase 5: Internacionalización, Tooltip y selector de idioma | `Pendiente` (4/7 tareas) |
 
-**Progreso global:** `81%` (17 de 21 tareas)
+**Progreso global:** `86%` (18 de 21 tareas)
 
 **Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
 
@@ -51,9 +51,7 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 
 **Pendiente (Fase 5, actualización en curso):**
 - Tareas 5.1 (catálogo i18n base: `types.ts`/`en.ts`/`es.ts`/`evmIndicatorsCatalog.ts`/`I18nProvider.tsx`/`useI18n.ts`, integrado en `main.tsx`), 5.2 (componente `Tooltip.tsx` reutilizable, accesible, sin librería externa) y 5.3 (`LanguageSwitcher.tsx`, toggle ES|EN en cabecera de `App.tsx`) ya están completadas y verificadas (TEST: PASA en las tres, lint/format/build limpios).
-- Catálogo i18n en `src/i18n/`.
-- Componente `Tooltip.tsx` reutilizable (nombre ES, nombre EN, descripción, fórmula).
-- Aplicación de sigla invariable en inglés + nombre localizado + tooltip a los indicadores EVM existentes (PV, EV, CV, SV, CPI, SPI, EAC, VAC).
+- **Tarea 5.4 completada:** sigla invariable + nombre localizado + Tooltip aplicados en `ActivitiesTable`, `ConsolidatedIndicators`, `CpiSpiBadge` y `PvEvAcChart`. TEST: PASA, con nota menor no bloqueante: el tooltip nativo de Recharts al hacer hover en las barras usa texto plano "SIGLA — Nombre" en vez del componente `Tooltip` interactivo, por limitación de tipos de Recharts, documentado y aceptado.
 - Reemplazo de strings hardcodeados por claves i18n en los componentes del dashboard.
 
 ## Verificación manual 4.3

@@ -1,3 +1,6 @@
+import type { EvmIndicatorCode } from '../i18n/evmIndicatorsCatalog.ts'
+import { evmIndicatorsCatalog } from '../i18n/evmIndicatorsCatalog.ts'
+import { useI18n } from '../i18n/useI18n.ts'
 import type { ActivityWithIndicatorsResponse } from '../types/api.ts'
 import {
   formatIndicator,
@@ -6,6 +9,7 @@ import {
 } from '../utils/formatDisplay.ts'
 import { CpiSpiBadge } from './CpiSpiBadge.tsx'
 import { LoadingButton } from './LoadingButton.tsx'
+import { Tooltip } from './Tooltip.tsx'
 
 export interface ActivitiesTableProps {
   activities: ActivityWithIndicatorsResponse[]
@@ -14,12 +18,39 @@ export interface ActivitiesTableProps {
   actionsDisabled?: boolean
 }
 
+interface EvmColumnHeaderProps {
+  code: EvmIndicatorCode
+  locale: 'es' | 'en'
+}
+
+function EvmColumnHeader({ code, locale }: EvmColumnHeaderProps) {
+  const entry = evmIndicatorsCatalog[code]
+  return (
+    <>
+      <Tooltip
+        nameEs={entry.nameEs}
+        nameEn={entry.nameEn}
+        description={
+          locale === 'es' ? entry.descriptionEs : entry.descriptionEn
+        }
+        formula={entry.formula}
+      >
+        <span>{code}</span>
+      </Tooltip>
+      {' — '}
+      {locale === 'es' ? entry.nameEs : entry.nameEn}
+    </>
+  )
+}
+
 export function ActivitiesTable({
   activities,
   onEdit,
   onDelete,
   actionsDisabled = false,
 }: ActivitiesTableProps) {
+  const { locale } = useI18n()
+
   if (activities.length === 0) {
     return (
       <div className="activities-table-empty">
@@ -38,14 +69,30 @@ export function ActivitiesTable({
             <th scope="col">Planned %</th>
             <th scope="col">Actual %</th>
             <th scope="col">AC</th>
-            <th scope="col">PV</th>
-            <th scope="col">EV</th>
-            <th scope="col">CV</th>
-            <th scope="col">SV</th>
-            <th scope="col">CPI</th>
-            <th scope="col">SPI</th>
-            <th scope="col">EAC</th>
-            <th scope="col">VAC</th>
+            <th scope="col">
+              <EvmColumnHeader code="PV" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="EV" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="CV" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="SV" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="CPI" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="SPI" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="EAC" locale={locale} />
+            </th>
+            <th scope="col">
+              <EvmColumnHeader code="VAC" locale={locale} />
+            </th>
             <th scope="col">Actions</th>
           </tr>
         </thead>

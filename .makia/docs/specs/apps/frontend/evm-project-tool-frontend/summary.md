@@ -20,9 +20,9 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 | Fase 2: API client | `Completado` (2/2 tareas) |
 | Fase 3: Dashboard componentes | `Completado` (7/7 tareas) |
 | Fase 4: Docker / verificación | `Completado` (3/3 tareas) |
-| Fase 5: Internacionalización, Tooltip y selector de idioma | `Pendiente` (0/6 tareas) |
+| Fase 5: Internacionalización, Tooltip y selector de idioma | `Pendiente` (2/7 tareas) |
 
-**Progreso global:** `70%` (14 de 20 tareas)
+**Progreso global:** `76%` (16 de 21 tareas)
 
 **Fase 3 completada:** dashboard integrado en `Dashboard.tsx` con `ProjectSelector`, `ConsolidatedIndicators`, `ActivitiesTable`, `PvEvAcChart`, `CpiSpiBadge`, `ActivityFormModal` y hook `useMutationWithLock`. CRUD de actividades con refetch tras mutación; indicadores EVM y consolidados consumidos del API sin cálculo en cliente.
 
@@ -50,6 +50,7 @@ Ofrecer al líder de proyecto un dashboard web claro y accionable para visualiza
 **Cierre ciclo anterior:** TEST global y AUDIT ciclo 2 completados con veredicto **PASA** (2026-09-11). El spec se reabre en esta misma fecha para la Fase 5.
 
 **Pendiente (Fase 5, actualización en curso):**
+- Tareas 5.1 (catálogo i18n base: `types.ts`/`en.ts`/`es.ts`/`evmIndicatorsCatalog.ts`/`I18nProvider.tsx`/`useI18n.ts`, integrado en `main.tsx`) y 5.2 (componente `Tooltip.tsx` reutilizable, accesible, sin librería externa) ya están completadas y verificadas (TEST: PASA en ambas, lint/format/build limpios).
 - Selector de idioma Español/English, visible y persistente durante la sesión.
 - Catálogo i18n en `src/i18n/`.
 - Componente `Tooltip.tsx` reutilizable (nombre ES, nombre EN, descripción, fórmula).

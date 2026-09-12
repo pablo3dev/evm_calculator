@@ -13,4 +13,18 @@ describe('CpiSpiBadge', () => {
 
     expect(screen.getByText('Under budget')).toBeInTheDocument()
   })
+
+  it('stacks siglum, icon and interpretation when layout is stacked', () => {
+    render(
+      <I18nProvider>
+        <CpiSpiBadge value={1.2} metric="cpi" label="CPI" layout="stacked" />
+      </I18nProvider>,
+    )
+
+    expect(
+      screen.getByRole('status', { name: 'CPI: Under budget' }),
+    ).toHaveAttribute('data-layout', 'stacked')
+    expect(screen.getByText('CPI')).toBeInTheDocument()
+    expect(screen.getByText('Under budget')).toBeInTheDocument()
+  })
 })

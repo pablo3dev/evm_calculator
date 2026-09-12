@@ -43,12 +43,16 @@ function IndicatorCard({ code, value }: IndicatorCardProps) {
 export function ConsolidatedIndicators({
   indicators,
 }: ConsolidatedIndicatorsProps) {
+  const { t } = useI18n()
+
   return (
     <section
       className="consolidated-indicators"
-      aria-label="Consolidated project indicators"
+      aria-label={t('consolidatedIndicators.ariaLabel')}
     >
-      <h2 className="consolidated-indicators-title">Project Summary</h2>
+      <h2 className="consolidated-indicators-title">
+        {t('consolidatedIndicators.title')}
+      </h2>
       <div className="consolidated-indicators-grid">
         <IndicatorCard code="PV" value={formatIndicator(indicators.pv)} />
         <IndicatorCard code="EV" value={formatIndicator(indicators.ev)} />

@@ -6,6 +6,7 @@ export interface Dictionary {
     delete: string
     edit: string
     create: string
+    close: string
     errorGeneric: string
     errorNetwork: string
   }
@@ -13,6 +14,10 @@ export interface Dictionary {
     title: string
     selectProject: string
     noProjectsFound: string
+    ariaLabel: string
+    selectProjectPrompt: string
+    activitiesTitle: string
+    errorLoadFailed: string
   }
   activityForm: {
     titleCreate: string
@@ -23,6 +28,11 @@ export interface Dictionary {
     fieldActualProgress: string
     fieldActualCost: string
     submitLabel: string
+    submitLabelCreate: string
+    submitLabelEdit: string
+    confirmDelete: string
+    fallbackName: string
+    errorSaveFailed: string
   }
   activitiesTable: {
     columnActivity: string
@@ -30,9 +40,12 @@ export interface Dictionary {
     columnPlannedProgress: string
     columnActualProgress: string
     columnActualCost: string
+    columnActions: string
+    emptyState: string
   }
   consolidatedIndicators: {
     title: string
+    ariaLabel: string
   }
   cpiSpiBadge: {
     cpiLabel: string
@@ -52,6 +65,26 @@ export interface Dictionary {
     spiAboveOne: string
     spiEqualOne: string
     spiBelowOne: string
+  }
+  projectSelector: {
+    errorLoadFailed: string
+    createdLabel: string
+    updatedLabel: string
+  }
+  projectForm: {
+    titleCreate: string
+    titleEdit: string
+    fieldName: string
+    fieldDescription: string
+    submitLabelCreate: string
+    submitLabelEdit: string
+    confirmDelete: string
+    errorSaveFailed: string
+  }
+  pvEvAcChart: {
+    title: string
+    ariaLabel: string
+    emptyState: string
   }
 }
 

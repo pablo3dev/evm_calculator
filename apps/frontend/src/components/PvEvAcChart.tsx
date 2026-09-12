@@ -96,12 +96,12 @@ function renderTooltipFormatter(locale: 'es' | 'en'): TooltipFormatter {
 }
 
 export function PvEvAcChart({ activities }: PvEvAcChartProps) {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
 
   if (activities.length === 0) {
     return (
       <div className="pv-ev-ac-chart-empty">
-        <p>No activities to chart. Add activities to compare PV, EV, and AC.</p>
+        <p>{t('pvEvAcChart.emptyState')}</p>
       </div>
     )
   }
@@ -109,11 +109,8 @@ export function PvEvAcChart({ activities }: PvEvAcChartProps) {
   const chartData = buildChartData(activities)
 
   return (
-    <section
-      className="pv-ev-ac-chart"
-      aria-label="PV, EV, and AC comparison chart"
-    >
-      <h2 className="pv-ev-ac-chart-title">PV / EV / AC by Activity</h2>
+    <section className="pv-ev-ac-chart" aria-label={t('pvEvAcChart.ariaLabel')}>
+      <h2 className="pv-ev-ac-chart-title">{t('pvEvAcChart.title')}</h2>
       <div className="pv-ev-ac-chart-container">
         <ResponsiveContainer width="100%" height={360}>
           <BarChart

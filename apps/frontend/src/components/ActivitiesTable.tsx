@@ -49,12 +49,12 @@ export function ActivitiesTable({
   onDelete,
   actionsDisabled = false,
 }: ActivitiesTableProps) {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
 
   if (activities.length === 0) {
     return (
       <div className="activities-table-empty">
-        <p>No activities yet. Add an activity to see EVM indicators.</p>
+        <p>{t('activitiesTable.emptyState')}</p>
       </div>
     )
   }
@@ -64,11 +64,11 @@ export function ActivitiesTable({
       <table className="activities-table">
         <thead>
           <tr>
-            <th scope="col">Activity</th>
-            <th scope="col">BAC</th>
-            <th scope="col">Planned %</th>
-            <th scope="col">Actual %</th>
-            <th scope="col">AC</th>
+            <th scope="col">{t('activitiesTable.columnActivity')}</th>
+            <th scope="col">{t('activitiesTable.columnBudget')}</th>
+            <th scope="col">{t('activitiesTable.columnPlannedProgress')}</th>
+            <th scope="col">{t('activitiesTable.columnActualProgress')}</th>
+            <th scope="col">{t('activitiesTable.columnActualCost')}</th>
             <th scope="col">
               <EvmColumnHeader code="PV" locale={locale} />
             </th>
@@ -93,7 +93,7 @@ export function ActivitiesTable({
             <th scope="col">
               <EvmColumnHeader code="VAC" locale={locale} />
             </th>
-            <th scope="col">Actions</th>
+            <th scope="col">{t('activitiesTable.columnActions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -133,14 +133,14 @@ export function ActivitiesTable({
                     disabled={actionsDisabled}
                     onClick={() => onEdit(activity.id)}
                   >
-                    Edit
+                    {t('common.edit')}
                   </button>
                   <LoadingButton
                     type="button"
                     loading={actionsDisabled}
                     onClick={() => onDelete(activity.id)}
                   >
-                    Delete
+                    {t('common.delete')}
                   </LoadingButton>
                 </td>
               </tr>

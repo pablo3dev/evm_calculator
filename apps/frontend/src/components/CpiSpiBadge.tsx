@@ -1,13 +1,17 @@
 import type { ReactElement } from 'react'
 import type { EvmIndicatorCode } from '../i18n/evmIndicatorsCatalog.ts'
 import { evmIndicatorsCatalog } from '../i18n/evmIndicatorsCatalog.ts'
+import {
+  getCpiInterpretationKey,
+  getSpiInterpretationKey,
+} from '../i18n/evmInterpretation.ts'
 import { useI18n } from '../i18n/useI18n.ts'
 import { Tooltip } from './Tooltip.tsx'
 import styles from './CpiSpiBadge.module.css'
 
 export interface CpiSpiBadgeProps {
   value: number | null
-  interpretation: string
+  metric: 'cpi' | 'spi'
   label?: EvmIndicatorCode
 }
 
@@ -131,14 +135,15 @@ function buildAriaLabel(
   return interpretation
 }
 
-export function CpiSpiBadge({
-  value,
-  interpretation,
-  label,
-}: CpiSpiBadgeProps) {
-  const { locale } = useI18n()
+export function CpiSpiBadge({ value, metric, label }: CpiSpiBadgeProps) {
+  const { locale, t } = useI18n()
   const variant = getVariant(value)
   const Icon = ICON_BY_VARIANT[variant]
+  const interpretationKey =
+    metric === 'cpi'
+      ? getCpiInterpretationKey(value)
+      : getSpiInterpretationKey(value)
+  const interpretation = t(`evmInterpretation.${interpretationKey}`)
   const ariaLabel = buildAriaLabel(label, interpretation)
   const entry = label ? evmIndicatorsCatalog[label] : undefined
 

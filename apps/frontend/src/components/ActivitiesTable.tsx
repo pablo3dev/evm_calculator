@@ -114,14 +114,14 @@ export function ActivitiesTable({
                 <td>
                   <CpiSpiBadge
                     value={indicators.cpi}
-                    interpretation={indicators.cpi_interpretation}
+                    metric="cpi"
                     label="CPI"
                   />
                 </td>
                 <td>
                   <CpiSpiBadge
                     value={indicators.spi}
-                    interpretation={indicators.spi_interpretation}
+                    metric="spi"
                     label="SPI"
                   />
                 </td>
